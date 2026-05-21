@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "790803856416",
+    "project_id": "epkk-41a96",
+    "storage_bucket": "epkk-41a96.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790803856416:android:958e338921ebfd50999045",
+        "android_client_info": {
+          "package_name": "com.example.epkk_nganjuk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCzJ7zQ2Pnnh2AQJEuAd5lQMZPbRBY6cs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
