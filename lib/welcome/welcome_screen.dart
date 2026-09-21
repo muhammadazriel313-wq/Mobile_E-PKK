@@ -52,204 +52,166 @@ class WelcomeScreen extends StatelessWidget {
           ),
 
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: size.width * 0.05,
-              ),
-
-              child: Column(
-                children: [
-                  SizedBox(height: size.height * 0.050),
-
-                  /// LOGO
-                  Image.asset(
-                    'assets/images/logo_pkk.png',
-                    width: size.width * 0.30,
-                  ),
-
-                  SizedBox(height: size.height * 0.02),
-
-                  /// TITLE
-                  RichText(
-                    textAlign: TextAlign.center,
-
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Selamat Datang\n',
-                          style: TextStyle(
-                            fontSize: size.width * 0.065,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0B1F44),
-                            height: 1.2,
-                          ),
-                        ),
-
-                        TextSpan(
-                          text: 'di Aplikasi PKK',
-                          style: TextStyle(
-                            fontSize: size.width * 0.055,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF3F8FC1),
-                          ),
-                        ),
-                      ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  ),
-
-                  SizedBox(height: size.height * 0.02),
-
-                  /// DESCRIPTION
-                  Text(
-                    'Pilih akses pengguna untuk\nmelanjutkan ke aplikasi',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: size.width * 0.045,
-                      color: Colors.grey.shade600,
-                      height: 1.5,
-                    ),
-                  ),
-
-                  SizedBox(height: size.height * 0.03),
-
-                  /// ILLUSTRATION
-                  Flexible(
-                    flex: 4,
-                    child: Image.asset(
-                      'assets/images/ic_welcome.png',
-                      width: size.width * 0.80,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-
-                  SizedBox(height: size.height * 0.02),
-
-                  /// TITLE ROLE
-                  Text(
-                    "Pilih Role Anda",
-                    style: TextStyle(
-                      fontSize: size.width * 0.055,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1B2A4A),
-                    ),
-                  ),
-
-                  SizedBox(height: size.height * 0.025),
-
-                  /// ROLE BUTTON
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-
-                    children: [
-                      Obx(
-                        () => _roleItem(
-                          context: context,
-                          title: "Desa",
-                          icon: Icons.home_rounded,
-                          selected:
-                              welcomeController
-                                      .selectedRole
-                                      .value ==
-                                  id1,
-                          activeColor:
-                              const Color(0xFF3F8FC1),
-
-                          onTap: () {
-                            welcomeController
-                                .selectedRole
-                                .value = id1;
-
-                            print(
-                              "ROLE TERPILIH DESA",
-                            );
-                          },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: size.width > 600 ? size.width * 0.2 : size.width * 0.05, // Responsif untuk web
+                      ),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [
+                            SizedBox(height: size.height * 0.050),
+          
+                            /// LOGO
+                            Image.asset(
+                              'assets/images/logo_pkk.png',
+                              width: size.width > 600 ? 150 : size.width * 0.30,
+                            ),
+          
+                            SizedBox(height: size.height * 0.02),
+          
+                            /// TITLE
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Selamat Datang\n',
+                                    style: TextStyle(
+                                      fontSize: size.width > 600 ? 32 : size.width * 0.065,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF0B1F44),
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'di Aplikasi PKK',
+                                    style: TextStyle(
+                                      fontSize: size.width > 600 ? 28 : size.width * 0.055,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF3F8FC1),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+          
+                            SizedBox(height: size.height * 0.02),
+          
+                            /// DESCRIPTION
+                            Text(
+                              'Pilih akses pengguna untuk\nmelanjutkan ke aplikasi',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: size.width > 600 ? 18 : size.width * 0.045,
+                                color: Colors.grey.shade600,
+                                height: 1.5,
+                              ),
+                            ),
+          
+                            SizedBox(height: size.height * 0.03),
+          
+                            /// ILLUSTRATION
+                            Expanded(
+                              flex: 4,
+                              child: Image.asset(
+                                'assets/images/ic_welcome.png',
+                                width: size.width > 600 ? 300 : size.width * 0.80,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+          
+                            SizedBox(height: size.height * 0.02),
+          
+                            /// TITLE ROLE
+                            Text(
+                              "Pilih Role Anda",
+                              style: TextStyle(
+                                fontSize: size.width > 600 ? 24 : size.width * 0.055,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF1B2A4A),
+                              ),
+                            ),
+          
+                            SizedBox(height: size.height * 0.025),
+          
+                            /// ROLE BUTTON
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Obx(
+                                  () => _roleItem(
+                                    context: context,
+                                    title: "Desa",
+                                    icon: Icons.home_rounded,
+                                    selected: welcomeController.selectedRole.value == id1,
+                                    activeColor: const Color(0xFF3F8FC1),
+                                    onTap: () {
+                                      welcomeController.selectedRole.value = id1;
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 34),
+                                Obx(
+                                  () => _roleItem(
+                                    context: context,
+                                    title: "Kecamatan",
+                                    icon: Icons.apartment_rounded,
+                                    selected: welcomeController.selectedRole.value == id2,
+                                    activeColor: const Color(0xFF3F8FC1),
+                                    onTap: () {
+                                      welcomeController.selectedRole.value = id2;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+          
+                            const Spacer(),
+          
+                            /// BUTTON
+                            ZoomTapAnimation(
+                              child: ButtonFill(
+                                text: "Lanjutkan",
+                                textColor: Colors.white,
+                                onPressed: () async {
+                                  final selectedRole = welcomeController.selectedRole.value;
+          
+                                  if (selectedRole.isEmpty) {
+                                    Get.snackbar(
+                                      "Peringatan",
+                                      "Pilih role terlebih dahulu",
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                    );
+                                    return;
+                                  }
+          
+                                  Get.toNamed(
+                                    Routes.AUTH_LOGIN,
+                                    arguments: {
+                                      'roleID': selectedRole,
+                                      'roleName': selectedRole == '1' ? 'Desa' : 'Kecamatan',
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+          
+                            SizedBox(height: size.height * 0.03),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(width: 34),
-
-                      Obx(
-                        () => _roleItem(
-                          context: context,
-                          title: "Kecamatan",
-                          icon:
-                              Icons.apartment_rounded,
-                          selected:
-                              welcomeController
-                                      .selectedRole
-                                      .value ==
-                                  id2,
-                          activeColor:
-                              const Color(0xFF3F8FC1),
-
-                          onTap: () {
-                            welcomeController
-                                .selectedRole
-                                .value = id2;
-
-                            print(
-                              "ROLE TERPILIH KECAMATAN",
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const Spacer(),
-
-                  /// BUTTON
-                  ZoomTapAnimation(
-                    child: ButtonFill(
-                      text: "Lanjutkan",
-                      textColor: Colors.white,
-
-                      onPressed: () async {
-                        final selectedRole =
-                            welcomeController
-                                .selectedRole
-                                .value;
-
-                        print(
-                          "SELECTED ROLE: $selectedRole",
-                        );
-
-                        if (selectedRole.isEmpty) {
-                          Get.snackbar(
-                            "Peringatan",
-                            "Pilih role terlebih dahulu",
-                            backgroundColor:
-                                Colors.red,
-                            colorText:
-                                Colors.white,
-                          );
-
-                          return;
-                        }
-
-                        /// LANGSUNG PINDAH
-                        /// TANPA HIT API ROLE
-                        Get.toNamed(
-                          Routes.AUTH_LOGIN,
-                          arguments: {
-                            'roleID':
-                                selectedRole,
-
-                            'roleName':
-                                selectedRole ==
-                                        '1'
-                                    ? 'Desa'
-                                    : 'Kecamatan',
-                          },
-                        );
-                      },
                     ),
                   ),
-
-                  SizedBox(height: size.height * 0.03),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],

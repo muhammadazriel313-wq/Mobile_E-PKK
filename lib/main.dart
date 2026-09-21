@@ -30,12 +30,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // FIREBASE INIT
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
 
-  // BACKGROUND NOTIFICATION
-  FirebaseMessaging.onBackgroundMessage(
-    firebaseMessagingBackgroundHandler,
-  );
+    // BACKGROUND NOTIFICATION
+    FirebaseMessaging.onBackgroundMessage(
+      firebaseMessagingBackgroundHandler,
+    );
+  } catch (e) {
+    print('Firebase initialization error: $e');
+  }
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
