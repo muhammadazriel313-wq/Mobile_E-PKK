@@ -91,15 +91,17 @@ class _SplashScreenState extends State<SplashScreen>
             child: SlideTransition(
               position: slideAnimation,
 
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
 
-                  Image.asset(
-                    'assets/images/logo_pkk.png',
-                    width: 200.w,
-                    height: 200.w,
-                  ),
+                    Image.asset(
+                      'assets/images/logo_pkk.png',
+                      width: 200.w,
+                      height: 200.w,
+                      fit: BoxFit.contain,
+                    ),
 
                   SizedBox(height: 14.h),
 
@@ -135,8 +137,9 @@ class _SplashScreenState extends State<SplashScreen>
                       strokeWidth: 2.5,
                       color: Colors.white,
                     ),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

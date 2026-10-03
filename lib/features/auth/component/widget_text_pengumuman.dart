@@ -46,25 +46,29 @@ class WidgetTextPengumuman extends StatelessWidget {
             ],
           ),
         ),
-        GestureDetector(
-          onTap: onTapThreeText,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TypographyStyles.bodyCaptionSmallReguler(
-                threeText,
-                color: BrandColors.brandPrimary500,
-                overflow: TextOverflow.ellipsis,
-                maxlines: 1,
-              ),
-              SizedBox(width: 4.w),
-              SvgPicture.asset(
-                svgIcon,
-                width: 20.w,
-                height: 20.h,
-                color: BrandColors.brandPrimary500,
-              ),
-            ],
+        Flexible(
+          child: GestureDetector(
+            onTap: onTapThreeText,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: TypographyStyles.bodyCaptionSmallReguler(
+                    threeText,
+                    color: BrandColors.brandPrimary500,
+                    overflow: TextOverflow.ellipsis,
+                    maxlines: 1,
+                  ),
+                ),
+                SizedBox(width: 4.w),
+                SvgPicture.asset(
+                  svgIcon,
+                  width: 20.w,
+                  height: 20.h,
+                  color: BrandColors.brandPrimary500,
+                ),
+              ],
+            ),
           ),
         ),
       ],

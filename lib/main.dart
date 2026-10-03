@@ -3,6 +3,7 @@ import 'package:epkk_nganjuk/features/home/nav_controller.dart';
 import 'package:epkk_nganjuk/features/splash/intro_splash_screen.dart';
 import 'package:epkk_nganjuk/features/auth/auth_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,7 +13,6 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 
 /// BACKGROUND HANDLER
 @pragma('vm:entry-point')
@@ -65,7 +65,25 @@ void main() async {
   Get.put(NavController(), permanent: true);
   Get.put(ProfilController(), permanent: true);
 
-  runApp(const MyApp());
+  runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
+}
+
+/// ScreenUtil default-nya mengambil ukuran jendela komputer, bukan ukuran
+/// HP di Device Preview. Kalau layar terlalu besar, angka .w/.h/.sp jadi
+/// membengkak dan banyak widget overflow. Ukuran di sini dibatasi supaya
+/// tampilan tetap seperti HP.
+Size _ukuranUntukScreenUtil(Size size) {
+  const desain = Size(375, 812);
+  const skalaMaksimal = 1.2;
+
+  return Size(
+    size.width > desain.width * skalaMaksimal
+        ? desain.width * skalaMaksimal
+        : size.width,
+    size.height > desain.height * skalaMaksimal
+        ? desain.height * skalaMaksimal
+        : size.height,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -73,47 +91,61 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
+    return GetMaterialApp(
+      locale: DevicePreview.locale(context),
+      builder: (context, widget) {
+        final mediaQuery = MediaQuery.of(context);
 
-      builder: (context, child) {
-        return GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-
-          title: 'E-PKK Nganjuk',
-
-          // PERFORMANCE
-          showPerformanceOverlay: false,
-
-          // SMOOTH TRANSITION GLOBAL
-          defaultTransition: Transition.fadeIn,
-          transitionDuration: const Duration(milliseconds: 300),
-
-          // GLOBAL THEME
-          theme: ThemeData(
-            useMaterial3: true,
-            fontFamily: 'DMSans',
-
-            scaffoldBackgroundColor: Colors.white,
-
-            splashFactory: NoSplash.splashFactory,
-
-            appBarTheme: const AppBarTheme(
-              elevation: 0,
-              centerTitle: true,
-              backgroundColor: Colors.transparent,
-            ),
+        ScreenUtil.configure(
+          data: mediaQuery.copyWith(
+            size: _ukuranUntukScreenUtil(mediaQuery.size),
           ),
+          designSize: const Size(375, 812),
+          minTextAdapt: true,
+          splitScreenMode: true,
+        );
 
-          // SPLASH AWAL
-          home: const IntroSplashScreen(),
+        final previewed = DevicePreview.appBuilder(context, widget);
 
-          // ROUTES
-          getPages: AppPages.pages,
+        return MediaQuery(
+          data: mediaQuery.copyWith(
+            textScaler: const TextScaler.linear(1.0),
+          ),
+          child: previewed,
         );
       },
+      debugShowCheckedModeBanner: false,
+
+      title: 'E-PKK Nganjuk',
+
+      // PERFORMANCE
+      showPerformanceOverlay: false,
+
+      // SMOOTH TRANSITION GLOBAL
+      defaultTransition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 300),
+
+      // GLOBAL THEME
+      theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: 'DMSans',
+
+        scaffoldBackgroundColor: Colors.white,
+
+        splashFactory: NoSplash.splashFactory,
+
+        appBarTheme: const AppBarTheme(
+          elevation: 0,
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+        ),
+      ),
+
+      // SPLASH AWAL
+      home: const IntroSplashScreen(),
+
+      // ROUTES
+      getPages: AppPages.pages,
     );
   }
 }

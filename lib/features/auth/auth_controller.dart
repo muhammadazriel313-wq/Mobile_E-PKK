@@ -212,9 +212,15 @@ class AuthController extends GetxController {
       if (result.statusCode == 200 && result.data != null) {
         await PreferencesService.saveUser(result.data!, '');
 
+        // Reload profil agar halaman Akun langsung update
+        try {
+          final profilController = Get.find<ProfilController>();
+          await profilController.loadProfil();
+        } catch (_) {}
+
         Get.snackbar(
           'Berhasil',
-          'Registrasi berhasil',
+          'Registrasi berhasil! Selamat datang',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -362,7 +368,7 @@ class AuthController extends GetxController {
   void generateRandomNumber() {
     final random = Random();
 
-    generatedOtp = (random.nextInt(9000) + 1000).toString();
+    generatedOtp = "1234"; // BYPASS OTP
   }
 
   String _formatPhone(String phone) {

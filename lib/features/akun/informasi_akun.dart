@@ -12,7 +12,6 @@ class InfoAkunScreen extends StatefulWidget {
   @override
   State<InfoAkunScreen> createState() => _InfoAkunScreenState();
 }
-
 class _InfoAkunScreenState extends State<InfoAkunScreen> {
   final _formKey = GlobalKey<FormState>();
 
