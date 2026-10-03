@@ -3,7 +3,9 @@ import 'package:dio/dio.dart';
 class ApiHelper {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'https://epkknganjuk.pbltifnganjuk.com/api',
+      // [PERUBAHAN 03-10-2026] Mengembalikan baseUrl ke http://127.0.0.1:8000/api (menggunakan adb reverse di emulator); 10.0.2.2 dinonaktifkan
+      // baseUrl: 'http://10.0.2.2:8000/api',
+      baseUrl: 'http://127.0.0.1:8000/api',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
