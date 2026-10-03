@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
@@ -8,6 +9,7 @@ import 'package:epkk_nganjuk/features/auth/component/drop_down.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
 import 'package:epkk_nganjuk/features/laporan/upload_galeri/upload_galerii_controller.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,6 +33,10 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
   final TextEditingController _lokasiController = TextEditingController();
 
+  final TextEditingController _namaPesertaInputController = TextEditingController();
+
+  final List<String> _pesertaList = [];
+
   double? latitude;
   double? longitude;
 
@@ -39,6 +45,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
   final _formKey = GlobalKey<FormState>();
 
   File? _image;
+  Uint8List? _imageBytes;
+  String? _imageName;
 
   final _picker = ImagePicker();
 
@@ -74,7 +82,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       _bidangList = [
         'Kader Pokja I',
         'Penghayatan & Pengamalan Pancasila',
-
+        'Gotong Royong',
       ];
     } else if (id_organization == '2') {
       _bidangList = [
@@ -104,6 +112,48 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
     }
   }
 
+  void _tambahPeserta() {
+    final nama = _namaPesertaInputController.text.trim();
+    if (nama.isEmpty) {
+      Get.snackbar(
+        'Peringatan',
+        'Nama peserta tidak boleh kosong',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange.shade600,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 12,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    if (_pesertaList.any((p) => p.toLowerCase() == nama.toLowerCase())) {
+      Get.snackbar(
+        'Peringatan',
+        'Nama peserta "$nama" sudah ada dalam daftar',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange.shade600,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 12,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    setState(() {
+      _pesertaList.add(nama);
+      _namaPesertaInputController.clear();
+    });
+  }
+
+  void _hapusPeserta(int index) {
+    setState(() {
+      _pesertaList.removeAt(index);
+    });
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     try {
       final pickedFile = await _picker.pickImage(
@@ -112,8 +162,11 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       );
 
       if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
         setState(() {
           _image = File(pickedFile.path);
+          _imageBytes = bytes;
+          _imageName = pickedFile.name;
         });
       }
     } catch (e) {
@@ -276,16 +329,21 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       return;
     }
 
+    String? namaPesertaJson =
+        _pesertaList.isNotEmpty ? jsonEncode(_pesertaList) : null;
+
     await _controller.submitDataGaleri(
       idUser: id_user!,
       deskripsi: _namaKegiatanController.text,
-
+      namaPeserta: namaPesertaJson,
       lokasi: _lokasiController.text,
 
       latitude: latitude,
       longitude: longitude,
 
       gambar: _image!.path,
+      gambarBytes: _imageBytes,
+      namaFile: _imageName,
 
       pokja: name_organization!,
 
@@ -303,6 +361,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
   void _resetForm() {
     _namaKegiatanController.clear();
+    _namaPesertaInputController.clear();
+    _pesertaList.clear();
 
     _lokasiController.clear();
 
@@ -311,6 +371,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
     setState(() {
       _image = null;
+      _imageBytes = null;
+      _imageName = null;
       _selectedBidang = null;
     });
   }
@@ -323,7 +385,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       backgroundColor: Colors.white,
 
       appBar: AppBarPrimary(
-        title: 'Upload Galeri',
+        title: 'Upload Kegiatan',
 
         onBack: () {
           if (_namaKegiatanController.text.isEmpty &&
@@ -393,7 +455,11 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(12.r),
 
-                                  child: Image.file(_image!, fit: BoxFit.cover),
+                                  // [PERUBAHAN 03-10-2026] Mendukung preview gambar di Flutter Web (Chrome); kode lama di bawah dinonaktifkan
+                                  // child: Image.file(_image!, fit: BoxFit.cover),
+                                  child: kIsWeb
+                                      ? Image.network(_image!.path, fit: BoxFit.cover)
+                                      : Image.file(_image!, fit: BoxFit.cover),
                                 )
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -435,6 +501,66 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
                         validator: (value) =>
                             value!.isEmpty ? 'Harap isi nama kegiatan' : null,
+                      ),
+
+                      SizedBox(height: 20.h),
+
+                      /// NAMA PESERTA
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: InputFormField(
+                                  controller: _namaPesertaInputController,
+                                  label: 'Nama Peserta',
+                                  hintText: 'Ketik nama peserta lalu klik Tambah',
+                                  textInputAction: TextInputAction.done,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              ElevatedButton(
+                                onPressed: _tambahPeserta,
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  backgroundColor: const Color(0xFF3F8FC1),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.add, color: Colors.white, size: 18.sp),
+                                    SizedBox(width: 4.w),
+                                    Text('Tambah', style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_pesertaList.isNotEmpty) ...[
+                            SizedBox(height: 10.h),
+                            Wrap(
+                              spacing: 8.w,
+                              runSpacing: 6.h,
+                              children: List.generate(_pesertaList.length, (index) {
+                                return Chip(
+                                  backgroundColor: Colors.blue.shade50,
+                                  side: BorderSide(color: Colors.blue.shade200),
+                                  label: Text(
+                                    '${index + 1}. ${_pesertaList[index]}',
+                                    style: TextStyle(fontSize: 12.sp, color: Colors.blue.shade900, fontWeight: FontWeight.w500),
+                                  ),
+                                  deleteIcon: Icon(Icons.close, size: 16.sp, color: Colors.red.shade400),
+                                  onDeleted: () => _hapusPeserta(index),
+                                );
+                              }),
+                            ),
+                          ],
+                        ],
                       ),
 
                       SizedBox(height: 20.h),
@@ -542,7 +668,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
   @override
   void dispose() {
     _namaKegiatanController.dispose();
-
+    _namaPesertaInputController.dispose();
     _lokasiController.dispose();
 
     super.dispose();

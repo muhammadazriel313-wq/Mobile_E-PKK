@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         titleText: 'Tambah Foto kegiatan',
 
-                        subTitle: 'upload galeri kegiatan PKK disini',
+                        subTitle: 'upload kegiatan PKK disini',
 
                         imageAssets: 'assets/images/ic_gallery.png',
 

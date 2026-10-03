@@ -46,10 +46,11 @@ class GaleriEntry {
   final Role role;
   final Organization organization;
 
-  //TAMBAHAN LOKASI
+  //TAMBAHAN LOKASI & NAMA PESERTA
   final String? lokasi;
   final double? latitude;
   final double? longitude;
+  final String? namaPeserta;
 
   GaleriEntry({
     required this.id,
@@ -67,6 +68,7 @@ class GaleriEntry {
     this.lokasi,
     this.latitude,
     this.longitude,
+    this.namaPeserta,
   });
 
   factory GaleriEntry.fromJson(Map<String, dynamic> json) {
@@ -84,7 +86,7 @@ class GaleriEntry {
       role: Role.fromJson(json['role']),
       organization: Organization.fromJson(json['organization']),
 
-      //LOKASI
+      //LOKASI & PESERTA
       lokasi: json['lokasi'],
       latitude: json['latitude'] != null
           ? double.tryParse(json['latitude'].toString())
@@ -92,6 +94,7 @@ class GaleriEntry {
       longitude: json['longitude'] != null
           ? double.tryParse(json['longitude'].toString())
           : null,
+      namaPeserta: json['nama_peserta']?.toString(),
     );
   }
 
@@ -110,10 +113,11 @@ class GaleriEntry {
       'role': role.toJson(),
       'organization': organization.toJson(),
 
-     // LOKASI
+     // LOKASI & PESERTA
       'lokasi': lokasi,
       'latitude': latitude,
       'longitude': longitude,
+      'nama_peserta': namaPeserta,
     };
   }
 }
