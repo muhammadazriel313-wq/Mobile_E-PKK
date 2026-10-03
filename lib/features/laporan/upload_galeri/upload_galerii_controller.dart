@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,11 +27,14 @@ class GaleriController extends GetxController {
     required String idUser,
     required String deskripsi,
     required String gambar,
+    Uint8List? gambarBytes,
+    String? namaFile,
     required String pokja,
     required String bidang,
     required String idRole,
     required String idOrganization,
 
+    String? namaPeserta,
     String? lokasi,
     double? latitude,
     double? longitude,
@@ -43,7 +48,11 @@ class GaleriController extends GetxController {
       galeriData.value = null;
 
       /// FILE MULTIPART
-      final file = await dio.MultipartFile.fromFile(gambar);
+      // [PERUBAHAN 03-10-2026] Mendukung upload di Flutter Web menggunakan fromBytes; kode lama di bawah dinonaktifkan
+      // final file = await dio.MultipartFile.fromFile(gambar);
+      final dio.MultipartFile file = (kIsWeb && gambarBytes != null)
+          ? dio.MultipartFile.fromBytes(gambarBytes, filename: namaFile ?? 'upload.jpg')
+          : await dio.MultipartFile.fromFile(gambar);
 
       final response = await apiHelper.postMultipart(
         '/report/galeri',
@@ -55,6 +64,8 @@ class GaleriController extends GetxController {
           'bidang': bidang,
           'id_role': idRole,
           'id_organization': idOrganization,
+
+          if (namaPeserta != null) 'nama_peserta': namaPeserta,
 
           if (lokasi != null) 'lokasi': lokasi,
 
