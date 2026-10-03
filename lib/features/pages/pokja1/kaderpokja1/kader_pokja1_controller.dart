@@ -18,9 +18,8 @@ class UploadReportController extends GetxController {
 
   Future<void> createKaderPokja1Controller({
     required String id_user,
-    required String PKBN,
-    required String PKDRT,
-    required String pola_asuh,
+    required String kader_umum,
+    required String kader_khusus,
     required String id_role,
     required String id_organization,
   }) async {
@@ -33,9 +32,8 @@ class UploadReportController extends GetxController {
         '/report/kader-pokja1',
         data: {
           'id_user': id_user,
-          'PKBN': PKBN,
-          'PKDRT': PKDRT,
-          'pola_asuh': pola_asuh,
+          'kader_umum': kader_umum,
+          'kader_khusus': kader_khusus,
           'id_role': id_role,
           'id_organization': id_organization,
         },

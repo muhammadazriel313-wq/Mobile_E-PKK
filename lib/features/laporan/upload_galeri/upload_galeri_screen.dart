@@ -74,7 +74,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       _bidangList = [
         'Kader Pokja I',
         'Penghayatan & Pengamalan Pancasila',
-        'Gotong Royong',
+
       ];
     } else if (id_organization == '2') {
       _bidangList = [

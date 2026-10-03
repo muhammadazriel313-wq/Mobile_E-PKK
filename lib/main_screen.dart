@@ -36,16 +36,16 @@ class MainScreen extends StatelessWidget {
             selectedItemColor: const Color(0xFF3F8FC1),
             unselectedItemColor: Colors.grey,
             type: BottomNavigationBarType.fixed,
-            selectedFontSize: 14, // ukuran teks aktif
-            unselectedFontSize: 12,
+            selectedFontSize: 12,
+            unselectedFontSize: 11,
             selectedIconTheme: IconThemeData(
-              size: 30,
-              color: const Color(0xFF3F8FC1), // warna ikon aktif
+              size: 24,
+              color: const Color(0xFF3F8FC1),
             ),
             unselectedIconTheme: IconThemeData(
               size: 22,
-              color: Colors.grey, // warna ikon tidak aktif
-            ), // ukuran teks non-aktif
+              color: Colors.grey,
+            ),
             
             items: const [
               BottomNavigationBarItem(

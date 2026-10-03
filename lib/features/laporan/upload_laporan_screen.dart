@@ -95,24 +95,6 @@ class UploadLaporanScreen extends StatelessWidget {
                             'Kader Pokja I',
                           ),
                         ),
-
-                        _space(),
-
-                        _buildMenu(
-                          title: 'Gotong Royong',
-                          route: Routes.GOTONG_ROYONG,
-                          color1: const Color(0xFFFFEED5),
-                          color2: const Color(0xFFFFDAAA),
-                          image: 'assets/images/ic_gotong_royong.png',
-                          args: _args(
-                            idUser,
-                            fullName,
-                            idRole,
-                            role,
-                            idOrganization,
-                            'Kader Pokja I',
-                          ),
-                        ),
                       ]
                       /// ================= POKJA II =================
                       else if (roleBidang == 'kader pokja ii') ...[
