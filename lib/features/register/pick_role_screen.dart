@@ -207,15 +207,19 @@ class PickRoleScreen extends StatelessWidget {
                           .validate()) {
                         try {
                           authController
+                        // Bypass OTP: generate kode dulu
                               .generateRandomNumber();
-
+                        // Coba kirim OTP, tapi tidak blokir flow jika gagal (mode bypass)
+                        try {
                           await authController
                               .sendOtpViaWhatsApp(
                                 phone_number,
-
-                                authController
-                                    .generatedOtp,
+                                authController.generatedOtp,
                               );
+                        } catch (_) {
+                          // Abaikan error pengiriman OTP (mode bypass aktif)
+                          // Kode OTP bypass = 1234, masukkan di halaman verifikasi
+                        }
 
                           Get.toNamed(
                             Routes.VERIFICATION,
@@ -264,7 +268,7 @@ class PickRoleScreen extends StatelessWidget {
                           Get.snackbar(
                             'Error',
 
-                            'Gagal mengirim OTP',
+                            'Kode OTP bypass = 1234',
 
                             snackPosition:
                                 SnackPosition.TOP,

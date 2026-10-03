@@ -55,21 +55,16 @@ class _AuthScreenState extends State<AuthScreen> {
       backgroundColor: Colors.white,
 
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-
-          child: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight:
-                    MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top,
-              ),
-
-              child: IntrinsicHeight(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 20.h,
+                ),
                 child: Form(
                   key: _formKey,
-
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -202,8 +197,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

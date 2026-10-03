@@ -54,95 +54,106 @@ class WelcomeScreen extends StatelessWidget {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
+                final maxW = constraints.maxWidth;
+                final maxH = constraints.maxHeight;
+                final isWide = maxW > 600;
+
                 return SingleChildScrollView(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
+                      minHeight: maxH,
                     ),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: size.width > 600 ? size.width * 0.2 : size.width * 0.05, // Responsif untuk web
+                        horizontal: isWide ? maxW * 0.2 : maxW * 0.05,
                       ),
-                      child: IntrinsicHeight(
-                        child: Column(
-                          children: [
-                            SizedBox(height: size.height * 0.050),
-          
-                            /// LOGO
-                            Image.asset(
-                              'assets/images/logo_pkk.png',
-                              width: size.width > 600 ? 150 : size.width * 0.30,
-                            ),
-          
-                            SizedBox(height: size.height * 0.02),
-          
-                            /// TITLE
-                            RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Selamat Datang\n',
-                                    style: TextStyle(
-                                      fontSize: size.width > 600 ? 32 : size.width * 0.065,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF0B1F44),
-                                      height: 1.2,
-                                    ),
+                      child: Column(
+                        children: [
+                          SizedBox(height: maxH * 0.04),
+
+                          /// LOGO
+                          Image.asset(
+                            'assets/images/logo_pkk.png',
+                            width: (isWide ? 150.0 : maxW * 0.30).clamp(72.0, 150.0),
+                          ),
+
+                          SizedBox(height: 12),
+
+                          /// TITLE
+                          RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Selamat Datang\n',
+                                  style: TextStyle(
+                                    fontSize: (isWide ? 32.0 : maxW * 0.065)
+                                        .clamp(22.0, 32.0),
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF0B1F44),
+                                    height: 1.2,
                                   ),
-                                  TextSpan(
-                                    text: 'di Aplikasi PKK',
-                                    style: TextStyle(
-                                      fontSize: size.width > 600 ? 28 : size.width * 0.055,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF3F8FC1),
-                                    ),
+                                ),
+                                TextSpan(
+                                  text: 'di Aplikasi PKK',
+                                  style: TextStyle(
+                                    fontSize: (isWide ? 28.0 : maxW * 0.055)
+                                        .clamp(18.0, 28.0),
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF3F8FC1),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-          
-                            SizedBox(height: size.height * 0.02),
-          
-                            /// DESCRIPTION
-                            Text(
-                              'Pilih akses pengguna untuk\nmelanjutkan ke aplikasi',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: size.width > 600 ? 18 : size.width * 0.045,
-                                color: Colors.grey.shade600,
-                                height: 1.5,
-                              ),
+                          ),
+
+                          SizedBox(height: 12),
+
+                          /// DESCRIPTION
+                          Text(
+                            'Pilih akses pengguna untuk\nmelanjutkan ke aplikasi',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: (isWide ? 18.0 : maxW * 0.045)
+                                  .clamp(13.0, 18.0),
+                              color: Colors.grey.shade600,
+                              height: 1.5,
                             ),
-          
-                            SizedBox(height: size.height * 0.03),
-          
-                            /// ILLUSTRATION
-                            Expanded(
-                              flex: 4,
-                              child: Image.asset(
-                                'assets/images/ic_welcome.png',
-                                width: size.width > 600 ? 300 : size.width * 0.80,
-                                fit: BoxFit.contain,
-                              ),
+                          ),
+
+                          SizedBox(height: 16),
+
+                          /// ILLUSTRATION
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: (maxH * 0.32).clamp(140.0, 280.0),
+                              maxWidth: isWide ? 300 : maxW * 0.80,
                             ),
-          
-                            SizedBox(height: size.height * 0.02),
-          
-                            /// TITLE ROLE
-                            Text(
-                              "Pilih Role Anda",
-                              style: TextStyle(
-                                fontSize: size.width > 600 ? 24 : size.width * 0.055,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF1B2A4A),
-                              ),
+                            child: Image.asset(
+                              'assets/images/ic_welcome.png',
+                              fit: BoxFit.contain,
                             ),
-          
-                            SizedBox(height: size.height * 0.025),
-          
-                            /// ROLE BUTTON
-                            Row(
+                          ),
+
+                          SizedBox(height: 16),
+
+                          /// TITLE ROLE
+                          Text(
+                            "Pilih Role Anda",
+                            style: TextStyle(
+                              fontSize: (isWide ? 24.0 : maxW * 0.055)
+                                  .clamp(16.0, 24.0),
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF1B2A4A),
+                            ),
+                          ),
+
+                          SizedBox(height: 16),
+
+                          /// ROLE BUTTON
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Obx(
@@ -172,41 +183,41 @@ class WelcomeScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-          
-                            const Spacer(),
-          
-                            /// BUTTON
-                            ZoomTapAnimation(
-                              child: ButtonFill(
-                                text: "Lanjutkan",
-                                textColor: Colors.white,
-                                onPressed: () async {
-                                  final selectedRole = welcomeController.selectedRole.value;
-          
-                                  if (selectedRole.isEmpty) {
-                                    Get.snackbar(
-                                      "Peringatan",
-                                      "Pilih role terlebih dahulu",
-                                      backgroundColor: Colors.red,
-                                      colorText: Colors.white,
-                                    );
-                                    return;
-                                  }
-          
-                                  Get.toNamed(
-                                    Routes.AUTH_LOGIN,
-                                    arguments: {
-                                      'roleID': selectedRole,
-                                      'roleName': selectedRole == '1' ? 'Desa' : 'Kecamatan',
-                                    },
+                          ),
+
+                          SizedBox(height: 28),
+
+                          /// BUTTON
+                          ZoomTapAnimation(
+                            child: ButtonFill(
+                              text: "Lanjutkan",
+                              textColor: Colors.white,
+                              onPressed: () async {
+                                final selectedRole = welcomeController.selectedRole.value;
+
+                                if (selectedRole.isEmpty) {
+                                  Get.snackbar(
+                                    "Peringatan",
+                                    "Pilih role terlebih dahulu",
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
                                   );
-                                },
-                              ),
+                                  return;
+                                }
+
+                                Get.toNamed(
+                                  Routes.AUTH_LOGIN,
+                                  arguments: {
+                                    'roleID': selectedRole,
+                                    'roleName': selectedRole == '1' ? 'Desa' : 'Kecamatan',
+                                  },
+                                );
+                              },
                             ),
-          
-                            SizedBox(height: size.height * 0.03),
-                          ],
-                        ),
+                          ),
+
+                          SizedBox(height: maxH * 0.03),
+                        ],
                       ),
                     ),
                   ),
@@ -228,6 +239,9 @@ class WelcomeScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final size = MediaQuery.of(context).size;
+    final circle = (size.width * 0.16).clamp(56.0, 76.0);
+    final iconSize = (size.width * 0.08).clamp(22.0, 32.0);
+    final fontSize = (size.width * 0.040).clamp(12.0, 16.0);
 
     return GestureDetector(
       onTap: onTap,
@@ -238,8 +252,8 @@ class WelcomeScreen extends StatelessWidget {
             duration:
                 const Duration(milliseconds: 250),
 
-            width: size.width * 0.16,
-            height: size.width * 0.16,
+            width: circle,
+            height: circle,
 
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -258,19 +272,19 @@ class WelcomeScreen extends StatelessWidget {
 
             child: Icon(
               icon,
-              size: size.width * 0.08,
+              size: iconSize,
               color: selected
                   ? activeColor
                   : Colors.grey.shade400,
             ),
           ),
 
-          SizedBox(height: size.height * 0.010),
+          const SizedBox(height: 8),
 
           Text(
             title,
             style: TextStyle(
-              fontSize: size.width * 0.040,
+              fontSize: fontSize,
               fontWeight: FontWeight.w700,
               color: selected
                   ? activeColor

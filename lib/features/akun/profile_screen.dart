@@ -84,12 +84,12 @@ class AkunPage extends StatelessWidget {
                   child: Column(
                     children: [
                       CircleAvatar(
-                        radius: 42.r,
+                        radius: 38.r,
                         backgroundColor: Colors.white,
 
                         child: Icon(
-                          Icons.person,
-                          size: 50.sp,
+                          Icons.account_circle,
+                          size: 38.sp,
                           color: const Color(0xFF3F8FC1),
                         ),
                       ),
@@ -127,7 +127,7 @@ class AkunPage extends StatelessWidget {
                         ),
 
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
                               Icons.groups_rounded,
@@ -137,14 +137,20 @@ class AkunPage extends StatelessWidget {
 
                             SizedBox(width: 6.w),
 
-                            Text(
-                              getOrganizationName(profil.idOrganization.trim()),
-
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.3,
+                            Flexible(
+                              child: Text(
+                                getOrganizationName(
+                                  profil.idOrganization.trim(),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.3,
+                                ),
                               ),
                             ),
                           ],

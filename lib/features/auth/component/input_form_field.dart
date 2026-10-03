@@ -57,43 +57,53 @@ class InputFormField extends StatelessWidget {
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         onChanged: onChanged,
+        style: TextStyle(
+          fontSize: 16.sp,
+          fontFamily: 'DMSans',
+          color: const Color(0xFF111827),
+          fontWeight: FontWeight.w500,
+        ),
 
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-            fontSize: 18.sp,
+            fontSize: 14.sp,
             fontFamily: 'DMSans',
             color: TextColors.grey500,
             fontWeight: FontWeight.w400,
           ),
           alignLabelWithHint: true,
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 14.w,
+            vertical: 16.h,
+          ),
           hintText: hintText,
           hintStyle: TextStyle(
-            color: TextColors.grey600,
+            color: TextColors.grey400,
             fontWeight: FontWeight.w400,
-            fontSize: 16.sp,
+            fontSize: 15.sp,
             fontFamily: 'DMSans',
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.r),
             borderSide: BorderSide(
               width: 1.w,
-              color: TextColors.grey200,
+              color: TextColors.grey300,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.r),
             borderSide: BorderSide(
               width: 1.w,
-              color: TextColors.grey200,
+              color: TextColors.grey300,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.r),
             borderSide: BorderSide(
               width: 1.w,
-              color: TextColors.grey200,
+              color: TextColors.grey300,
             ),
           ),
           suffixIcon: suffixIcon,

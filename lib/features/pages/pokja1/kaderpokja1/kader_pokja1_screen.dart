@@ -24,9 +24,8 @@ class _KaderPokja1ScreenState extends State<KaderPokja1Screen> {
   String name_role = '';
   String name_organization = '';
 
-  final pkbnController = TextEditingController();
-  final pkdrtController = TextEditingController();
-  final polaController = TextEditingController();
+  final kaderUmumController = TextEditingController();
+  final kaderKhususController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -49,16 +48,14 @@ class _KaderPokja1ScreenState extends State<KaderPokja1Screen> {
   }
 
   void clearForm() {
-    pkbnController.clear();
-    pkdrtController.clear();
-    polaController.clear();
+    kaderUmumController.clear();
+    kaderKhususController.clear();
   }
 
   @override
   void dispose() {
-    pkbnController.dispose();
-    pkdrtController.dispose();
-    polaController.dispose();
+    kaderUmumController.dispose();
+    kaderKhususController.dispose();
     super.dispose();
   }
 
@@ -72,9 +69,8 @@ class _KaderPokja1ScreenState extends State<KaderPokja1Screen> {
         title: 'Kader Pokja I',
 
         onBack: () {
-          if (pkbnController.text.isEmpty &&
-              pkdrtController.text.isEmpty &&
-              polaController.text.isEmpty) {
+          if (kaderUmumController.text.isEmpty &&
+              kaderKhususController.text.isEmpty) {
             Get.back();
           } else {
             Get.defaultDialog(
@@ -120,13 +116,13 @@ class _KaderPokja1ScreenState extends State<KaderPokja1Screen> {
 
                         /// PKBN
                         InputFormField(
-                          controller: pkbnController,
+                          controller: kaderUmumController,
 
                           keyboardType: TextInputType.number,
 
                           hintText: 'Masukkan jumlah',
 
-                          label: 'PKBN',
+                          label: 'Kader Umum',
 
                           validator: (value) =>
                               ValidatorForm.validateNumber(value),
@@ -136,33 +132,19 @@ class _KaderPokja1ScreenState extends State<KaderPokja1Screen> {
 
                         /// PKDRT
                         InputFormField(
-                          controller: pkdrtController,
+                          controller: kaderKhususController,
 
                           keyboardType: TextInputType.number,
 
                           hintText: 'Masukkan jumlah',
 
-                          label: 'PKDRT',
+                          label: 'Kader Khusus',
 
                           validator: (value) =>
                               ValidatorForm.validateNumber(value),
                         ),
 
                         SizedBox(height: 24.h),
-
-                        /// POLA ASUH
-                        InputFormField(
-                          controller: polaController,
-
-                          keyboardType: TextInputType.number,
-
-                          hintText: 'Masukkan jumlah',
-
-                          label: 'Pola Asuh',
-
-                          validator: (value) =>
-                              ValidatorForm.validateNumber(value),
-                        ),
 
                         SizedBox(height: 40.h),
 
@@ -195,9 +177,10 @@ class _KaderPokja1ScreenState extends State<KaderPokja1Screen> {
 
                                         await uploadReportController
                                             .createKaderPokja1Controller(
-                                              PKBN: pkbnController.text,
-                                              PKDRT: pkdrtController.text,
-                                              pola_asuh: polaController.text,
+                                              kader_umum:
+                                                  kaderUmumController.text,
+                                              kader_khusus:
+                                                  kaderKhususController.text,
                                               id_role: id_role,
                                               id_organization: id_organization,
                                               id_user: id_user,
