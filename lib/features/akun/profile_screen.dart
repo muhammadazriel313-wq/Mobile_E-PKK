@@ -83,14 +83,43 @@ class AkunPage extends StatelessWidget {
 
                   child: Column(
                     children: [
+                      // [PERUBAHAN 08-10-2026] Menampilkan foto profil dengan fallback ke ikon
                       CircleAvatar(
                         radius: 38.r,
                         backgroundColor: Colors.white,
-
-                        child: Icon(
-                          Icons.account_circle,
-                          size: 38.sp,
-                          color: const Color(0xFF3F8FC1),
+                        child: ClipOval(
+                          child: (profil.foto != null && profil.foto!.isNotEmpty)
+                              ? Image.network(
+                                  profil.foto!,
+                                  width: 76.r,
+                                  height: 76.r,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
+                                    return Center(
+                                      child: SizedBox(
+                                        width: 20.w,
+                                        height: 20.w,
+                                        child: const CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFF3F8FC1),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(
+                                      Icons.account_circle,
+                                      size: 38.sp,
+                                      color: const Color(0xFF3F8FC1),
+                                    );
+                                  },
+                                )
+                              : Icon(
+                                  Icons.account_circle,
+                                  size: 38.sp,
+                                  color: const Color(0xFF3F8FC1),
+                                ),
                         ),
                       ),
 
@@ -205,6 +234,22 @@ class AkunPage extends StatelessWidget {
 
                       onTap: () {
                         Get.toNamed(Routes.EDIT_PASSWORD);
+                      },
+
+                      backgroundColor: Colors.white,
+                      strokeColor: Colors.grey.shade200,
+                      iconColor: const Color(0xFF3F8FC1),
+                    ),
+
+                    SizedBox(height: 14.h),
+
+                    // [PERUBAHAN 08-10-2026] Menambahkan menu Bantuan
+                    CardButtonRow(
+                      leadingIcon: Icons.help_outline_rounded,
+                      titleText: 'Bantuan',
+
+                      onTap: () {
+                        Get.toNamed(Routes.BANTUAN);
                       },
 
                       backgroundColor: Colors.white,
@@ -379,3 +424,4 @@ class AkunPage extends StatelessWidget {
     );
   }
 }
+

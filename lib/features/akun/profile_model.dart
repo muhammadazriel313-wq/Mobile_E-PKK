@@ -45,6 +45,8 @@ class Profil {
   final String idVillage;
   final String idRole;
   final String idOrganization;
+  // [PERUBAHAN 08-10-2026] Menambahkan field foto
+  final String? foto;
 
   Profil({
     required this.id,
@@ -60,6 +62,7 @@ class Profil {
     required this.idVillage,
     required this.idRole,
     required this.idOrganization,
+    this.foto,
   });
 
   factory Profil.fromJson(Map<String, dynamic> json) {
@@ -83,6 +86,8 @@ class Profil {
 
       password: '',
       kodeOtp: '',
+      // [PERUBAHAN 08-10-2026] Parsing foto
+      foto: json['foto']?.toString(),
     );
   }
 
@@ -120,7 +125,12 @@ class Profil {
     }
   }
 
-  Profil copyWith({String? fullName, String? phoneNumber, String? password}) {
+  Profil copyWith({
+    String? fullName,
+    String? phoneNumber,
+    String? password,
+    String? foto,
+  }) {
     return Profil(
       id: id,
       uuid: uuid,
@@ -135,6 +145,7 @@ class Profil {
       idVillage: idVillage,
       idRole: idRole,
       idOrganization: idOrganization,
+      foto: foto ?? this.foto,
     );
   }
 }
