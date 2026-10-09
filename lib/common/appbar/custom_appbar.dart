@@ -7,6 +7,9 @@ class CustomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback? onBack;
   final VoidCallback? onTab2;
+  // [PERUBAHAN 08-10-2026] Menambahkan ikon dan widget aksi kustom
+  final IconData? actionIcon;
+  final Widget? actionWidget;
   final Color? backgroundColor;
   final double? elevation;
   final bool showBottomBorder;
@@ -19,6 +22,8 @@ class CustomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.onBack,
     this.onTab2,
+    this.actionIcon,
+    this.actionWidget,
     this.backgroundColor = Colors.transparent,
     this.elevation,
     this.showBottomBorder = false,
@@ -119,18 +124,20 @@ class CustomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               : null,
 
       /// 🔧 ACTION
-      actions: onTab2 != null
-          ? [
-              IconButton(
-                onPressed: onTab2,
-                icon: Icon(
-                  Icons.filter_alt_rounded,
-                  size: 24,
-                  color: TextColors.grey700,
-                ),
-              ),
-            ]
-          : null,
+      actions: actionWidget != null
+          ? [actionWidget!]
+          : (onTab2 != null
+              ? [
+                  IconButton(
+                    onPressed: onTab2,
+                    icon: Icon(
+                      actionIcon ?? Icons.filter_alt_rounded,
+                      size: 24,
+                      color: TextColors.grey700,
+                    ),
+                  ),
+                ]
+              : null),
     );
   }
 }
@@ -140,6 +147,8 @@ class AppBarPrimary extends CustomeAppBar {
     required String title,
     VoidCallback? onBack,
     VoidCallback? onTab2,
+    IconData? actionIcon,
+    Widget? actionWidget,
     Color? backgroundColor,
     double? elevation,
     int? currentStep,
@@ -148,6 +157,8 @@ class AppBarPrimary extends CustomeAppBar {
           title: title,
           onBack: onBack,
           onTab2: onTab2,
+          actionIcon: actionIcon,
+          actionWidget: actionWidget,
           backgroundColor: backgroundColor,
           elevation: elevation,
           currentStep: currentStep,

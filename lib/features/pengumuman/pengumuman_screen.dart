@@ -3,6 +3,7 @@ import 'package:epkk_nganjuk/common/component/card_pengumuman.dart';
 import 'package:epkk_nganjuk/features/home/nav_controller.dart';
 import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 import 'package:epkk_nganjuk/features/pengumuman/pengumuman_model.dart';
+import 'package:epkk_nganjuk/features/pengumuman/riwayat_pengumuman_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -20,42 +21,26 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
   final PengumumanController pengumumanController =
       Get.find<PengumumanController>();
   final RefreshController _refreshController = RefreshController();
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadInitialData();
-    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
   Future<void> _loadInitialData() async {
-    await pengumumanController.loadPengumuman(isRefresh: true);
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      _loadMoreData();
-    }
-  }
-
-  Future<void> _loadMoreData() async {
-    if (!pengumumanController.isLoadMore.value &&
-        pengumumanController.hasMore.value) {
-      await pengumumanController.loadPengumuman();
-    }
+    await pengumumanController.loadWeeklyPengumuman(isRefresh: true);
   }
 
   Future<void> _onRefresh() async {
     try {
-      await pengumumanController.refreshData();
+      await pengumumanController.loadWeeklyPengumuman(isRefresh: true);
       _refreshController.refreshCompleted();
     } catch (e) {
       _refreshController.refreshFailed();
@@ -72,90 +57,117 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
         onBack: () {
           final NavController navController = Get.find<NavController>();
           navController.changeTabIndex(0);
-          Get.back();
+        },
+        // [PERUBAHAN 08-10-2026] Ikon kalender di kanan atas membuka Riwayat Pengumuman
+        // [PERUBAHAN 08-10-2026 REVISI 1] Menampilkan kalender sebagai popup zoom di tengah layar, bukan pindah ke halaman penuh
+        actionIcon: Icons.calendar_month_outlined,
+        onTab2: () {
+          // Sebelumnya: Get.toNamed(Routes.RIWAYAT_PENGUMUMAN);
+          RiwayatPengumumanPopup.show(context);
         },
       ),
       body: SmartRefresher(
         controller: _refreshController,
         onRefresh: _onRefresh,
         enablePullDown: true,
-        enablePullUp: pengumumanController.hasMore.value,
-        onLoading: _loadMoreData,
+        enablePullUp: false,
         header: const ClassicHeader(
           idleText: 'Tarik untuk refresh',
           releaseText: 'Lepaskan untuk refresh',
           completeText: 'Refresh selesai',
         ),
-        footer: CustomFooter(
-          builder: (context, mode) {
-            if (mode == LoadStatus.loading) {
-              return const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return const SizedBox();
-          },
-        ),
         child: Obx(() {
-          if (pengumumanController.isLoading.value &&
-              pengumumanController.pengumumanList.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (pengumumanController.errorMessage.isNotEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    pengumumanController.errorMessage.value,
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                  SizedBox(height: 16.h),
-                  ElevatedButton(
-                    onPressed: _loadInitialData,
-                    child: Text('Coba Lagi', style: TextStyle(fontSize: 14.sp)),
-                  ),
-                ],
-              ),
+          if (pengumumanController.isWeeklyLoading.value &&
+              pengumumanController.weeklyPengumumanList.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF3F8FC1)),
             );
           }
 
-          if (pengumumanController.pengumumanList.isEmpty) {
+          final list = pengumumanController.weeklyPengumumanList;
+
+          // [PERUBAHAN 08-10-2026] Keterangan lembut jika minggu ini belum ada pengumuman
+          if (list.isEmpty) {
             return Center(
-              child: Text(
-                "Belum ada pengumuman",
-                style: TextStyle(fontSize: 16.sp),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(18.w),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3F8FC1).withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.campaign_outlined,
+                        size: 46.sp,
+                        color: const Color(0xFF3F8FC1),
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Belum ada pengumuman minggu ini',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Pengumuman sebelumnya dapat dilihat melalui Riwayat Pengumuman',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: Colors.grey.shade600,
+                        height: 1.4,
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3F8FC1),
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 12.h,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.calendar_month_outlined,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        'Buka Riwayat Pengumuman',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () {
+                        // [PERUBAHAN 08-10-2026 REVISI 1] Menampilkan kalender sebagai popup zoom di tengah layar
+                        // Sebelumnya: Get.toNamed(Routes.RIWAYAT_PENGUMUMAN);
+                        RiwayatPengumumanPopup.show(context);
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           }
 
           return ListView.builder(
-            controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            itemCount:
-                pengumumanController.pengumumanList.length +
-                (pengumumanController.hasMore.value ? 1 : 0),
+            itemCount: list.length,
             itemBuilder: (context, index) {
-              if (index >= pengumumanController.pengumumanList.length) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  child: Center(
-                    child: pengumumanController.isLoadMore.value
-                        ? const CircularProgressIndicator()
-                        : Text(
-                            'Tarik untuk memuat lebih banyak',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey,
-                            ),
-                          ),
-                  ),
-                );
-              }
-
-              final pengumuman = pengumumanController.pengumumanList[index];
+              final pengumuman = list[index];
               return Padding(
                 padding: EdgeInsets.only(bottom: 16.h),
                 child: CardPengumuman(
