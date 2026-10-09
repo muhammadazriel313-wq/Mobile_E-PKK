@@ -43,6 +43,10 @@ import 'package:epkk_nganjuk/features/home/home_screen.dart';
 // ===== PROFILE =====
 import 'package:epkk_nganjuk/features/akun/informasi_akun.dart';
 import 'package:epkk_nganjuk/features/akun/edit_password.dart';
+// [PERUBAHAN 08-10-2026] Import halaman Bantuan
+import 'package:epkk_nganjuk/features/akun/bantuan_screen.dart';
+// [PERUBAHAN 08-10-2026] Import halaman Riwayat Pengumuman
+import 'package:epkk_nganjuk/features/pengumuman/riwayat_pengumuman_screen.dart';
 
 // ===== POKJA 1 =====
 import 'package:epkk_nganjuk/features/pages/pokja1/kaderpokja1/kader_pokja1_screen.dart';
@@ -117,6 +121,12 @@ class Routes {
   static const INFO_AKUN = '/info_akun';
 
   static const EDIT_PASSWORD = '/edit_password';
+
+  // [PERUBAHAN 08-10-2026] Menambahkan route BANTUAN
+  static const BANTUAN = '/bantuan';
+
+  // [PERUBAHAN 08-10-2026] Menambahkan route RIWAYAT_PENGUMUMAN
+  static const RIWAYAT_PENGUMUMAN = '/riwayat_pengumuman';
 
   // ===== POKJA 1 =====
 
@@ -269,6 +279,17 @@ class AppPages {
     GetPage(name: Routes.INFO_AKUN, page: () => InfoAkunScreen()),
 
     GetPage(name: Routes.EDIT_PASSWORD, page: () => EditPasswordScreen()),
+
+    // [PERUBAHAN 08-10-2026] Menambahkan GetPage BANTUAN
+    GetPage(name: Routes.BANTUAN, page: () => const BantuanScreen()),
+
+    // [PERUBAHAN 08-10-2026] Menambahkan GetPage RIWAYAT_PENGUMUMAN
+    // [CATATAN REVISI 08-10-2026] Rute halaman penuh ini tetap dipertahankan untuk kompatibilitas,
+    // sedangkan ikon kalender pada halaman Pengumuman kini menggunakan popup zoom (RiwayatPengumumanPopup).
+    GetPage(
+      name: Routes.RIWAYAT_PENGUMUMAN,
+      page: () => const RiwayatPengumumanScreen(),
+    ),
 
     // ===== POKJA 1 =====
     GetPage(name: Routes.KADER_POKJA1, page: () => KaderPokja1Screen()),
