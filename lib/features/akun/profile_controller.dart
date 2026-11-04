@@ -52,6 +52,25 @@ class ProfilController extends GetxController {
       final user = await PreferencesService.getUser();
       if (user == null) throw Exception('User not logged in');
 
+      // Isi profil awal dari cache lokal jika profilData belum pernah dimuat
+      if (profilData.value.fullName.isEmpty) {
+        profilData.value = Profil(
+          id: user.id,
+          uuid: user.uuid,
+          phoneNumber: user.phoneNumber,
+          fullName: user.fullName,
+          status: user.status,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          idSubdistrict: user.subdistrict?.id.toString() ?? '0',
+          idVillage: user.village?.id.toString() ?? '0',
+          idRole: user.role?.id.toString() ?? '0',
+          idOrganization: user.organization?.id.toString() ?? '0',
+          kodeOtp: '',
+          foto: null,
+        );
+      }
+
       print('====================');
       print('HIT API PROFILE');
       print('USER ID: ${user.id}');
@@ -68,13 +87,23 @@ class ProfilController extends GetxController {
       if (body['statusCode'] == 200 && body['data'] != null) {
         profilData.value = Profil.fromJson(body['data']);
       } else {
-        throw Exception(body['message'] ?? 'Gagal load profile');
+        throw Exception(body['message'] ?? 'Gagal memuat profil');
       }
     } on SocketException {
       errorMessage.value = 'Tidak ada koneksi internet';
+    } on dio.DioException catch (e) {
+      print('DIO ERROR LOAD PROFILE: ${e.response?.statusCode} - ${e.message}');
+      if (e.response?.statusCode == 500) {
+        errorMessage.value =
+            'Server backend sedang mengalami kendala (HTTP 500). Menampilkan data tersimpan.';
+      } else if (e.response?.statusCode == 404) {
+        errorMessage.value = 'Data profil tidak ditemukan di server.';
+      } else {
+        errorMessage.value = 'Gagal menghubungi server. Menampilkan data lokal.';
+      }
     } catch (e) {
       print('ERROR LOAD PROFILE: $e');
-      errorMessage.value = 'Failed to load profile: $e';
+      errorMessage.value = 'Gagal memuat profil terbaru. Menampilkan data lokal.';
     } finally {
       isLoading.value = false;
     }

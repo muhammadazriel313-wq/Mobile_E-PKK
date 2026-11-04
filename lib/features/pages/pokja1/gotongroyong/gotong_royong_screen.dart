@@ -1,5 +1,4 @@
-import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
-import 'package:epkk_nganjuk/core/validators/validator_form.dart';
+﻿import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/gotongroyong/gotong_royong_controller.dart';
@@ -21,58 +20,112 @@ class _GotongRoyongScreenState extends State<GotongRoyongScreen> {
   String? id_role;
   String? id_organization;
 
-  final kerjabaktiController = TextEditingController();
+  // 1. KERJA BAKTI
+  final kerjaBaktiKegiatanController = TextEditingController();
+  final kerjaBaktiVolController = TextEditingController();
+  final kerjaBaktiMetodeController = TextEditingController();
+  final kerjaBaktiSasaranController = TextEditingController();
 
-  final rukunkematianController = TextEditingController();
+  // 2. BANTUAN ANAK YATIM
+  final bantuanYatimKegiatanController = TextEditingController();
+  final bantuanYatimVolController = TextEditingController();
+  final bantuanYatimMetodeController = TextEditingController();
+  final bantuanYatimSasaranController = TextEditingController();
 
-  final keagamaanController = TextEditingController();
+  // 3. KEGIATAN SOSIAL
+  final kegiatanSosialKegiatanController = TextEditingController();
+  final kegiatanSosialVolController = TextEditingController();
+  final kegiatanSosialMetodeController = TextEditingController();
+  final kegiatanSosialSasaranController = TextEditingController();
 
-  final jimpitanController = TextEditingController();
-
-  final arisanController = TextEditingController();
+  // INFORMASI TAMBAHAN
+  final sumberDanaController = TextEditingController();
+  final hasilKegiatanController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-
   final GotongRoyongController controller = Get.put(GotongRoyongController());
 
   void clearForm() {
-    kerjabaktiController.clear();
-    rukunkematianController.clear();
-    keagamaanController.clear();
-    jimpitanController.clear();
-    arisanController.clear();
+    kerjaBaktiKegiatanController.clear();
+    kerjaBaktiVolController.clear();
+    kerjaBaktiMetodeController.clear();
+    kerjaBaktiSasaranController.clear();
+
+    bantuanYatimKegiatanController.clear();
+    bantuanYatimVolController.clear();
+    bantuanYatimMetodeController.clear();
+    bantuanYatimSasaranController.clear();
+
+    kegiatanSosialKegiatanController.clear();
+    kegiatanSosialVolController.clear();
+    kegiatanSosialMetodeController.clear();
+    kegiatanSosialSasaranController.clear();
+
+    sumberDanaController.clear();
+    hasilKegiatanController.clear();
   }
 
   bool isFormEmpty() {
-    return kerjabaktiController.text.isEmpty &&
-        rukunkematianController.text.isEmpty &&
-        keagamaanController.text.isEmpty &&
-        jimpitanController.text.isEmpty &&
-        arisanController.text.isEmpty;
+    return kerjaBaktiKegiatanController.text.isEmpty &&
+        kerjaBaktiVolController.text.isEmpty &&
+        kerjaBaktiMetodeController.text.isEmpty &&
+        kerjaBaktiSasaranController.text.isEmpty &&
+        bantuanYatimKegiatanController.text.isEmpty &&
+        bantuanYatimVolController.text.isEmpty &&
+        bantuanYatimMetodeController.text.isEmpty &&
+        bantuanYatimSasaranController.text.isEmpty &&
+        kegiatanSosialKegiatanController.text.isEmpty &&
+        kegiatanSosialVolController.text.isEmpty &&
+        kegiatanSosialMetodeController.text.isEmpty &&
+        kegiatanSosialSasaranController.text.isEmpty &&
+        sumberDanaController.text.isEmpty &&
+        hasilKegiatanController.text.isEmpty;
   }
 
   @override
   void initState() {
     super.initState();
-
     final args = Get.arguments ?? {};
-
     id_user = args['id_user'];
-
     id_role = args['id_role'];
-
     id_organization = args['id_organization'];
   }
 
   @override
   void dispose() {
-    kerjabaktiController.dispose();
-    rukunkematianController.dispose();
-    keagamaanController.dispose();
-    jimpitanController.dispose();
-    arisanController.dispose();
+    kerjaBaktiKegiatanController.dispose();
+    kerjaBaktiVolController.dispose();
+    kerjaBaktiMetodeController.dispose();
+    kerjaBaktiSasaranController.dispose();
+
+    bantuanYatimKegiatanController.dispose();
+    bantuanYatimVolController.dispose();
+    bantuanYatimMetodeController.dispose();
+    bantuanYatimSasaranController.dispose();
+
+    kegiatanSosialKegiatanController.dispose();
+    kegiatanSosialVolController.dispose();
+    kegiatanSosialMetodeController.dispose();
+    kegiatanSosialSasaranController.dispose();
+
+    sumberDanaController.dispose();
+    hasilKegiatanController.dispose();
 
     super.dispose();
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.only(top: 24.h, bottom: 12.h),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 15.sp,
+          fontWeight: FontWeight.bold,
+          color: const Color(0xFF1F2937),
+        ),
+      ),
+    );
   }
 
   @override
@@ -84,25 +137,18 @@ class _GotongRoyongScreenState extends State<GotongRoyongScreen> {
       /// APPBAR
       appBar: AppBarSecondary(
         title: 'Gotong Royong',
-
         onBack: () {
           if (isFormEmpty()) {
             Get.back();
           } else {
             Get.defaultDialog(
               title: "Batal Upload?",
-
               middleText: "Data yang sudah diisi akan hilang",
-
               textConfirm: "Ya",
-
               textCancel: "Tidak",
-
               onConfirm: () {
                 clearForm();
-
                 Get.back();
-
                 Get.back();
               },
             );
@@ -112,115 +158,182 @@ class _GotongRoyongScreenState extends State<GotongRoyongScreen> {
 
       /// BODY
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ============ 1. KERJA BAKTI ============
+                        _buildSectionTitle('KERJA BAKTI'),
+                        InputFormField(
+                          controller: kerjaBaktiKegiatanController,
+                          hintText: 'Masukkan Kegiatan',
+                          label: 'Kegiatan',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: kerjaBaktiVolController,
+                          hintText: 'Masukkan Volume',
+                          label: 'Volume',
+                          keyboardType: TextInputType.number,
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: kerjaBaktiMetodeController,
+                          hintText: 'Masukkan Metode',
+                          label: 'Metode',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: kerjaBaktiSasaranController,
+                          hintText: 'Masukkan Sasaran',
+                          label: 'Sasaran',
+                        ),
 
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                        // ============ 2. BANTUAN ANAK YATIM ============
+                        _buildSectionTitle('BANTUAN ANAK YATIM'),
+                        InputFormField(
+                          controller: bantuanYatimKegiatanController,
+                          hintText: 'Masukkan Kegiatan',
+                          label: 'Kegiatan',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: bantuanYatimVolController,
+                          hintText: 'Masukkan Volume',
+                          label: 'Volume',
+                          keyboardType: TextInputType.number,
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: bantuanYatimMetodeController,
+                          hintText: 'Masukkan Metode',
+                          label: 'Metode',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: bantuanYatimSasaranController,
+                          hintText: 'Masukkan Sasaran',
+                          label: 'Sasaran',
+                        ),
 
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        // ============ 3. KEGIATAN SOSIAL ============
+                        _buildSectionTitle('KEGIATAN SOSIAL'),
+                        InputFormField(
+                          controller: kegiatanSosialKegiatanController,
+                          hintText: 'Masukkan Kegiatan',
+                          label: 'Kegiatan',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: kegiatanSosialVolController,
+                          hintText: 'Masukkan Volume',
+                          label: 'Volume',
+                          keyboardType: TextInputType.number,
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: kegiatanSosialMetodeController,
+                          hintText: 'Masukkan Metode',
+                          label: 'Metode',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: kegiatanSosialSasaranController,
+                          hintText: 'Masukkan Sasaran',
+                          label: 'Sasaran',
+                        ),
 
-                child: Form(
-                  key: _formKey,
+                        // ============ INFORMASI TAMBAHAN ============
+                        _buildSectionTitle('INFORMASI TAMBAHAN'),
+                        InputFormField(
+                          controller: sumberDanaController,
+                          hintText: 'Masukkan Sumber Dana (cth: APBD, Swadaya)',
+                          label: 'Sumber Dana',
+                        ),
+                        SizedBox(height: 16.h),
+                        InputFormField(
+                          controller: hasilKegiatanController,
+                          hintText: 'Masukkan Hasil Kegiatan',
+                          label: 'Hasil Kegiatan',
+                          minLines: 3,
+                          maxLines: 5,
+                        ),
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                        SizedBox(height: 40.h),
 
-                    children: [
-                      /// INPUT
-                      _input(kerjabaktiController, 'Kerja Bakti'),
+                        /// BUTTON
+                        ZoomTapAnimation(
+                          child: Obx(
+                            () => ButtonFill(
+                              text: controller.isLoading.value
+                                  ? 'Loading...'
+                                  : 'Kirim',
+                              textColor: Colors.white,
+                              onPressed: controller.isLoading.value
+                                  ? null
+                                  : () async {
+                                      bool success = await controller.submitGotongRoyong(
+                                        idUser: id_user ?? '',
+                                        idRole: id_role ?? '',
+                                        idOrganization: id_organization ?? '',
 
-                      _input(rukunkematianController, 'Rukun Kematian'),
+                                        // KERJA BAKTI
+                                        kerjaBaktiKegiatan: kerjaBaktiKegiatanController.text.isNotEmpty ? kerjaBaktiKegiatanController.text : null,
+                                        kerjaBaktiVol: kerjaBaktiVolController.text.isNotEmpty ? kerjaBaktiVolController.text : null,
+                                        kerjaBaktiMetode: kerjaBaktiMetodeController.text.isNotEmpty ? kerjaBaktiMetodeController.text : null,
+                                        kerjaBaktiSasaran: kerjaBaktiSasaranController.text.isNotEmpty ? kerjaBaktiSasaranController.text : null,
 
-                      _input(keagamaanController, 'Keagamaan'),
+                                        // BANTUAN ANAK YATIM
+                                        bantuanYatimKegiatan: bantuanYatimKegiatanController.text.isNotEmpty ? bantuanYatimKegiatanController.text : null,
+                                        bantuanYatimVol: bantuanYatimVolController.text.isNotEmpty ? bantuanYatimVolController.text : null,
+                                        bantuanYatimMetode: bantuanYatimMetodeController.text.isNotEmpty ? bantuanYatimMetodeController.text : null,
+                                        bantuanYatimSasaran: bantuanYatimSasaranController.text.isNotEmpty ? bantuanYatimSasaranController.text : null,
 
-                      _input(jimpitanController, 'Jimpitan'),
+                                        // KEGIATAN SOSIAL
+                                        kegiatanSosialKegiatan: kegiatanSosialKegiatanController.text.isNotEmpty ? kegiatanSosialKegiatanController.text : null,
+                                        kegiatanSosialVol: kegiatanSosialVolController.text.isNotEmpty ? kegiatanSosialVolController.text : null,
+                                        kegiatanSosialMetode: kegiatanSosialMetodeController.text.isNotEmpty ? kegiatanSosialMetodeController.text : null,
+                                        kegiatanSosialSasaran: kegiatanSosialSasaranController.text.isNotEmpty ? kegiatanSosialSasaranController.text : null,
 
-                      _input(arisanController, 'Arisan'),
+                                        // TAMBAHAN
+                                        sumberDana: sumberDanaController.text.trim().isNotEmpty
+                                            ? sumberDanaController.text.trim()
+                                            : null,
+                                        hasilKegiatan: hasilKegiatanController.text.trim().isNotEmpty
+                                            ? hasilKegiatanController.text.trim()
+                                            : null,
+                                      );
 
-                      SizedBox(height: 24.h),
-
-                      /// BUTTON
-                      ZoomTapAnimation(
-                        child: Obx(
-                          () => ButtonFill(
-                            text: controller.isLoading.value
-                                ? 'Loading...'
-                                : 'Kirim',
-
-                            textColor: Colors.white,
-
-                            onPressed: controller.isLoading.value
-                                ? null
-                                : () async {
-                                    if (!_formKey.currentState!.validate()) {
-                                      return;
-                                    }
-
-                                    bool success = await controller
-                                        .submitGotongRoyong(
-                                          idUser: id_user!,
-
-                                          kerjaBakti: kerjabaktiController.text,
-
-                                          rukunKematian:
-                                              rukunkematianController.text,
-
-                                          keagamaan: keagamaanController.text,
-
-                                          jimpitan: jimpitanController.text,
-
-                                          arisan: arisanController.text,
-
-                                          idRole: id_role!,
-
-                                          idOrganization: id_organization!,
-                                        );
-
-                                    if (success) {
-                                      _formKey.currentState?.reset();
-
-                                      clearForm();
-
-                                      Get.offAllNamed(Routes.MAIN);
-                                    }
-                                  },
+                                      if (success) {
+                                        _formKey.currentState?.reset();
+                                        clearForm();
+                                        Get.offAllNamed(Routes.MAIN);
+                                      }
+                                    },
+                            ),
                           ),
                         ),
-                      ),
 
-                      SizedBox(height: 20.h),
-                    ],
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
-    );
-  }
-
-  /// REUSABLE INPUT
-  Widget _input(TextEditingController controller, String label) {
-    return Column(
-      children: [
-        InputFormField(
-          controller: controller,
-
-          hintText: 'Masukkan jumlah',
-
-          label: label,
-
-          keyboardType: TextInputType.number,
-
-          validator: (value) => ValidatorForm.validateNumber(value),
-        ),
-
-        SizedBox(height: 24.h),
-      ],
     );
   }
 }

@@ -2,6 +2,7 @@
 /// FILE : app_routes.dart
 /// =======================================================
 
+import 'package:epkk_nganjuk/features/draft/draft_list_screen.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/inovasi_screen.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/kegiatanpokja4/kegiatan1_pokja4_screen.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/kegiatanpokja4/kegiatan2_pokja4_screen.dart';
@@ -228,6 +229,8 @@ class Routes {
 
   // ===== LAPORAN =====
 
+  static const DRAFT_LIST = '/draft_list';
+
   static const UPLOAD_LAPORAN = '/upload_laporan';
 
   static const UPLOAD_GALERI = '/upload_galeri';
@@ -447,6 +450,8 @@ class AppPages {
     ),
 
     // ===== LAPORAN =====
+    GetPage(name: Routes.DRAFT_LIST, page: () => const DraftListScreen()),
+
     GetPage(name: Routes.UPLOAD_LAPORAN, page: () => UploadLaporanScreen()),
 
     GetPage(name: Routes.UPLOAD_GALERI, page: () => UploadGaleriPage()),

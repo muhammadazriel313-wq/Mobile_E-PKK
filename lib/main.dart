@@ -16,9 +16,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 /// BACKGROUND HANDLER
 @pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(
-  RemoteMessage message,
-) async {
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   print("BACKGROUND MESSAGE:");
@@ -34,9 +32,7 @@ void main() async {
     await Firebase.initializeApp();
 
     // BACKGROUND NOTIFICATION
-    FirebaseMessaging.onBackgroundMessage(
-      firebaseMessagingBackgroundHandler,
-    );
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   } catch (e) {
     print('Firebase initialization error: $e');
   }
@@ -52,9 +48,7 @@ void main() async {
     ),
   );
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await dotenv.load(fileName: ".env");
 
@@ -108,9 +102,7 @@ class MyApp extends StatelessWidget {
         final previewed = DevicePreview.appBuilder(context, widget);
 
         return MediaQuery(
-          data: mediaQuery.copyWith(
-            textScaler: const TextScaler.linear(1.0),
-          ),
+          data: mediaQuery.copyWith(textScaler: const TextScaler.linear(1.0)),
           child: previewed,
         );
       },

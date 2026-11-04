@@ -27,8 +27,8 @@ class ButtonActionsColors {
   static const strokeKaderPokja = Color(0xFFFFC9B2);
   static const fillPenghayatan = Color(0xFFFFF4C6);
   static const strokePenghayatan = Color(0xFFFFE990);
-  static const fillGotong = Color(0xFFFFEED5);
-  static const strokeGotong = Color(0xFFFFDAAA);
+  static const fillGotong = Color(0xFFE3F4E1);
+  static const strokeGotong = Color(0xFFBFE3BC);
   static const fillPendidikan = Color(0xFFC3E0F4);
   static const strokePendidikan = Color(0xFF8EC7EB);
   static const fillPengembangan = Color(0xFFDFF3FF);

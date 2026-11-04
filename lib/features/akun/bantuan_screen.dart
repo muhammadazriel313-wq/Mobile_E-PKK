@@ -645,34 +645,63 @@ class _BantuanScreenState extends State<BantuanScreen> {
     required String pertanyaan,
     required String jawaban,
   }) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: EdgeInsets.only(bottom: 12.h, left: 4.w, right: 4.w),
-        iconColor: const Color(0xFF3F8FC1),
-        collapsedIconColor: Colors.grey.shade500,
-        title: Text(
-          pertanyaan,
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+    return Container(
+      margin: EdgeInsets.only(bottom: 10.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14.r),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            dividerColor: Colors.transparent,
+            splashColor: const Color(0xFF3F8FC1).withValues(alpha: 0.05),
+            highlightColor: const Color(0xFF3F8FC1).withValues(alpha: 0.03),
           ),
-        ),
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              jawaban,
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 2.h),
+            childrenPadding: EdgeInsets.only(
+              left: 14.w,
+              right: 14.w,
+              bottom: 14.h,
+              top: 2.h,
+            ),
+            iconColor: const Color(0xFF3F8FC1),
+            collapsedIconColor: const Color(0xFF64748B),
+            shape: const Border(),
+            collapsedShape: const Border(),
+            title: Text(
+              pertanyaan,
               style: TextStyle(
-                fontSize: 12.sp,
-                color: Colors.grey.shade600,
-                height: 1.45,
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1E293B),
+                letterSpacing: -0.1,
               ),
             ),
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12.w),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.r),
+                  border: Border.all(color: const Color(0xFFEDF2F7)),
+                ),
+                child: Text(
+                  jawaban,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: const Color(0xFF475569),
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -1,4 +1,6 @@
+import 'package:epkk_nganjuk/features/draft/draft_badge_icon.dart';
 import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
+import 'package:epkk_nganjuk/common/colors.dart';
 import 'package:epkk_nganjuk/features/auth/button/card_button_actions.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +29,14 @@ class UploadLaporanScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      appBar: AppBarPrimary(title: 'Upload Laporan', onBack: () => Get.back()),
+      appBar: AppBarPrimary(
+        title: 'Upload Laporan',
+        onBack: () => Get.back(),
+        actionWidget: DraftBadgeIcon(
+          scope: DraftScope.laporan,
+          arguments: args is Map<String, dynamic> ? args : Map<String, dynamic>.from(args),
+        ),
+      ),
 
       body: SafeArea(
         child: LayoutBuilder(
@@ -86,6 +95,24 @@ class UploadLaporanScreen extends StatelessWidget {
                           color1: const Color(0xFFFFF4C6),
                           color2: const Color(0xFFFFE990),
                           image: 'assets/images/ic_garuda.png',
+                          args: _args(
+                            idUser,
+                            fullName,
+                            idRole,
+                            role,
+                            idOrganization,
+                            'Kader Pokja I',
+                          ),
+                        ),
+
+                        _space(),
+
+                        _buildMenu(
+                          title: 'Gotong Royong',
+                          route: Routes.GOTONG_ROYONG,
+                          color1: ButtonActionsColors.fillGotong,
+                          color2: ButtonActionsColors.strokeGotong,
+                          image: 'assets/images/ic_gotong_royong.png',
                           args: _args(
                             idUser,
                             fullName,
