@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,14 +27,13 @@ class GaleriController extends GetxController {
     required String idUser,
     required String deskripsi,
     required String gambar,
-    Uint8List? gambarBytes,
-    String? namaFile,
     required String pokja,
     required String bidang,
     required String idRole,
     required String idOrganization,
-
-    String? namaPeserta,
+    Uint8List? gambarBytes,
+    String? namaFile,
+    List<String> namaPeserta = const [],
     String? lokasi,
     double? latitude,
     double? longitude,
@@ -48,10 +47,12 @@ class GaleriController extends GetxController {
       galeriData.value = null;
 
       /// FILE MULTIPART
-      // [PERUBAHAN 03-10-2026] Mendukung upload di Flutter Web menggunakan fromBytes; kode lama di bawah dinonaktifkan
-      // final file = await dio.MultipartFile.fromFile(gambar);
+      // Flutter Web tidak mendukung fromFile(path), pakai bytes
       final dio.MultipartFile file = (kIsWeb && gambarBytes != null)
-          ? dio.MultipartFile.fromBytes(gambarBytes, filename: namaFile ?? 'upload.jpg')
+          ? dio.MultipartFile.fromBytes(
+              gambarBytes,
+              filename: namaFile ?? 'upload.jpg',
+            )
           : await dio.MultipartFile.fromFile(gambar);
 
       final response = await apiHelper.postMultipart(
@@ -59,13 +60,12 @@ class GaleriController extends GetxController {
         data: {
           'id_user': idUser,
           'deskripsi': deskripsi,
+          'nama_peserta': jsonEncode(namaPeserta),
           'gambar': file,
           'pokja': pokja,
           'bidang': bidang,
           'id_role': idRole,
           'id_organization': idOrganization,
-
-          if (namaPeserta != null) 'nama_peserta': namaPeserta,
 
           if (lokasi != null) 'lokasi': lokasi,
 
@@ -87,7 +87,7 @@ class GaleriController extends GetxController {
 
           Get.snackbar(
             'Berhasil',
-            'Foto berhasil dikirim',
+            'Kegiatan berhasil dikirim',
             snackPosition: SnackPosition.TOP,
             backgroundColor: const Color(0xFF3F8FC1),
             colorText: Colors.white,
@@ -163,8 +163,11 @@ class GaleriController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } on DioException catch (e) {
-      errorMessage.value =
-          e.response?.data['message'] ?? 'Terjadi kesalahan jaringan';
+      final data = e.response?.data;
+
+      errorMessage.value = (data is Map && data['message'] != null)
+          ? data['message'].toString()
+          : 'Terjadi kesalahan jaringan';
 
       Get.snackbar(
         'Error',
@@ -177,7 +180,7 @@ class GaleriController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      errorMessage.value = 'Gagal upload galeri';
+      errorMessage.value = 'Gagal upload kegiatan';
 
       Get.snackbar(
         'Error',

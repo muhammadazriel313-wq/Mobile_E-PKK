@@ -39,6 +39,7 @@ class LaporanUmumController extends GetxController {
     required String idRole,
     required String idOrganization,
     String? catatan,
+    String? keterangan,
   }) async {
     try {
       isLoading(true);
@@ -72,6 +73,7 @@ class LaporanUmumController extends GetxController {
           'id_role': idRole,
           'id_organization': idOrganization,
           if (catatan != null) 'catatan': catatan,
+          'keterangan': (keterangan ?? '').trim(),
         },
       );
 

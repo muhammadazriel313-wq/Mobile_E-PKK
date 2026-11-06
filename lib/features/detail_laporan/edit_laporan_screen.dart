@@ -137,7 +137,10 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
             key == 'status' ||
             key == 'created_at' ||
             key == 'id_role' ||
-            key == 'id_organization',
+            key == 'id_organization' ||
+            // khusus Kegiatan: tidak boleh diedit dari mobile
+            key == 'gambar_url' ||
+            key == 'bidang',
       );
 
     return editableData.entries.map((entry) {
@@ -183,6 +186,10 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
             TextFormField(
               initialValue: entry.value?.toString() ?? '',
 
+              minLines: 1,
+
+              maxLines: entry.key == 'nama_peserta' ? 5 : 1,
+
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
@@ -190,7 +197,9 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
               ),
 
               decoration: InputDecoration(
-                hintText: 'Masukkan ${_getFieldLabel(entry.key)}',
+                hintText: entry.key == 'nama_peserta'
+                    ? 'Satu nama per baris'
+                    : 'Masukkan ${_getFieldLabel(entry.key)}',
 
                 hintStyle: TextStyle(
                   fontSize: 13.sp,
@@ -228,6 +237,9 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
               onSaved: (newValue) => _formData[entry.key] = newValue,
 
               validator: (value) {
+                // Nama peserta boleh kosong
+                if (entry.key == 'nama_peserta') return null;
+
                 if (value == null || value.isEmpty) {
                   return 'Field wajib diisi';
                 }
@@ -243,6 +255,12 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
 
   String _getFieldLabel(String fieldName) {
     switch (fieldName) {
+      case 'nama_kegiatan':
+        return 'Nama Kegiatan';
+
+      case 'nama_peserta':
+        return 'Nama Peserta';
+
       case 'nama_kader':
         return 'Nama Kader';
 

@@ -242,6 +242,11 @@ class DetailLaporanScreen extends StatelessWidget {
 
     return Column(
       children: displayData.entries.map((entry) {
+        // Foto kegiatan (khusus Kegiatan)
+        if (entry.key == 'gambar_url') {
+          return _buildFotoCard(entry.value?.toString());
+        }
+
         return Container(
           width: double.infinity,
 
@@ -274,7 +279,7 @@ class DetailLaporanScreen extends StatelessWidget {
               SizedBox(height: 8.h),
 
               Text(
-                entry.value?.toString() ?? '-',
+                _formatFieldValue(entry.key, entry.value),
 
                 style: TextStyle(
                   fontSize: 14.sp,
@@ -290,8 +295,77 @@ class DetailLaporanScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildFotoCard(String? url) {
+    if (url == null || url.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+
+      margin: EdgeInsets.only(bottom: 14.h),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(18.r),
+
+        border: Border.all(color: const Color(0xFFE7EDF3)),
+      ),
+
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18.r),
+
+        child: Image.network(
+          url,
+
+          fit: BoxFit.cover,
+
+          errorBuilder: (context, error, stackTrace) => Padding(
+            padding: EdgeInsets.all(20.w),
+
+            child: Text(
+              'Foto tidak dapat ditampilkan',
+
+              textAlign: TextAlign.center,
+
+              style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatFieldValue(String key, dynamic value) {
+    final text = value?.toString() ?? '';
+
+    // Nama peserta: satu nama per baris -> tampil bernomor
+    if (key == 'nama_peserta') {
+      final names = text
+          .split('\n')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+
+      if (names.isEmpty) return '-';
+
+      return names
+          .asMap()
+          .entries
+          .map((e) => '${e.key + 1}. ${e.value}')
+          .join('\n');
+    }
+
+    return text.isEmpty ? '-' : text;
+  }
+
   String _getFieldLabel(String fieldName) {
     switch (fieldName) {
+      case 'nama_kegiatan':
+        return 'Nama Kegiatan';
+
+      case 'nama_peserta':
+        return 'Nama Peserta';
+
       case 'nama_kader':
         return 'Nama Kader';
 

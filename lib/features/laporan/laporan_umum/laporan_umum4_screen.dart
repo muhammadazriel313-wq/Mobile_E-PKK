@@ -347,6 +347,18 @@ class _LaporanUmum4ScreenState extends State<LaporanUmum4Screen> {
                                 ),
                               ]),
                             ]),
+
+                            // ================= KETERANGAN =================
+                            _buildSection('Keterangan', [
+                              _buildDetailItem(
+                                'Keterangan',
+
+                                ((data['keterangan'] ?? '').toString().trim())
+                                        .isEmpty
+                                    ? '-'
+                                    : data['keterangan'].toString(),
+                              ),
+                            ]),
                           ],
                         ),
                       ),
@@ -435,6 +447,9 @@ class _LaporanUmum4ScreenState extends State<LaporanUmum4Screen> {
                                       idOrganization:
                                           (data['id_organization'] ?? '')
                                               .toString(),
+
+                                      keterangan: (data['keterangan'] ?? '')
+                                          .toString(),
                                     );
 
                                     // SUCCESS
