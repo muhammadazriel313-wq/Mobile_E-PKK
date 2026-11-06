@@ -291,6 +291,9 @@ String getSubtitleFromUUID(String uuid) {
     case 'PKKUM':
       return 'Laporan Umum';
 
+    case 'GAL':
+      return 'Kegiatan';
+
     default:
       return 'Kategori Tidak Dikenal';
   }
