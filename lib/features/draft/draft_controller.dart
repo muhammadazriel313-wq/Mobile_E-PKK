@@ -1,6 +1,7 @@
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
 import 'package:epkk_nganjuk/features/draft/draft_service.dart';
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class DraftController extends GetxController {
@@ -15,6 +16,23 @@ class DraftController extends GetxController {
   /// Daftar draf yang sedang ditampilkan pada halaman Draf Saya
   var daftarDraft = <DraftModel>[].obs;
   var isLoading = false.obs;
+  final Set<String> _sendingDraftIds = <String>{};
+  final sendingDraftIds = <String>{}.obs;
+  bool isSending(String id) => _sendingDraftIds.contains(id);
+
+  Future<bool> beginSending(String id, String idAkun) async {
+    if (_sendingDraftIds.contains(id)) return false;
+    final currentUser = await PreferencesService.getUser();
+    if (currentUser == null || currentUser.id != idAkun) return false;
+    _sendingDraftIds.add(id);
+    sendingDraftIds.add(id);
+    return true;
+  }
+
+  void endSending(String id) {
+    _sendingDraftIds.remove(id);
+    sendingDraftIds.remove(id);
+  }
 
   static const List<String> jenisLaporan = [
     'pancasila',
@@ -22,14 +40,22 @@ class DraftController extends GetxController {
     'kader_pokja1',
   ];
 
-  static const List<String> jenisGaleri = [
-    'galeri',
-  ];
+  static const List<String> jenisGaleri = ['galeri'];
 
   @override
   void onInit() {
     super.onInit();
+    _recoverInterruptedDrafts();
     refreshAllCount();
+  }
+
+  Future<void> _recoverInterruptedDrafts() async {
+    if (kIsWeb) {
+      await _draftService.hitungJumlahDraft(idAkun: '');
+    } else {
+      await _draftService.database;
+    }
+    await refreshAllCount();
   }
 
   /// Memperbarui hitungan badge draf untuk laporan dan galeri
@@ -86,10 +112,13 @@ class DraftController extends GetxController {
   }
 
   /// Hapus draf dan refresh daftar serta hitungan
-  Future<void> hapusDraft(String idDraft, {required List<String> filterJenis}) async {
+  Future<void> hapusDraft(
+    String idDraft, {
+    required List<String> filterJenis,
+  }) async {
+    daftarDraft.removeWhere((item) => item.id == idDraft);
     await _draftService.hapusDraft(idDraft);
     await loadDrafts(filterJenis: filterJenis);
     await refreshAllCount();
   }
 }
-

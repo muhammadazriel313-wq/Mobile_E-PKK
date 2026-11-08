@@ -4,7 +4,13 @@ import 'package:epkk_nganjuk/common/typography.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/features/pages/pokja1/penghayatan/penghayatan_controller.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -36,7 +42,8 @@ class _DraftListScreenState extends State<DraftListScreen> {
     if (args['filter_jenis'] != null && args['filter_jenis'] is List<String>) {
       _filterJenis = args['filter_jenis'];
     }
-    if (args['parent_args'] != null && args['parent_args'] is Map<String, dynamic>) {
+    if (args['parent_args'] != null &&
+        args['parent_args'] is Map<String, dynamic>) {
       _parentArgs = args['parent_args'];
     }
 
@@ -99,7 +106,13 @@ class _DraftListScreenState extends State<DraftListScreen> {
     );
   }
 
-  void _bukaFormEdit(DraftModel draft) async {
+  Future<void> _bukaFormEdit(DraftModel draft) async {
+    if (draft.status == 'mengirim' ||
+        _draftController.sendingDraftIds.contains(draft.id)) {
+      return;
+    }
+    final user = await PreferencesService.getUser();
+    if (user == null || user.id != draft.idAkun) return;
     if (draft.jenis == 'pancasila') {
       final formArgs = Map<String, dynamic>.from(_parentArgs);
       formArgs['draft'] = draft;
@@ -117,7 +130,117 @@ class _DraftListScreenState extends State<DraftListScreen> {
     }
   }
 
+  Future<void> _kirimDraft(DraftModel draft) async {
+    if (draft.status == 'mengirim' ||
+        _draftController.sendingDraftIds.contains(draft.id)) {
+      return;
+    }
+    if (draft.jenis != 'pancasila') {
+      Get.snackbar(
+        'Segera Tersedia',
+        'Pengiriman jenis ini akan tersedia pada tahap berikutnya.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return;
+    }
+    final user = await PreferencesService.getUser();
+    if (user == null || user.id.isEmpty || user.id != draft.idAkun) {
+      Get.snackbar(
+        'Sesi Berubah',
+        'Masuk kembali dengan akun pemilik draf untuk mengirimnya.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return;
+    }
+    if (!await _draftController.beginSending(draft.id, draft.idAkun)) return;
+    final service = DraftService();
+    try {
+      await service.ubahStatus(id: draft.id, status: 'mengirim');
+      await _draftController.loadDrafts(filterJenis: _filterJenis);
+      final freshDraft = await service.getDraftById(draft.id);
+      if (freshDraft == null || freshDraft.idAkun != user.id) {
+        throw StateError('Draf tidak ditemukan atau bukan milik akun aktif');
+      }
+      final apiController = Get.isRegistered<PenghayatanPengamalanController>()
+          ? Get.find<PenghayatanPengamalanController>()
+          : Get.put(PenghayatanPengamalanController());
+      // TODO Tahap 6: kirim UUID draf sebagai kunci idempotensi setelah backend mendukungnya.
+      final result = await apiController.submitDraftData({
+        ...freshDraft.dataForm,
+        'id_user': user.id,
+        'tanggal_dibuat': freshDraft.tanggalDibuat,
+      });
+      if (result.success) {
+        await service.hapusDraft(freshDraft.id);
+        await _draftController.loadDrafts(filterJenis: _filterJenis);
+        Get.snackbar(
+          'Berhasil',
+          'Laporan berhasil dikirim dan menunggu persetujuan',
+          snackPosition: SnackPosition.TOP,
+        );
+      } else if (result.sessionExpired) {
+        await service.ubahStatus(
+          id: freshDraft.id,
+          status: 'gagal_kirim',
+          pesanError: 'Sesi login habis. Masuk kembali untuk mencoba lagi.',
+        );
+        Get.snackbar(
+          'Sesi Habis',
+          'Masuk kembali. Draf tetap tersimpan.',
+          snackPosition: SnackPosition.TOP,
+        );
+      } else {
+        final error = result.statusCode == 422
+            ? (result.message ??
+                  'Data tidak dapat diterima. Periksa kembali isian draf.')
+            : 'Gagal terkirim. Draf tetap tersimpan, coba lagi saat sinyal bagus.';
+        await service.ubahStatus(
+          id: freshDraft.id,
+          status: 'gagal_kirim',
+          pesanError: error,
+        );
+        await _draftController.loadDrafts(filterJenis: _filterJenis);
+        if (result.statusCode == 422) {
+          Get.snackbar(
+            'Periksa Isian',
+            error,
+            snackPosition: SnackPosition.TOP,
+            duration: const Duration(seconds: 6),
+          );
+          await _bukaFormEdit(freshDraft);
+        } else {
+          Get.snackbar(
+            'Gagal Mengirim',
+            error,
+            snackPosition: SnackPosition.TOP,
+            duration: const Duration(seconds: 5),
+          );
+        }
+      }
+    } catch (_) {
+      await service.ubahStatus(
+        id: draft.id,
+        status: 'gagal_kirim',
+        pesanError:
+            'Gagal terkirim. Draf tetap tersimpan, coba lagi saat sinyal bagus.',
+      );
+      await _draftController.loadDrafts(filterJenis: _filterJenis);
+      Get.snackbar(
+        'Gagal Mengirim',
+        'Gagal terkirim. Draf tetap tersimpan, coba lagi saat sinyal bagus.',
+        snackPosition: SnackPosition.TOP,
+      );
+    } finally {
+      _draftController.endSending(draft.id);
+      await _draftController.loadDrafts(filterJenis: _filterJenis);
+    }
+  }
+
   void _konfirmasiHapus(DraftModel draft) {
+    if (draft.status == 'mengirim' ||
+        _draftController.sendingDraftIds.contains(draft.id)) {
+      return;
+    }
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(
@@ -159,10 +282,13 @@ class _DraftListScreenState extends State<DraftListScreen> {
                 child: ElevatedButton(
                   onPressed: () async {
                     Get.back(); // tutup dialog
-                    await _draftController.hapusDraft(draft.id, filterJenis: _filterJenis);
+                    await _draftController.hapusDraft(
+                      draft.id,
+                      filterJenis: _filterJenis,
+                    );
                     Get.snackbar(
-                      'Draf Dihapus',
-                      'Draf dan fotonya berhasil dihapus',
+                      'Draf dihapus',
+                      'Draf berhasil dihapus.',
                       backgroundColor: const Color(0xFFEF5350),
                       colorText: Colors.white,
                       snackPosition: SnackPosition.TOP,
@@ -176,10 +302,7 @@ class _DraftListScreenState extends State<DraftListScreen> {
                       borderRadius: BorderRadius.circular(24.r),
                     ),
                   ),
-                  child: TypographyStyles.button(
-                    'Hapus',
-                    color: Colors.white,
-                  ),
+                  child: TypographyStyles.button('Hapus', color: Colors.white),
                 ),
               ),
             ],
@@ -193,16 +316,11 @@ class _DraftListScreenState extends State<DraftListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBarPrimary(
-        title: _screenTitle,
-        onBack: () => Get.back(),
-      ),
+      appBar: AppBarPrimary(title: _screenTitle, onBack: () => Get.back()),
       body: SafeArea(
         child: Obx(() {
           if (_draftController.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final drafts = _draftController.daftarDraft;
@@ -238,7 +356,8 @@ class _DraftListScreenState extends State<DraftListScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () => _draftController.loadDrafts(filterJenis: _filterJenis),
+            onRefresh: () =>
+                _draftController.loadDrafts(filterJenis: _filterJenis),
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
@@ -258,8 +377,19 @@ class _DraftListScreenState extends State<DraftListScreen> {
   }
 
   Widget _buildDraftCard(DraftModel draft) {
+    final sending =
+        draft.status == 'mengirim' ||
+        _draftController.sendingDraftIds.contains(draft.id);
+    final missingPhoto =
+        !kIsWeb &&
+        draft.daftarFoto.isNotEmpty &&
+        draft.daftarFoto.any((path) => !File(path).existsSync());
     return InkWell(
-      onTap: () => _bukaFormEdit(draft),
+      onTap:
+          draft.status == 'mengirim' ||
+              _draftController.sendingDraftIds.contains(draft.id)
+          ? null
+          : () => _bukaFormEdit(draft),
       borderRadius: BorderRadius.circular(12.r),
       child: Container(
         padding: EdgeInsets.all(16.w),
@@ -289,6 +419,7 @@ class _DraftListScreenState extends State<DraftListScreen> {
                 ),
                 _buildStatusBadge(draft.status),
                 PopupMenuButton<String>(
+                  enabled: !sending,
                   icon: Icon(
                     Icons.more_vert,
                     color: TextColors.grey600,
@@ -309,9 +440,16 @@ class _DraftListScreenState extends State<DraftListScreen> {
                       value: 'edit',
                       child: Row(
                         children: [
-                          Icon(Icons.edit_outlined, size: 18.sp, color: TextColors.grey700),
+                          Icon(
+                            Icons.edit_outlined,
+                            size: 18.sp,
+                            color: TextColors.grey700,
+                          ),
                           SizedBox(width: 8.w),
-                          TypographyStyles.bodyCaptionReguler('Edit', color: TextColors.grey800),
+                          TypographyStyles.bodyCaptionReguler(
+                            'Edit',
+                            color: TextColors.grey800,
+                          ),
                         ],
                       ),
                     ),
@@ -319,9 +457,16 @@ class _DraftListScreenState extends State<DraftListScreen> {
                       value: 'hapus',
                       child: Row(
                         children: [
-                          Icon(Icons.delete_outline, size: 18.sp, color: const Color(0xFFEF5350)),
+                          Icon(
+                            Icons.delete_outline,
+                            size: 18.sp,
+                            color: const Color(0xFFEF5350),
+                          ),
                           SizedBox(width: 8.w),
-                          TypographyStyles.bodyCaptionReguler('Hapus', color: const Color(0xFFEF5350)),
+                          TypographyStyles.bodyCaptionReguler(
+                            'Hapus',
+                            color: const Color(0xFFEF5350),
+                          ),
                         ],
                       ),
                     ),
@@ -344,7 +489,11 @@ class _DraftListScreenState extends State<DraftListScreen> {
             // Tanggal dibuat & Jumlah Foto
             Row(
               children: [
-                Icon(Icons.access_time_rounded, size: 14.sp, color: TextColors.grey400),
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 14.sp,
+                  color: TextColors.grey400,
+                ),
                 SizedBox(width: 4.w),
                 TypographyStyles.captionReguler(
                   _formatTanggal(draft.tanggalDibuat),
@@ -352,7 +501,11 @@ class _DraftListScreenState extends State<DraftListScreen> {
                 ),
                 if (draft.daftarFoto.isNotEmpty) ...[
                   SizedBox(width: 12.w),
-                  Icon(Icons.photo_outlined, size: 14.sp, color: TextColors.grey400),
+                  Icon(
+                    Icons.photo_outlined,
+                    size: 14.sp,
+                    color: TextColors.grey400,
+                  ),
                   SizedBox(width: 4.w),
                   TypographyStyles.captionReguler(
                     '${draft.daftarFoto.length} foto',
@@ -363,7 +516,9 @@ class _DraftListScreenState extends State<DraftListScreen> {
             ),
 
             // Tampilkan pesan error jika status gagal_kirim
-            if (draft.status == 'gagal_kirim' && draft.pesanError != null && draft.pesanError!.isNotEmpty) ...[
+            if (draft.status == 'gagal_kirim' &&
+                draft.pesanError != null &&
+                draft.pesanError!.isNotEmpty) ...[
               SizedBox(height: 8.h),
               Text(
                 draft.pesanError!,
@@ -377,27 +532,45 @@ class _DraftListScreenState extends State<DraftListScreen> {
               ),
             ],
 
+            if (missingPhoto) ...[
+              SizedBox(height: 8.h),
+              Text(
+                'Foto draf tidak ditemukan. Draf masih bisa dibuka dan diedit.',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: const Color(0xFFD32F2F),
+                ),
+              ),
+            ],
+
             SizedBox(height: 14.h),
 
-            // Tombol Kirim di Kartu
             SizedBox(
               width: double.infinity,
               height: 48.h,
-              child: ButtonFill(
-                text: 'Kirim',
-                textColor: Colors.white,
-                onPressed: () {
-                  // Sesuai Tahap 3: Kirim draf penuh akan diaktifkan di Tahap 4
-                  Get.snackbar(
-                    'Fitur Kirim Draf',
-                    'Fitur kirim draf menyusul (Tahap 4)',
-                    backgroundColor: const Color(0xFF3F8FC1),
-                    colorText: Colors.white,
-                    snackPosition: SnackPosition.TOP,
-                  );
-                },
+              child: Obx(
+                () => ButtonFill(
+                  text: _draftController.sendingDraftIds.contains(draft.id)
+                      ? 'Mengirim...'
+                      : (draft.status == 'gagal_kirim' ? 'Coba Lagi' : 'Kirim'),
+                  textColor: Colors.white,
+                  onPressed:
+                      sending ||
+                          _draftController.sendingDraftIds.contains(draft.id)
+                      ? null
+                      : () => _kirimDraft(draft),
+                ),
               ),
             ),
+            if (sending) ...[
+              SizedBox(height: 10.h),
+              const LinearProgressIndicator(),
+              SizedBox(height: 6.h),
+              Text(
+                'Sedang mengirim laporan. Mohon tunggu…',
+                style: TextStyle(fontSize: 14.sp, color: TextColors.grey600),
+              ),
+            ],
           ],
         ),
       ),

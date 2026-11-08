@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,12 +16,70 @@ class DraftService {
   DraftService._internal();
 
   Database? _database;
+  Future<Database>? _databaseFuture;
+  Future<void> _webOperation = Future<void>.value();
+  bool _webRecoveryComplete = false;
   static const String _tableName = 'drafts';
+  static const String _webStorageKey = 'epkk_drafts_web';
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDb();
-    return _database!;
+  Future<T> _withWebDrafts<T>(
+    Future<T> Function(List<DraftModel> drafts) operation,
+  ) {
+    final result = _webOperation.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final stored = prefs.getString(_webStorageKey);
+      final drafts = <DraftModel>[];
+      if (stored != null) {
+        final decoded = jsonDecode(stored);
+        if (decoded is List) {
+          drafts.addAll(
+            decoded.whereType<Map>().map(
+              (row) => DraftModel.fromMap(Map<String, dynamic>.from(row)),
+            ),
+          );
+        }
+      }
+
+      if (!_webRecoveryComplete) {
+        for (var i = 0; i < drafts.length; i++) {
+          if (drafts[i].status == 'mengirim') {
+            drafts[i] = drafts[i].copyWith(
+              status: 'gagal_kirim',
+              pesanError: 'Pengiriman terputus saat aplikasi ditutup.',
+            );
+          }
+        }
+        _webRecoveryComplete = true;
+      }
+
+      final value = await operation(drafts);
+      await prefs.setString(
+        _webStorageKey,
+        jsonEncode(drafts.map((draft) => draft.toMap()).toList()),
+      );
+      return value;
+    });
+    _webOperation = result.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stack) {},
+    );
+    return result;
+  }
+
+  Future<Database> get database {
+    if (_database != null) return Future.value(_database);
+    return _databaseFuture ??= _openDatabase();
+  }
+
+  Future<Database> _openDatabase() async {
+    try {
+      final db = await _initDb();
+      _database = db;
+      return db;
+    } catch (_) {
+      _databaseFuture = null;
+      rethrow;
+    }
   }
 
   Future<Database> _initDb() async {
@@ -131,6 +191,21 @@ class DraftService {
     required Map<String, dynamic> dataForm,
     required List<String> originalPhotoPaths,
   }) async {
+    if (kIsWeb) {
+      return _withWebDrafts((drafts) async {
+        final draft = DraftModel(
+          id: const Uuid().v4(),
+          idAkun: idAkun,
+          jenis: jenis,
+          dataForm: dataForm,
+          daftarFoto: const [],
+          tanggalDibuat: DateTime.now().toIso8601String(),
+          status: 'draf',
+        );
+        drafts.add(draft);
+        return draft;
+      });
+    }
     final db = await database;
     final id = const Uuid().v4();
     final tanggalDibuat = DateTime.now().toIso8601String();
@@ -169,6 +244,19 @@ class DraftService {
     String? jenis,
     List<String>? daftarJenis,
   }) async {
+    if (kIsWeb) {
+      return _withWebDrafts((drafts) async {
+        final filtered = drafts.where((draft) {
+          if (draft.idAkun != idAkun) return false;
+          if (jenis != null && jenis.isNotEmpty) return draft.jenis == jenis;
+          if (daftarJenis != null && daftarJenis.isNotEmpty) {
+            return daftarJenis.contains(draft.jenis);
+          }
+          return true;
+        }).toList()..sort((a, b) => b.tanggalDibuat.compareTo(a.tanggalDibuat));
+        return filtered;
+      });
+    }
     final db = await database;
 
     String whereClause = 'id_akun = ?';
@@ -195,6 +283,14 @@ class DraftService {
 
   /// Ambil satu draf berdasarkan ID
   Future<DraftModel?> getDraftById(String id) async {
+    if (kIsWeb) {
+      return _withWebDrafts((drafts) async {
+        for (final draft in drafts) {
+          if (draft.id == id) return draft;
+        }
+        return null;
+      });
+    }
     final db = await database;
     final maps = await db.query(
       _tableName,
@@ -208,6 +304,13 @@ class DraftService {
 
   /// Update draf (misal perubahan data form atau foto)
   Future<void> updateDraft(DraftModel draft) async {
+    if (kIsWeb) {
+      await _withWebDrafts((drafts) async {
+        final index = drafts.indexWhere((item) => item.id == draft.id);
+        if (index >= 0) drafts[index] = draft;
+      });
+      return;
+    }
     final db = await database;
     await db.update(
       _tableName,
@@ -223,13 +326,22 @@ class DraftService {
     required String status,
     String? pesanError,
   }) async {
+    if (kIsWeb) {
+      await _withWebDrafts((drafts) async {
+        final index = drafts.indexWhere((draft) => draft.id == id);
+        if (index >= 0) {
+          drafts[index] = drafts[index].copyWith(
+            status: status,
+            pesanError: pesanError,
+          );
+        }
+      });
+      return;
+    }
     final db = await database;
     await db.update(
       _tableName,
-      {
-        'status': status,
-        'pesan_error': pesanError,
-      },
+      {'status': status, 'pesan_error': pesanError},
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -237,16 +349,18 @@ class DraftService {
 
   /// Hapus draf beserta file fotonya
   Future<void> hapusDraft(String id) async {
+    if (kIsWeb) {
+      await _withWebDrafts((drafts) async {
+        drafts.removeWhere((draft) => draft.id == id);
+      });
+      return;
+    }
     final draft = await getDraftById(id);
     if (draft != null) {
       await deletePhotoFiles(draft.daftarFoto);
     }
     final db = await database;
-    await db.delete(
-      _tableName,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
   }
 
   /// Hitung jumlah draf milik akun dengan status 'draf' atau 'gagal_kirim'
@@ -254,6 +368,19 @@ class DraftService {
     required String idAkun,
     List<String>? daftarJenis,
   }) async {
+    if (kIsWeb) {
+      return _withWebDrafts((drafts) async {
+        return drafts.where((draft) {
+          if (draft.idAkun != idAkun ||
+              (draft.status != 'draf' && draft.status != 'gagal_kirim')) {
+            return false;
+          }
+          return daftarJenis == null ||
+              daftarJenis.isEmpty ||
+              daftarJenis.contains(draft.jenis);
+        }).length;
+      });
+    }
     final db = await database;
     String whereClause = 'id_akun = ? AND status IN (?, ?)';
     List<dynamic> whereArgs = [idAkun, 'draf', 'gagal_kirim'];
@@ -272,4 +399,3 @@ class DraftService {
     return Sqflite.firstIntValue(result) ?? 0;
   }
 }
-

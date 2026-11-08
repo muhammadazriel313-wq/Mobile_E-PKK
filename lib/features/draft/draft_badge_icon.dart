@@ -12,11 +12,7 @@ class DraftBadgeIcon extends StatelessWidget {
   final DraftScope scope;
   final Map<String, dynamic>? arguments;
 
-  const DraftBadgeIcon({
-    super.key,
-    required this.scope,
-    this.arguments,
-  });
+  const DraftBadgeIcon({super.key, required this.scope, this.arguments});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +24,9 @@ class DraftBadgeIcon extends StatelessWidget {
         ? DraftController.jenisLaporan
         : DraftController.jenisGaleri;
 
-    final title = (scope == DraftScope.laporan) ? 'Draf Laporan' : 'Draf Galeri';
+    final title = (scope == DraftScope.laporan)
+        ? 'Draf Laporan'
+        : 'Draf Galeri';
 
     return Center(
       child: Tooltip(
@@ -41,10 +39,7 @@ class DraftBadgeIcon extends StatelessWidget {
             decoration: BoxDecoration(
               color: TextColors.grey50,
               borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(
-                strokeAlign: 1,
-                color: TextColors.grey200,
-              ),
+              border: Border.all(strokeAlign: 1, color: TextColors.grey200),
             ),
             child: Stack(
               clipBehavior: Clip.none,
@@ -120,4 +115,3 @@ class DraftBadgeIcon extends StatelessWidget {
     );
   }
 }
-

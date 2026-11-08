@@ -78,7 +78,9 @@ class DraftModel {
           }
         } catch (_) {}
       } else if (map['daftar_foto'] is List) {
-        parsedFoto = (map['daftar_foto'] as List).map((e) => e.toString()).toList();
+        parsedFoto = (map['daftar_foto'] as List)
+            .map((e) => e.toString())
+            .toList();
       }
     }
 
@@ -88,7 +90,8 @@ class DraftModel {
       jenis: map['jenis']?.toString() ?? '',
       dataForm: parsedDataForm,
       daftarFoto: parsedFoto,
-      tanggalDibuat: map['tanggal_dibuat']?.toString() ?? DateTime.now().toIso8601String(),
+      tanggalDibuat:
+          map['tanggal_dibuat']?.toString() ?? DateTime.now().toIso8601String(),
       status: map['status']?.toString() ?? 'draf',
       pesanError: map['pesan_error']?.toString(),
     );
@@ -97,13 +100,24 @@ class DraftModel {
   String getRingkasan() {
     switch (jenis) {
       case 'pancasila':
-        for (final k in ['kisah_kegiatan', 'krisan_kegiatan', 'kilas_kegiatan', 'kiat_kegiatan', 'kisak_kegiatan', 'pkbn_kegiatan']) {
+        for (final k in [
+          'kisah_kegiatan',
+          'krisan_kegiatan',
+          'kilas_kegiatan',
+          'kiat_kegiatan',
+          'kisak_kegiatan',
+          'pkbn_kegiatan',
+        ]) {
           final val = dataForm[k]?.toString().trim() ?? '';
           if (val.isNotEmpty) return val;
         }
         return 'Penghayatan & Pengamalan Pancasila';
       case 'gotong_royong':
-        for (final k in ['kerja_bakti_kegiatan', 'bantuan_yatim_kegiatan', 'kegiatan_sosial_kegiatan']) {
+        for (final k in [
+          'kerja_bakti_kegiatan',
+          'bantuan_yatim_kegiatan',
+          'kegiatan_sosial_kegiatan',
+        ]) {
           final val = dataForm[k]?.toString().trim() ?? '';
           if (val.isNotEmpty) return val;
         }
@@ -139,4 +153,3 @@ class DraftModel {
     }
   }
 }
-
