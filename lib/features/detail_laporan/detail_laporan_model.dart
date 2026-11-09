@@ -15,7 +15,9 @@ class DetailLaporanResponse {
     return DetailLaporanResponse(
       statusCode: json['statusCode'] ?? 500,
       message: json['message'] ?? 'Unknown error',
-      data: json['data'] != null ? Map<String, dynamic>.from(json['data']) : null,
+      data: json['data'] != null
+          ? Map<String, dynamic>.from(json['data'])
+          : null,
       error: json['error'] != null ? json['error']['message'] : null,
     );
   }

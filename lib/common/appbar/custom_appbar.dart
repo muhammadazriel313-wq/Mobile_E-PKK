@@ -58,9 +58,7 @@ class CustomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       /// 🔙 BACK BUTTON
       leading: onBack != null
-          ? Center(
-              child: IconButtonBack(onTab: onBack!),
-            )
+          ? Center(child: IconButtonBack(onTab: onBack!))
           : null,
 
       ///  TITLE
@@ -68,20 +66,19 @@ class CustomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.only(top: 4, left: 0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment:
-              centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+          crossAxisAlignment: centerTitle
+              ? CrossAxisAlignment.center
+              : CrossAxisAlignment.start,
           children: [
             TypographyStyles.bodySmallBold(
               title,
-              textAlign:
-                  centerTitle ? TextAlign.center : TextAlign.left,
+              textAlign: centerTitle ? TextAlign.center : TextAlign.left,
               color: TextColors.grey700,
             ),
             if (currentStep != null && totalSteps != null)
               TypographyStyles.captionReguler(
                 'Langkah $currentStep dari $totalSteps',
-                textAlign:
-                    centerTitle ? TextAlign.center : TextAlign.left,
+                textAlign: centerTitle ? TextAlign.center : TextAlign.left,
                 color: TextColors.grey500,
               ),
           ],
@@ -114,30 +111,27 @@ class CustomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             )
           : showBottomBorder
-              ? PreferredSize(
-                  preferredSize: const Size.fromHeight(6),
-                  child: Container(
-                    height: 1,
-                    color: Colors.grey.shade300,
-                  ),
-                )
-              : null,
+          ? PreferredSize(
+              preferredSize: const Size.fromHeight(6),
+              child: Container(height: 1, color: Colors.grey.shade300),
+            )
+          : null,
 
       /// 🔧 ACTION
       actions: actionWidget != null
           ? [actionWidget!]
           : (onTab2 != null
-              ? [
-                  IconButton(
-                    onPressed: onTab2,
-                    icon: Icon(
-                      actionIcon ?? Icons.filter_alt_rounded,
-                      size: 24,
-                      color: TextColors.grey700,
+                ? [
+                    IconButton(
+                      onPressed: onTab2,
+                      icon: Icon(
+                        actionIcon ?? Icons.filter_alt_rounded,
+                        size: 24,
+                        color: TextColors.grey700,
+                      ),
                     ),
-                  ),
-                ]
-              : null),
+                  ]
+                : null),
     );
   }
 }
@@ -154,18 +148,18 @@ class AppBarPrimary extends CustomeAppBar {
     int? currentStep,
     int? totalSteps,
   }) : super(
-          title: title,
-          onBack: onBack,
-          onTab2: onTab2,
-          actionIcon: actionIcon,
-          actionWidget: actionWidget,
-          backgroundColor: backgroundColor,
-          elevation: elevation,
-          currentStep: currentStep,
-          totalSteps: totalSteps,
-          showBottomBorder: false,
-          centerTitle: true,
-        );
+         title: title,
+         onBack: onBack,
+         onTab2: onTab2,
+         actionIcon: actionIcon,
+         actionWidget: actionWidget,
+         backgroundColor: backgroundColor,
+         elevation: elevation,
+         currentStep: currentStep,
+         totalSteps: totalSteps,
+         showBottomBorder: false,
+         centerTitle: true,
+       );
 }
 
 class AppBarSecondary extends CustomeAppBar {
@@ -178,14 +172,14 @@ class AppBarSecondary extends CustomeAppBar {
     int? currentStep,
     int? totalSteps,
   }) : super(
-          title: title,
-          onBack: onBack,
-          onTab2: onTab2,
-          backgroundColor: backgroundColor,
-          elevation: 0,
-          currentStep: currentStep,
-          totalSteps: totalSteps,
-          showBottomBorder: true,
-          centerTitle: true,
-        );
+         title: title,
+         onBack: onBack,
+         onTab2: onTab2,
+         backgroundColor: backgroundColor,
+         elevation: 0,
+         currentStep: currentStep,
+         totalSteps: totalSteps,
+         showBottomBorder: true,
+         centerTitle: true,
+       );
 }

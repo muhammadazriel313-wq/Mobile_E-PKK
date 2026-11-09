@@ -17,8 +17,7 @@ class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() =>
-      _RegisterScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
@@ -27,11 +26,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _nomorController = TextEditingController();
   final _passController = TextEditingController();
-  final _konfirmPassController =
-      TextEditingController();
+  final _konfirmPassController = TextEditingController();
 
-  final AuthController authController =
-      Get.find<AuthController>();
+  final AuthController authController = Get.find<AuthController>();
 
   late String roleId;
   late String roleName;
@@ -48,8 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight =
-        MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -57,17 +53,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 10.h,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
 
           child: Form(
             key: _formKey,
 
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
                 /// BACK
@@ -76,10 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Get.toNamed(
                       Routes.AUTH_LOGIN,
 
-                      arguments: {
-                        'roleID': roleId,
-                        'roleName': roleName,
-                      },
+                      arguments: {'roleID': roleId, 'roleName': roleName},
                     );
                   },
                 ),
@@ -88,8 +77,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 /// HEADER
                 HeaderText(
-                  firstText:
-                      'Daftar sebagai $roleName',
+                  firstText: 'Daftar sebagai $roleName',
 
                   bodyText:
                       'Daftar sebagai $roleName merupakan pengguna Anggota PKK yang berasal dari Desa. Silahkan isikan form yang sudah disediakan untuk mendaftarkan akun anda',
@@ -108,14 +96,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 InputForm(
                   controller: _nameController,
                   hintText: 'Ahmad ...',
-                  svgIconPath:
-                      'assets/icons/ic_profile.svg',
+                  svgIconPath: 'assets/icons/ic_profile.svg',
 
                   inputFormatters: [],
 
                   validator: (value) {
-                    if (value == null ||
-                        value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Masukkan nama anda';
                     }
 
@@ -136,15 +122,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 InputForm(
                   controller: _nomorController,
                   hintText: '0821xxxx',
-                  svgIconPath:
-                      'assets/icons/ic_call.svg',
+                  svgIconPath: 'assets/icons/ic_call.svg',
 
-                  keyboardType:
-                      TextInputType.phone,
+                  keyboardType: TextInputType.phone,
 
                   validator: (value) {
-                    if (value == null ||
-                        value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Masukkan nomor whatsapp anda';
                     }
 
@@ -165,12 +148,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 InputPassword(
                   controller: _passController,
                   hintText: '••••••••••',
-                  svgIconPath:
-                      'assets/icons/ic_lock.svg',
+                  svgIconPath: 'assets/icons/ic_lock.svg',
 
                   validator: (value) {
-                    if (value == null ||
-                        value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Masukkan password anda';
                     }
 
@@ -189,17 +170,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 14.h),
 
                 InputPassword(
-                  controller:
-                      _konfirmPassController,
+                  controller: _konfirmPassController,
 
                   hintText: '••••••••••',
 
-                  svgIconPath:
-                      'assets/icons/ic_lock.svg',
+                  svgIconPath: 'assets/icons/ic_lock.svg',
 
                   validator: (value) {
-                    if (value == null ||
-                        value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Masukkan konfirmasi password anda';
                     }
 
@@ -216,69 +194,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       text: "Lanjut",
                       textColor: Colors.white,
 
-                      isLoading:
-                          authController
-                              .isAuthLogin
-                              .value,
+                      isLoading: authController.isAuthLogin.value,
 
-                      onPressed:
-                          authController
-                                  .isAuthLogin
-                                  .value
-                              ? null
-                              : () {
-                                  if (_formKey
-                                      .currentState!
-                                      .validate()) {
-                                    if (_passController
-                                            .text !=
-                                        _konfirmPassController
-                                            .text) {
-                                      Get.snackbar(
-                                        'Error',
+                      onPressed: authController.isAuthLogin.value
+                          ? null
+                          : () {
+                              if (_formKey.currentState!.validate()) {
+                                if (_passController.text !=
+                                    _konfirmPassController.text) {
+                                  Get.snackbar(
+                                    'Error',
 
-                                        'Password dan konfirmasi password tidak cocok',
+                                    'Password dan konfirmasi password tidak cocok',
 
-                                        snackPosition:
-                                            SnackPosition
-                                                .TOP,
+                                    snackPosition: SnackPosition.TOP,
 
-                                        backgroundColor:
-                                            Colors.red,
+                                    backgroundColor: Colors.red,
 
-                                        colorText:
-                                            Colors
-                                                .white,
-                                      );
+                                    colorText: Colors.white,
+                                  );
 
-                                      return;
-                                    }
+                                  return;
+                                }
 
-                                    Get.toNamed(
-                                      Routes.PICK_ROLE,
+                                Get.toNamed(
+                                  Routes.PICK_ROLE,
 
-                                      arguments: {
-                                        'role_id':
-                                            roleId,
+                                  arguments: {
+                                    'role_id': roleId,
 
-                                        'role_name':
-                                            roleName,
+                                    'role_name': roleName,
 
-                                        'full_name':
-                                            _nameController
-                                                .text,
+                                    'full_name': _nameController.text,
 
-                                        'phone_number':
-                                            _nomorController
-                                                .text,
+                                    'phone_number': _nomorController.text,
 
-                                        'password':
-                                            _passController
-                                                .text,
-                                      },
-                                    );
-                                  }
-                                },
+                                    'password': _passController.text,
+                                  },
+                                );
+                              }
+                            },
                     ),
                   ),
                 ),
@@ -288,8 +243,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 /// FOOTER
                 Center(
                   child: FooterText(
-                    firstText:
-                        'Sudah punya akun?',
+                    firstText: 'Sudah punya akun?',
 
                     secondText: 'Masuk',
 
@@ -297,10 +251,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Get.toNamed(
                         Routes.AUTH_LOGIN,
 
-                        arguments: {
-                          'roleID': roleId,
-                          'roleName': roleName,
-                        },
+                        arguments: {'roleID': roleId, 'roleName': roleName},
                       );
                     },
                   ),

@@ -99,11 +99,13 @@ class ProfilController extends GetxController {
       } else if (e.response?.statusCode == 404) {
         errorMessage.value = 'Data profil tidak ditemukan di server.';
       } else {
-        errorMessage.value = 'Gagal menghubungi server. Menampilkan data lokal.';
+        errorMessage.value =
+            'Gagal menghubungi server. Menampilkan data lokal.';
       }
     } catch (e) {
       print('ERROR LOAD PROFILE: $e');
-      errorMessage.value = 'Gagal memuat profil terbaru. Menampilkan data lokal.';
+      errorMessage.value =
+          'Gagal memuat profil terbaru. Menampilkan data lokal.';
     } finally {
       isLoading.value = false;
     }
@@ -212,14 +214,12 @@ class ProfilController extends GetxController {
           filename: fileName ?? 'profile.jpg',
         );
       } else {
-        file = await dio.MultipartFile.fromFile(
-          filePath,
-          filename: fileName,
-        );
+        file = await dio.MultipartFile.fromFile(filePath, filename: fileName);
       }
 
       final user = await PreferencesService.getUser();
-      final userId = (profilData.value.id.isNotEmpty && profilData.value.id != '0')
+      final userId =
+          (profilData.value.id.isNotEmpty && profilData.value.id != '0')
           ? profilData.value.id
           : (user?.id ?? '0');
 
@@ -229,10 +229,7 @@ class ProfilController extends GetxController {
 
       final response = await apiHelper.postMultipart(
         '/profile/photo',
-        data: {
-          'id_user': userId,
-          'foto': file,
-        },
+        data: {'id_user': userId, 'foto': file},
       );
 
       if (response.statusCode == 200) {
@@ -274,7 +271,11 @@ class ProfilController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = 'Gagal memperbarui foto profil: $e';
-      Get.snackbar('Gagal', 'Gagal memperbarui foto profil', snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Gagal',
+        'Gagal memperbarui foto profil',
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       isUploadingPhoto.value = false;
@@ -289,7 +290,8 @@ class ProfilController extends GetxController {
 
     try {
       final user = await PreferencesService.getUser();
-      final userId = (profilData.value.id.isNotEmpty && profilData.value.id != '0')
+      final userId =
+          (profilData.value.id.isNotEmpty && profilData.value.id != '0')
           ? profilData.value.id
           : (user?.id ?? '0');
 
@@ -340,7 +342,11 @@ class ProfilController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = 'Gagal menghapus foto profil: $e';
-      Get.snackbar('Gagal', 'Gagal menghapus foto profil', snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Gagal',
+        'Gagal menghapus foto profil',
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       isUploadingPhoto.value = false;
@@ -396,7 +402,8 @@ class ProfilController extends GetxController {
 
         return true;
       } else {
-        final msg = body['message'] ??
+        final msg =
+            body['message'] ??
             body['error']?['message'] ??
             'Gagal menghapus akun';
         errorMessage.value = msg;
@@ -412,4 +419,4 @@ class ProfilController extends GetxController {
   }
 
   void resetErrorMessage() => errorMessage.value = '';
-}
+}

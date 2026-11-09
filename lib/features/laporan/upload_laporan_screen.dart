@@ -34,7 +34,9 @@ class UploadLaporanScreen extends StatelessWidget {
         onBack: () => Get.back(),
         actionWidget: DraftBadgeIcon(
           scope: DraftScope.laporan,
-          arguments: args is Map<String, dynamic> ? args : Map<String, dynamic>.from(args),
+          arguments: args is Map<String, dynamic>
+              ? args
+              : Map<String, dynamic>.from(args),
         ),
       ),
 

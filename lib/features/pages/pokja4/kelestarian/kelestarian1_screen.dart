@@ -12,20 +12,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class KelestarianLingkungan1Screen
-    extends StatefulWidget {
-  const KelestarianLingkungan1Screen({
-    super.key,
-  });
+class KelestarianLingkungan1Screen extends StatefulWidget {
+  const KelestarianLingkungan1Screen({super.key});
 
   @override
-  State<KelestarianLingkungan1Screen>
-  createState() =>
+  State<KelestarianLingkungan1Screen> createState() =>
       _Kelestarian1ScreenState();
 }
 
-class _Kelestarian1ScreenState
-    extends State<KelestarianLingkungan1Screen> {
+class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
   String? idUser;
   String? idRole;
   String? idOrganization;
@@ -33,26 +28,19 @@ class _Kelestarian1ScreenState
   String? nameRole;
   String? nameOrganization;
 
-  final jambanController =
-      TextEditingController();
+  final jambanController = TextEditingController();
 
-  final spalController =
-      TextEditingController();
+  final spalController = TextEditingController();
 
-  final sampahController =
-      TextEditingController();
+  final sampahController = TextEditingController();
 
-  final mckController =
-      TextEditingController();
+  final mckController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final KelestarianController
-  uploadController =
-      Get.put(
-        KelestarianController(),
-      );
+  final KelestarianController uploadController = Get.put(
+    KelestarianController(),
+  );
 
   @override
   void initState() {
@@ -68,11 +56,9 @@ class _Kelestarian1ScreenState
 
     nameRole = args['name_role'];
 
-    idOrganization =
-        args['id_organization'];
+    idOrganization = args['id_organization'];
 
-    nameOrganization =
-        args['name_organization'];
+    nameOrganization = args['name_organization'];
 
     debugPrint(
       'Diterima dari argument: '
@@ -106,18 +92,14 @@ class _Kelestarian1ScreenState
   }
 
   Widget buildInput({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
 
-    TextInputAction action =
-        TextInputAction.next,
+    TextInputAction action = TextInputAction.next,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 20.h,
-      ),
+      padding: EdgeInsets.only(bottom: 20.h),
 
       child: InputFormField(
         controller: controller,
@@ -126,27 +108,20 @@ class _Kelestarian1ScreenState
 
         label: label,
 
-        keyboardType:
-            TextInputType.number,
+        keyboardType: TextInputType.number,
 
         textInputAction: action,
 
-        validator: (value) =>
-            ValidatorForm
-                .validateDefault(
-                  value,
-                ),
+        validator: (value) => ValidatorForm.validateDefault(value),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -154,8 +129,7 @@ class _Kelestarian1ScreenState
       backgroundColor: Colors.white,
 
       appBar: AppBarSecondary(
-        title:
-            'Kelestarian Lingkungan Hidup',
+        title: 'Kelestarian Lingkungan Hidup',
 
         currentStep: 1,
 
@@ -164,207 +138,138 @@ class _Kelestarian1ScreenState
 
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 32.h),
+                          SizedBox(height: 32.h),
 
-                          TypographyStyles
-                              .bodyCaptionSemiBold(
-                                'Jumlah Rumah yang Memiliki',
+                          TypographyStyles.bodyCaptionSemiBold(
+                            'Jumlah Rumah yang Memiliki',
 
-                                color:
-                                    TextColors
-                                        .grey900,
-                              ),
+                            color: TextColors.grey900,
+                          ),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           /// JAMBAN
                           buildInput(
-                            controller:
-                                jambanController,
+                            controller: jambanController,
 
-                            label:
-                                'Jamban',
+                            label: 'Jamban',
                           ),
 
                           /// SPAL
-                          buildInput(
-                            controller:
-                                spalController,
-
-                            label:
-                                'SPAL',
-                          ),
+                          buildInput(controller: spalController, label: 'SPAL'),
 
                           /// TPS
                           buildInput(
-                            controller:
-                                sampahController,
+                            controller: sampahController,
 
-                            label:
-                                'Tempat Pembuangan Sampah',
+                            label: 'Tempat Pembuangan Sampah',
                           ),
 
                           /// MCK
                           buildInput(
-                            controller:
-                                mckController,
+                            controller: mckController,
 
-                            label:
-                                'Jumlah MCK',
+                            label: 'Jumlah MCK',
 
-                            action:
-                                TextInputAction
-                                    .done,
+                            action: TextInputAction.done,
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    uploadController
-                                        .isLoading
-                                        .value,
+                                isLoading: uploadController.isLoading.value,
 
-                                onPressed:
-                                    uploadController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                            if (_formKey
-                                                .currentState!
-                                                .validate()) {
+                                onPressed: uploadController.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          Get.toNamed(
+                                            Routes.KELESTARIAN2,
 
-                                              Get.toNamed(
-                                                Routes
-                                                    .KELESTARIAN2,
+                                            arguments: {
+                                              'id_user': idUser,
 
-                                                arguments: {
-                                                  'id_user':
-                                                      idUser,
+                                              'full_name': fullName,
 
-                                                  'full_name':
-                                                      fullName,
+                                              'id_role': idRole,
 
-                                                  'id_role':
-                                                      idRole,
+                                              'name_role': nameRole,
 
-                                                  'name_role':
-                                                      nameRole,
+                                              'id_organization': idOrganization,
 
-                                                  'id_organization':
-                                                      idOrganization,
+                                              'name_organization':
+                                                  nameOrganization,
 
-                                                  'name_organization':
-                                                      nameOrganization,
+                                              'jamban': jambanController.text,
 
-                                                  'jamban':
-                                                      jambanController
-                                                          .text,
+                                              'spal': spalController.text,
 
-                                                  'spal':
-                                                      spalController
-                                                          .text,
+                                              'tps': sampahController.text,
 
-                                                  'tps':
-                                                      sampahController
-                                                          .text,
+                                              'mck': mckController.text,
+                                            },
+                                          );
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
 
-                                                  'mck':
-                                                      mckController
-                                                          .text,
-                                                },
-                                              );
-                                            } else {
-                                              Get.snackbar(
-                                                'Error',
+                                            'Lengkapi Form',
 
-                                                'Lengkapi Form',
+                                            snackPosition: SnackPosition.TOP,
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            backgroundColor: Colors.red,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .red,
-
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-                                            }
-                                          },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

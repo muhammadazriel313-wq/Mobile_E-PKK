@@ -87,24 +87,15 @@ class InputFormField extends StatelessWidget {
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           suffixIcon: suffixIcon,
         ),

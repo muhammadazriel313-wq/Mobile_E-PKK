@@ -12,39 +12,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class PendidikanKetrampilan4Screen
-    extends StatefulWidget {
-  const PendidikanKetrampilan4Screen({
-    super.key,
-  });
+class PendidikanKetrampilan4Screen extends StatefulWidget {
+  const PendidikanKetrampilan4Screen({super.key});
 
   @override
-  State<PendidikanKetrampilan4Screen>
-  createState() =>
+  State<PendidikanKetrampilan4Screen> createState() =>
       _Pendidikan4ScreenState();
 }
 
-class _Pendidikan4ScreenState
-    extends State<
-      PendidikanKetrampilan4Screen
-    > {
-  final PendidikanKeterampilanController
-  controller =
-      Get.find<
-        PendidikanKeterampilanController
-      >();
+class _Pendidikan4ScreenState extends State<PendidikanKetrampilan4Screen> {
+  final PendidikanKeterampilanController controller =
+      Get.find<PendidikanKeterampilanController>();
 
-  final lp3Controller =
-      TextEditingController();
+  final lp3Controller = TextEditingController();
 
-  final tp3Controller =
-      TextEditingController();
+  final tp3Controller = TextEditingController();
 
-  final damasController =
-      TextEditingController();
+  final damasController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -58,16 +44,14 @@ class _Pendidikan4ScreenState
   }
 
   Widget sectionTitle(String title) {
-    return TypographyStyles
-        .bodyCaptionSemiBold(
+    return TypographyStyles.bodyCaptionSemiBold(
       title,
       color: TextColors.grey900,
     );
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
@@ -80,12 +64,9 @@ class _Pendidikan4ScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
-          validator: (v) =>
-              ValidatorForm
-                  .validateDefault(v),
+          validator: (v) => ValidatorForm.validateDefault(v),
         ),
 
         SizedBox(height: 20.h),
@@ -95,11 +76,9 @@ class _Pendidikan4ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -107,8 +86,7 @@ class _Pendidikan4ScreenState
       backgroundColor: Colors.white,
 
       appBar: AppBarSecondary(
-        title:
-            'Pendidikan & Keterampilan',
+        title: 'Pendidikan & Keterampilan',
 
         onBack: () => Get.back(),
 
@@ -119,167 +97,112 @@ class _Pendidikan4ScreenState
 
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           /// TITLE
-                          sectionTitle(
-                            'Jumlah Kader yang Sudah Dilatih',
-                          ),
+                          sectionTitle('Jumlah Kader yang Sudah Dilatih'),
 
-                          SizedBox(
-                              height: 24.h),
+                          SizedBox(height: 24.h),
 
                           /// INPUT
                           inputField(
-                            controller:
-                                lp3Controller,
+                            controller: lp3Controller,
 
-                            label:
-                                'LP3 PKK',
+                            label: 'LP3 PKK',
                           ),
 
                           inputField(
-                            controller:
-                                tp3Controller,
+                            controller: tp3Controller,
 
-                            label:
-                                'TP3 PKK',
+                            label: 'TP3 PKK',
                           ),
 
                           inputField(
-                            controller:
-                                damasController,
+                            controller: damasController,
 
-                            label:
-                                'DAMAS PKK',
+                            label: 'DAMAS PKK',
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    controller
-                                        .isLoading
-                                        .value,
+                                isLoading: controller.isLoading.value,
 
-                                onPressed:
-                                    controller
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                            if (_formKey
-                                                .currentState!
-                                                .validate()) {
-                                              /// SIMPAN DATA
-                                              controller
-                                                  .setStep4(
-                                                    lp3:
-                                                        lp3Controller
-                                                            .text,
+                                onPressed: controller.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          /// SIMPAN DATA
+                                          controller.setStep4(
+                                            lp3: lp3Controller.text,
 
-                                                    tp3:
-                                                        tp3Controller
-                                                            .text,
+                                            tp3: tp3Controller.text,
 
-                                                    damas:
-                                                        damasController
-                                                            .text,
-                                                  );
+                                            damas: damasController.text,
+                                          );
 
-                                              /// NEXT
-                                              Get.toNamed(
-                                                Routes
-                                                    .PENDIDIKAN5,
-                                              );
-                                            } else {
-                                              Get.snackbar(
-                                                'Error',
-                                                'Lengkapi Form',
+                                          /// NEXT
+                                          Get.toNamed(Routes.PENDIDIKAN5);
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
+                                            'Lengkapi Form',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .red,
+                                            backgroundColor: Colors.red,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-                                            }
-                                          },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

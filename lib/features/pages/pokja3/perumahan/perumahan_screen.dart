@@ -11,20 +11,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class PerumahanScreen
-    extends StatefulWidget {
-  const PerumahanScreen({
-    super.key,
-  });
+class PerumahanScreen extends StatefulWidget {
+  const PerumahanScreen({super.key});
 
   @override
-  State<PerumahanScreen>
-  createState() =>
-      _PerumahanScreenState();
+  State<PerumahanScreen> createState() => _PerumahanScreenState();
 }
 
-class _PerumahanScreenState
-    extends State<PerumahanScreen> {
+class _PerumahanScreenState extends State<PerumahanScreen> {
   String? id_user;
   String? id_role;
   String? id_organization;
@@ -32,20 +26,15 @@ class _PerumahanScreenState
   String? name_role;
   String? name_organization;
 
-  final sehatLayakController =
-      TextEditingController();
+  final sehatLayakController = TextEditingController();
 
-  final tidakSehatController =
-      TextEditingController();
+  final tidakSehatController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final PerumahanController
-  uploadReportController =
-      Get.put(
-        PerumahanController(),
-      );
+  final PerumahanController uploadReportController = Get.put(
+    PerumahanController(),
+  );
 
   void clearForm() {
     sehatLayakController.clear();
@@ -67,11 +56,9 @@ class _PerumahanScreenState
 
     name_role = args['name_role'];
 
-    id_organization =
-        args['id_organization'];
+    id_organization = args['id_organization'];
 
-    name_organization =
-        args['name_organization'];
+    name_organization = args['name_organization'];
 
     debugPrint(
       'Diterima dari argument: id_user=$id_user, id_role=$id_role, id_org=$id_organization',
@@ -87,24 +74,19 @@ class _PerumahanScreenState
     super.dispose();
   }
 
-  Widget sectionTitle(
-    String title,
-  ) {
-    return TypographyStyles
-        .bodyCaptionSemiBold(
+  Widget sectionTitle(String title) {
+    return TypographyStyles.bodyCaptionSemiBold(
       title,
       color: TextColors.grey900,
     );
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
 
-    TextInputAction action =
-        TextInputAction.next,
+    TextInputAction action = TextInputAction.next,
   }) {
     return Column(
       children: [
@@ -115,16 +97,11 @@ class _PerumahanScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
           textInputAction: action,
 
-          validator: (value) =>
-              ValidatorForm
-                  .validateDefault(
-                    value,
-                  ),
+          validator: (value) => ValidatorForm.validateDefault(value),
         ),
 
         SizedBox(height: 20.h),
@@ -134,11 +111,9 @@ class _PerumahanScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -146,175 +121,128 @@ class _PerumahanScreenState
       backgroundColor: Colors.white,
 
       /// APPBAR
-      appBar: AppBarSecondary(
-        title:
-            'Perumahan & Tata Laksana Rumah',
-      ),
+      appBar: AppBarSecondary(title: 'Perumahan & Tata Laksana Rumah'),
 
       /// BODY
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .onDrag,
+                    ScrollViewKeyboardDismissBehavior.onDrag,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 8.h),
+                          SizedBox(height: 8.h),
 
                           /// TITLE
-                          sectionTitle(
-                            'Jumlah Rumah',
-                          ),
+                          sectionTitle('Jumlah Rumah'),
 
-                          SizedBox(
-                              height: 24.h),
+                          SizedBox(height: 24.h),
 
                           /// INPUT 1
                           inputField(
-                            controller:
-                                sehatLayakController,
+                            controller: sehatLayakController,
 
-                            label:
-                                'Sehat dan Layak Dihuni',
+                            label: 'Sehat dan Layak Dihuni',
                           ),
 
                           /// INPUT 2
                           inputField(
-                            controller:
-                                tidakSehatController,
+                            controller: tidakSehatController,
 
-                            label:
-                                'Tidak Sehat dan Tidak Layak Dihuni',
+                            label: 'Tidak Sehat dan Tidak Layak Dihuni',
 
-                            action:
-                                TextInputAction
-                                    .done,
+                            action: TextInputAction.done,
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text: uploadReportController
-                                        .isLoading
-                                        .value
+                                text: uploadReportController.isLoading.value
                                     ? 'Loading'
                                     : 'Kirim',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
                                 onPressed:
-                                    uploadReportController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () async {
-                                            final isFormValid =
-                                                _formKey
-                                                    .currentState!
-                                                    .validate();
+                                    uploadReportController.isLoading.value
+                                    ? null
+                                    : () async {
+                                        final isFormValid = _formKey
+                                            .currentState!
+                                            .validate();
 
-                                            if (isFormValid) {
-                                              await uploadReportController
-                                                  .submitDataPerumahan(
-                                                    layakHuni:
-                                                        sehatLayakController
-                                                            .text,
+                                        if (isFormValid) {
+                                          await uploadReportController
+                                              .submitDataPerumahan(
+                                                layakHuni:
+                                                    sehatLayakController.text,
 
-                                                    tidakLayak:
-                                                        tidakSehatController
-                                                            .text,
+                                                tidakLayak:
+                                                    tidakSehatController.text,
 
-                                                    idRole:
-                                                        id_role!,
+                                                idRole: id_role!,
 
-                                                    idOrganization:
-                                                        id_organization!,
+                                                idOrganization:
+                                                    id_organization!,
 
-                                                    idUser:
-                                                        id_user!,
-                                                  );
+                                                idUser: id_user!,
+                                              );
 
-                                              if (uploadReportController
-                                                          .reportData
-                                                          .value !=
-                                                      null &&
-                                                  uploadReportController
-                                                          .reportData
-                                                          .value!
-                                                          .statusCode ==
-                                                      200) {
+                                          if (uploadReportController
+                                                      .reportData
+                                                      .value !=
+                                                  null &&
+                                              uploadReportController
+                                                      .reportData
+                                                      .value!
+                                                      .statusCode ==
+                                                  200) {
+                                            _formKey.currentState?.reset();
 
-                                                _formKey
-                                                    .currentState
-                                                    ?.reset();
+                                            clearForm();
 
-                                                clearForm();
-
-                                                Get.offAllNamed(
-                                                  '/main',
-                                                );
-                                              }
-                                            } 
-                                          },
+                                            Get.offAllNamed('/main');
+                                          }
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

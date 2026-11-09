@@ -15,12 +15,10 @@ class Pangan2Screen extends StatefulWidget {
   const Pangan2Screen({super.key});
 
   @override
-  State<Pangan2Screen> createState() =>
-      _Pangan1ScreenState();
+  State<Pangan2Screen> createState() => _Pangan1ScreenState();
 }
 
-class _Pangan1ScreenState
-    extends State<Pangan2Screen> {
+class _Pangan1ScreenState extends State<Pangan2Screen> {
   String? id_user;
   String? id_role;
   String? id_organization;
@@ -30,33 +28,23 @@ class _Pangan1ScreenState
   String? beras;
   String? non_beras;
 
-  final peternakanController =
-      TextEditingController();
+  final peternakanController = TextEditingController();
 
-  final perikananController =
-      TextEditingController();
+  final perikananController = TextEditingController();
 
-  final warungHidupController =
-      TextEditingController();
+  final warungHidupController = TextEditingController();
 
-  final lumbungHidupController =
-      TextEditingController();
+  final lumbungHidupController = TextEditingController();
 
-  final togaController =
-      TextEditingController();
+  final togaController = TextEditingController();
 
-  final tanamanKerasController =
-      TextEditingController();
+  final tanamanKerasController = TextEditingController();
 
-  final tanamanLainnyaController =
-      TextEditingController();
+  final tanamanLainnyaController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final PanganController
-  uploadController =
-      Get.find<PanganController>();
+  final PanganController uploadController = Get.find<PanganController>();
 
   @override
   void initState() {
@@ -72,11 +60,9 @@ class _Pangan1ScreenState
 
     name_role = args['name_role'];
 
-    id_organization =
-        args['id_organization'];
+    id_organization = args['id_organization'];
 
-    name_organization =
-        args['name_organization'];
+    name_organization = args['name_organization'];
 
     beras = args['beras'];
 
@@ -103,21 +89,18 @@ class _Pangan1ScreenState
   }
 
   Widget sectionTitle(String title) {
-    return TypographyStyles
-        .bodyCaptionSemiBold(
+    return TypographyStyles.bodyCaptionSemiBold(
       title,
       color: TextColors.grey900,
     );
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
 
-    TextInputAction action =
-        TextInputAction.next,
+    TextInputAction action = TextInputAction.next,
   }) {
     return Column(
       children: [
@@ -128,8 +111,7 @@ class _Pangan1ScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
           textInputAction: action,
         ),
@@ -141,11 +123,9 @@ class _Pangan1ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -164,247 +144,173 @@ class _Pangan1ScreenState
 
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 6.h),
+                          SizedBox(height: 6.h),
 
                           /// TITLE
-                          sectionTitle(
-                            'Pemanfaatan Pekarangan / Hatinya PKK',
-                          ),
+                          sectionTitle('Pemanfaatan Pekarangan / Hatinya PKK'),
 
-                          SizedBox(
-                              height: 24.h),
+                          SizedBox(height: 24.h),
 
                           /// PETERNAKAN
                           inputField(
-                            controller:
-                                peternakanController,
+                            controller: peternakanController,
 
-                            label:
-                                'Peternakan',
+                            label: 'Peternakan',
                           ),
 
                           /// PERIKANAN
                           inputField(
-                            controller:
-                                perikananController,
+                            controller: perikananController,
 
-                            label:
-                                'Perikanan',
+                            label: 'Perikanan',
                           ),
 
                           /// WARUNG HIDUP
                           inputField(
-                            controller:
-                                warungHidupController,
+                            controller: warungHidupController,
 
-                            label:
-                                'Warung Hidup',
+                            label: 'Warung Hidup',
                           ),
 
                           /// LUMBUNG HIDUP
                           inputField(
-                            controller:
-                                lumbungHidupController,
+                            controller: lumbungHidupController,
 
-                            label:
-                                'Lumbung Hidup',
+                            label: 'Lumbung Hidup',
                           ),
 
                           /// TOGA
-                          inputField(
-                            controller:
-                                togaController,
-
-                            label:
-                                'TOGA',
-                          ),
+                          inputField(controller: togaController, label: 'TOGA'),
 
                           /// TANAMAN KERAS
                           inputField(
-                            controller:
-                                tanamanKerasController,
+                            controller: tanamanKerasController,
 
-                            label:
-                                'Tanaman Keras',
+                            label: 'Tanaman Keras',
                           ),
 
                           /// TANAMAN LAINNYA
                           inputField(
-                            controller:
-                                tanamanLainnyaController,
+                            controller: tanamanLainnyaController,
 
-                            label:
-                                'Tanaman Lainnya',
+                            label: 'Tanaman Lainnya',
 
-                            action:
-                                TextInputAction
-                                    .done,
+                            action: TextInputAction.done,
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    uploadController
-                                        .isLoading
-                                        .value,
+                                isLoading: uploadController.isLoading.value,
 
-                                onPressed:
-                                    uploadController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                            if (_formKey
-                                                .currentState!
-                                                .validate()) {
-                                              Get.toNamed(
-                                                Routes
-                                                    .PANGAN3,
+                                onPressed: uploadController.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          Get.toNamed(
+                                            Routes.PANGAN3,
 
-                                                arguments: {
-                                                  'id_user':
-                                                      id_user,
+                                            arguments: {
+                                              'id_user': id_user,
 
-                                                  'full_name':
-                                                      full_name,
+                                              'full_name': full_name,
 
-                                                  'id_role':
-                                                      id_role,
+                                              'id_role': id_role,
 
-                                                  'name_role':
-                                                      name_role,
+                                              'name_role': name_role,
 
-                                                  'id_organization':
-                                                      id_organization,
+                                              'id_organization':
+                                                  id_organization,
 
-                                                  'name_organization':
-                                                      name_organization,
+                                              'name_organization':
+                                                  name_organization,
 
-                                                  'beras':
-                                                      beras,
+                                              'beras': beras,
 
-                                                  'non_beras':
-                                                      non_beras,
+                                              'non_beras': non_beras,
 
-                                                  'peternakan':
-                                                      peternakanController
-                                                          .text,
+                                              'peternakan':
+                                                  peternakanController.text,
 
-                                                  'perikanan':
-                                                      perikananController
-                                                          .text,
+                                              'perikanan':
+                                                  perikananController.text,
 
-                                                  'warung_hidup':
-                                                      warungHidupController
-                                                          .text,
+                                              'warung_hidup':
+                                                  warungHidupController.text,
 
-                                                  'lumbung_hidup':
-                                                      lumbungHidupController
-                                                          .text,
+                                              'lumbung_hidup':
+                                                  lumbungHidupController.text,
 
-                                                  'toga':
-                                                      togaController
-                                                          .text,
+                                              'toga': togaController.text,
 
-                                                  'tanaman_keras':
-                                                      tanamanKerasController
-                                                          .text,
+                                              'tanaman_keras':
+                                                  tanamanKerasController.text,
 
-                                                  'tanaman_lainnya':
-                                                      tanamanLainnyaController
-                                                          .text,
-                                                },
-                                              );
-                                            } else {
-                                              Get.snackbar(
-                                                'Error',
+                                              'tanaman_lainnya':
+                                                  tanamanLainnyaController.text,
+                                            },
+                                          );
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
 
-                                                'Lengkapi Form',
+                                            'Lengkapi Form',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .red,
+                                            backgroundColor: Colors.red,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-                                            }
-                                          },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

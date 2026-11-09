@@ -15,12 +15,10 @@ class LaporanUmum1Screen extends StatefulWidget {
   const LaporanUmum1Screen({super.key});
 
   @override
-  State<LaporanUmum1Screen> createState() =>
-      _LaporanUmum1ScreenState();
+  State<LaporanUmum1Screen> createState() => _LaporanUmum1ScreenState();
 }
 
-class _LaporanUmum1ScreenState
-    extends State<LaporanUmum1Screen> {
+class _LaporanUmum1ScreenState extends State<LaporanUmum1Screen> {
   // ================= USER DATA =================
 
   String? idUser;
@@ -33,34 +31,25 @@ class _LaporanUmum1ScreenState
 
   // ================= FORM CONTROLLER =================
 
-  final dusunController =
-      TextEditingController();
+  final dusunController = TextEditingController();
 
-  final pkkRwController =
-      TextEditingController();
+  final pkkRwController = TextEditingController();
 
-  final pkkRtController =
-      TextEditingController();
+  final pkkRtController = TextEditingController();
 
-  final desaWismaController =
-      TextEditingController();
+  final desaWismaController = TextEditingController();
 
-  final krtController =
-      TextEditingController();
+  final krtController = TextEditingController();
 
-  final kkController =
-      TextEditingController();
+  final kkController = TextEditingController();
 
   // ================= FORM KEY =================
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   // ================= GETX CONTROLLER =================
 
-  final controller = Get.put(
-    LaporanUmumController(),
-  );
+  final controller = Get.put(LaporanUmumController());
 
   @override
   void initState() {
@@ -74,15 +63,11 @@ class _LaporanUmum1ScreenState
     idRole = args['id_role'];
     nameRole = args['name_role'];
 
-    idOrganization =
-        args['id_organization'];
+    idOrganization = args['id_organization'];
 
-    nameOrganization =
-        args['name_organization'];
+    nameOrganization = args['name_organization'];
 
-    print(
-      'id_user=$idUser, id_role=$idRole',
-    );
+    print('id_user=$idUser, id_role=$idRole');
   }
 
   @override
@@ -104,11 +89,9 @@ class _LaporanUmum1ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -116,7 +99,6 @@ class _LaporanUmum1ScreenState
       backgroundColor: Colors.white,
 
       // ================= APPBAR =================
-
       appBar: AppBarSecondary(
         title: 'Laporan Umum',
 
@@ -126,271 +108,172 @@ class _LaporanUmum1ScreenState
       ),
 
       // ================= BODY =================
-
       body: SafeArea(
         child: GestureDetector(
-          onTap:
-              () => FocusScope.of(
-                context,
-              ).unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder: (
-              context,
-              constraints,
-            ) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet
-                          ? 40.w
-                          : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet
-                          ? 40.w
-                          : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                      20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxWidth:
-                          isTablet
-                              ? 650
-                              : double.infinity,
+                      maxWidth: isTablet ? 650 : double.infinity,
 
-                      minHeight:
-                          constraints.maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
                           // ================= TITLE =================
-
-                          TypographyStyles
-                              .bodyCaptionBold(
+                          TypographyStyles.bodyCaptionBold(
                             'Jumlah Kelompok',
 
-                            color:
-                                TextColors
-                                    .grey700,
+                            color: TextColors.grey700,
                           ),
 
-                          SizedBox(
-                            height: 24.h,
-                          ),
+                          SizedBox(height: 24.h),
 
                           // ================= DUSUN =================
-
                           _inputField(
-                            controller:
-                                dusunController,
+                            controller: dusunController,
 
-                            label:
-                                'Dusun/Lingkungan',
+                            label: 'Dusun/Lingkungan',
                           ),
 
                           _space(),
 
                           // ================= PKK RW =================
-
                           _inputField(
-                            controller:
-                                pkkRwController,
+                            controller: pkkRwController,
 
-                            label:
-                                'PKK RW',
+                            label: 'PKK RW',
                           ),
 
                           _space(),
 
                           // ================= PKK RT =================
-
                           _inputField(
-                            controller:
-                                pkkRtController,
+                            controller: pkkRtController,
 
-                            label:
-                                'PKK RT',
+                            label: 'PKK RT',
                           ),
 
                           _space(),
 
                           // ================= DESA WISMA =================
-
                           _inputField(
-                            controller:
-                                desaWismaController,
+                            controller: desaWismaController,
 
-                            label:
-                                'Desa Wisma',
+                            label: 'Desa Wisma',
                           ),
 
-                          SizedBox(
-                            height: 40.h,
-                          ),
+                          SizedBox(height: 40.h),
 
                           // ================= TITLE =================
-
-                          TypographyStyles
-                              .bodyCaptionBold(
+                          TypographyStyles.bodyCaptionBold(
                             'Jumlah',
 
-                            color:
-                                TextColors
-                                    .grey700,
+                            color: TextColors.grey700,
                           ),
 
-                          SizedBox(
-                            height: 24.h,
-                          ),
+                          SizedBox(height: 24.h),
 
                           // ================= KRT =================
-
-                          _inputField(
-                            controller:
-                                krtController,
-
-                            label: 'KRT',
-                          ),
+                          _inputField(controller: krtController, label: 'KRT'),
 
                           _space(),
 
                           // ================= KK =================
+                          _inputField(controller: kkController, label: 'KK'),
 
-                          _inputField(
-                            controller:
-                                kkController,
-
-                            label: 'KK',
-                          ),
-
-                          SizedBox(
-                            height: 30.h,
-                          ),
+                          SizedBox(height: 30.h),
 
                           // ================= BUTTON =================
-
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    controller
-                                        .isLoading
-                                        .value,
+                                isLoading: controller.isLoading.value,
 
-                                onPressed:
-                                    controller
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                          if (_formKey
-                                              .currentState!
-                                              .validate()) {
-                                            Get.toNamed(
-                                              Routes
-                                                  .LAPORAN_UMUM2,
+                                onPressed: controller.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          Get.toNamed(
+                                            Routes.LAPORAN_UMUM2,
 
-                                              arguments: {
-                                                'id_user':
-                                                    idUser,
+                                            arguments: {
+                                              'id_user': idUser,
 
-                                                'full_name':
-                                                    fullName,
+                                              'full_name': fullName,
 
-                                                'id_role':
-                                                    idRole,
+                                              'id_role': idRole,
 
-                                                'name_role':
-                                                    nameRole,
+                                              'name_role': nameRole,
 
-                                                'id_organization':
-                                                    idOrganization,
+                                              'id_organization': idOrganization,
 
-                                                'name_organization':
-                                                    nameOrganization,
+                                              'name_organization':
+                                                  nameOrganization,
 
-                                                'dusun_lingkungan':
-                                                    dusunController
-                                                        .text,
+                                              'dusun_lingkungan':
+                                                  dusunController.text,
 
-                                                'PKK_RW':
-                                                    pkkRwController
-                                                        .text,
+                                              'PKK_RW': pkkRwController.text,
 
-                                                'PKK_RT':
-                                                    pkkRtController
-                                                        .text,
+                                              'PKK_RT': pkkRtController.text,
 
-                                                'desa_wisma':
-                                                    desaWismaController
-                                                        .text,
+                                              'desa_wisma':
+                                                  desaWismaController.text,
 
-                                                'KRT':
-                                                    krtController
-                                                        .text,
+                                              'KRT': krtController.text,
 
-                                                'KK':
-                                                    kkController
-                                                        .text,
-                                              },
-                                            );
-                                          } else {
-                                            Get.snackbar(
-                                              'Error',
+                                              'KK': kkController.text,
+                                            },
+                                          );
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
 
-                                              'Lengkapi Form',
+                                            'Lengkapi Form',
 
-                                              snackPosition:
-                                                  SnackPosition
-                                                      .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                              backgroundColor:
-                                                  Colors
-                                                      .red,
+                                            backgroundColor: Colors.red,
 
-                                              colorText:
-                                                  Colors
-                                                      .white,
-                                            );
-                                          }
-                                        },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                            height: 20.h,
-                          ),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),
@@ -407,8 +290,7 @@ class _LaporanUmum1ScreenState
   // ================= INPUT FIELD =================
 
   Widget _inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
@@ -419,21 +301,17 @@ class _LaporanUmum1ScreenState
 
       label: label,
 
-      keyboardType:
-          TextInputType.number,
+      keyboardType: TextInputType.number,
 
-      textInputAction:
-          TextInputAction.next,
+      textInputAction: TextInputAction.next,
 
       validator: (value) {
-        return ValidatorForm
-            .validateDefault(value);
+        return ValidatorForm.validateDefault(value);
       },
     );
   }
 
   // ================= SPACE =================
 
-  Widget _space() =>
-      SizedBox(height: 24.h);
+  Widget _space() => SizedBox(height: 24.h);
 }

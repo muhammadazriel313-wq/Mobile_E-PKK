@@ -88,7 +88,8 @@ class AkunPage extends StatelessWidget {
                         radius: 38.r,
                         backgroundColor: Colors.white,
                         child: ClipOval(
-                          child: (profil.foto != null && profil.foto!.isNotEmpty)
+                          child:
+                              (profil.foto != null && profil.foto!.isNotEmpty)
                               ? Image.network(
                                   profil.foto!,
                                   width: 76.r,
@@ -424,4 +425,3 @@ class AkunPage extends StatelessWidget {
     );
   }
 }
-

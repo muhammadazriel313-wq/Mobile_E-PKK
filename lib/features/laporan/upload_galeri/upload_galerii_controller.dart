@@ -51,7 +51,10 @@ class GaleriController extends GetxController {
       // [PERUBAHAN 03-10-2026] Mendukung upload di Flutter Web menggunakan fromBytes; kode lama di bawah dinonaktifkan
       // final file = await dio.MultipartFile.fromFile(gambar);
       final dio.MultipartFile file = (kIsWeb && gambarBytes != null)
-          ? dio.MultipartFile.fromBytes(gambarBytes, filename: namaFile ?? 'upload.jpg')
+          ? dio.MultipartFile.fromBytes(
+              gambarBytes,
+              filename: namaFile ?? 'upload.jpg',
+            )
           : await dio.MultipartFile.fromFile(gambar);
 
       final response = await apiHelper.postMultipart(

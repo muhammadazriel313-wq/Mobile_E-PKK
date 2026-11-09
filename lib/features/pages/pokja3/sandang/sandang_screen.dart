@@ -9,20 +9,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class SandangScreen
-    extends StatefulWidget {
-  const SandangScreen({
-    super.key,
-  });
+class SandangScreen extends StatefulWidget {
+  const SandangScreen({super.key});
 
   @override
-  State<SandangScreen>
-  createState() =>
-      _SandangScreenState();
+  State<SandangScreen> createState() => _SandangScreenState();
 }
 
-class _SandangScreenState
-    extends State<SandangScreen> {
+class _SandangScreenState extends State<SandangScreen> {
   String? id_user;
   String? id_role;
   String? id_organization;
@@ -30,23 +24,15 @@ class _SandangScreenState
   String? name_role;
   String? name_organization;
 
-  final panganController =
-      TextEditingController();
+  final panganController = TextEditingController();
 
-  final sandangController =
-      TextEditingController();
+  final sandangController = TextEditingController();
 
-  final jasaController =
-      TextEditingController();
+  final jasaController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final SandangController
-  uploadReportController =
-      Get.put(
-        SandangController(),
-      );
+  final SandangController uploadReportController = Get.put(SandangController());
 
   void clearForm() {
     panganController.clear();
@@ -60,24 +46,19 @@ class _SandangScreenState
   void initState() {
     super.initState();
 
-    final args =
-        Get.arguments ?? {};
+    final args = Get.arguments ?? {};
 
     id_user = args['id_user'];
 
-    full_name =
-        args['full_name'];
+    full_name = args['full_name'];
 
     id_role = args['id_role'];
 
-    name_role =
-        args['name_role'];
+    name_role = args['name_role'];
 
-    id_organization =
-        args['id_organization'];
+    id_organization = args['id_organization'];
 
-    name_organization =
-        args['name_organization'];
+    name_organization = args['name_organization'];
   }
 
   @override
@@ -92,13 +73,11 @@ class _SandangScreenState
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
 
-    TextInputAction action =
-        TextInputAction.next,
+    TextInputAction action = TextInputAction.next,
   }) {
     return Column(
       children: [
@@ -109,14 +88,11 @@ class _SandangScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
           textInputAction: action,
 
-          validator:
-              ValidatorForm
-                  .validateDefault,
+          validator: ValidatorForm.validateDefault,
         ),
 
         SizedBox(height: 16.h),
@@ -126,11 +102,9 @@ class _SandangScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -139,8 +113,7 @@ class _SandangScreenState
 
       /// APPBAR
       appBar: AppBarSecondary(
-        title:
-            'Jumlah Industri Rumah Tangga',
+        title: 'Jumlah Industri Rumah Tangga',
 
         onBack: () => Get.back(),
       ),
@@ -148,172 +121,125 @@ class _SandangScreenState
       /// BODY
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .onDrag,
+                    ScrollViewKeyboardDismissBehavior.onDrag,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
 
                           /// PANGAN
                           inputField(
-                            controller:
-                                panganController,
+                            controller: panganController,
 
-                            label:
-                                'Pangan',
+                            label: 'Pangan',
                           ),
 
                           /// SANDANG
                           inputField(
-                            controller:
-                                sandangController,
+                            controller: sandangController,
 
-                            label:
-                                'Sandang',
+                            label: 'Sandang',
                           ),
 
                           /// JASA
                           inputField(
-                            controller:
-                                jasaController,
+                            controller: jasaController,
 
-                            label:
-                                'Jasa',
+                            label: 'Jasa',
 
-                            action:
-                                TextInputAction
-                                    .done,
+                            action: TextInputAction.done,
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text: uploadReportController
-                                        .isLoading
-                                        .value
+                                text: uploadReportController.isLoading.value
                                     ? 'Loading'
                                     : 'Kirim',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
                                 onPressed:
-                                    uploadReportController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () async {
-                                            final isFormValid =
-                                                _formKey
-                                                    .currentState!
-                                                    .validate();
+                                    uploadReportController.isLoading.value
+                                    ? null
+                                    : () async {
+                                        final isFormValid = _formKey
+                                            .currentState!
+                                            .validate();
 
-                                            if (isFormValid) {
-                                              await uploadReportController
-                                                  .submitDataSandang(
-                                                    pangan:
-                                                        panganController
-                                                            .text,
+                                        if (isFormValid) {
+                                          await uploadReportController
+                                              .submitDataSandang(
+                                                pangan: panganController.text,
 
-                                                    sandang:
-                                                        sandangController
-                                                            .text,
+                                                sandang: sandangController.text,
 
-                                                    jasa:
-                                                        jasaController
-                                                            .text,
+                                                jasa: jasaController.text,
 
-                                                    idRole:
-                                                        id_role!,
+                                                idRole: id_role!,
 
-                                                    idOrganization:
-                                                        id_organization!,
+                                                idOrganization:
+                                                    id_organization!,
 
-                                                    idUser:
-                                                        id_user!,
-                                                  );
+                                                idUser: id_user!,
+                                              );
 
-                                              if (uploadReportController
-                                                          .reportData
-                                                          .value !=
-                                                      null &&
-                                                  uploadReportController
-                                                          .reportData
-                                                          .value!
-                                                          .statusCode ==
-                                                      200) {
+                                          if (uploadReportController
+                                                      .reportData
+                                                      .value !=
+                                                  null &&
+                                              uploadReportController
+                                                      .reportData
+                                                      .value!
+                                                      .statusCode ==
+                                                  200) {
+                                            _formKey.currentState?.reset();
 
-                                                _formKey
-                                                    .currentState
-                                                    ?.reset();
+                                            clearForm();
 
-                                                clearForm();
-
-                                                Get.offAllNamed(
-                                                  '/main',
-                                                );
-                                              }
-                                            } 
-                                          },
+                                            Get.offAllNamed('/main');
+                                          }
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

@@ -12,57 +12,37 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class PendidikanKetrampilan3Screen
-    extends StatefulWidget {
-  const PendidikanKetrampilan3Screen({
-    super.key,
-  });
+class PendidikanKetrampilan3Screen extends StatefulWidget {
+  const PendidikanKetrampilan3Screen({super.key});
 
   @override
-  State<PendidikanKetrampilan3Screen>
-  createState() =>
+  State<PendidikanKetrampilan3Screen> createState() =>
       _Pendidikan3ScreenState();
 }
 
-class _Pendidikan3ScreenState
-    extends State<
-      PendidikanKetrampilan3Screen
-    > {
-  final PendidikanKeterampilanController
-  controller =
-      Get.find<
-        PendidikanKeterampilanController
-      >();
+class _Pendidikan3ScreenState extends State<PendidikanKetrampilan3Screen> {
+  final PendidikanKeterampilanController controller =
+      Get.find<PendidikanKeterampilanController>();
 
-  final klpController =
-      TextEditingController();
+  final klpController = TextEditingController();
 
-  final ibuPesertaController =
-      TextEditingController();
+  final ibuPesertaController = TextEditingController();
 
-  final apeController =
-      TextEditingController();
+  final apeController = TextEditingController();
 
-  final kelSimulasiController =
-      TextEditingController();
+  final kelSimulasiController = TextEditingController();
 
-  final tutorKFController =
-      TextEditingController();
+  final tutorKFController = TextEditingController();
 
-  final tutorPaudController =
-      TextEditingController();
+  final tutorPaudController = TextEditingController();
 
-  final kaderBKPController =
-      TextEditingController();
+  final kaderBKPController = TextEditingController();
 
-  final koperasiController =
-      TextEditingController();
+  final koperasiController = TextEditingController();
 
-  final ketrampilanController =
-      TextEditingController();
+  final ketrampilanController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -88,16 +68,14 @@ class _Pendidikan3ScreenState
   }
 
   Widget sectionTitle(String title) {
-    return TypographyStyles
-        .bodyCaptionSemiBold(
+    return TypographyStyles.bodyCaptionSemiBold(
       title,
       color: TextColors.grey900,
     );
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
@@ -110,12 +88,9 @@ class _Pendidikan3ScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
-          validator: (v) =>
-              ValidatorForm
-                  .validateDefault(v),
+          validator: (v) => ValidatorForm.validateDefault(v),
         ),
 
         SizedBox(height: 20.h),
@@ -125,11 +100,9 @@ class _Pendidikan3ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -137,8 +110,7 @@ class _Pendidikan3ScreenState
       backgroundColor: Colors.white,
 
       appBar: AppBarSecondary(
-        title:
-            'Pendidikan & Keterampilan',
+        title: 'Pendidikan & Keterampilan',
 
         onBack: () => Get.back(),
 
@@ -149,253 +121,175 @@ class _Pendidikan3ScreenState
 
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           /// BKP
                           sectionTitle('BKP'),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           inputField(
-                            controller:
-                                klpController,
+                            controller: klpController,
 
-                            label:
-                                'Jumlah KLP',
+                            label: 'Jumlah KLP',
                           ),
 
                           inputField(
-                            controller:
-                                ibuPesertaController,
+                            controller: ibuPesertaController,
 
-                            label:
-                                'Jumlah ibu peserta',
+                            label: 'Jumlah ibu peserta',
                           ),
 
                           inputField(
-                            controller:
-                                apeController,
+                            controller: apeController,
 
-                            label:
-                                'Jumlah APE (SET)',
+                            label: 'Jumlah APE (SET)',
                           ),
 
                           inputField(
-                            controller:
-                                kelSimulasiController,
+                            controller: kelSimulasiController,
 
-                            label:
-                                'Jumlah Kel. Simulasi',
+                            label: 'Jumlah Kel. Simulasi',
                           ),
 
-                          SizedBox(
-                              height: 8.h),
+                          SizedBox(height: 8.h),
 
                           /// KADER KHUSUS
-                          sectionTitle(
-                            'Kader Khusus',
-                          ),
+                          sectionTitle('Kader Khusus'),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           /// TUTOR
-                          sectionTitle(
-                            'Tutor',
-                          ),
+                          sectionTitle('Tutor'),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           inputField(
-                            controller:
-                                tutorKFController,
+                            controller: tutorKFController,
 
                             label: 'KF',
                           ),
 
                           inputField(
-                            controller:
-                                tutorPaudController,
+                            controller: tutorPaudController,
 
-                            label:
-                                'Paud / sejenis',
+                            label: 'Paud / sejenis',
                           ),
 
                           inputField(
-                            controller:
-                                kaderBKPController,
+                            controller: kaderBKPController,
 
                             label: 'BKP',
                           ),
 
                           inputField(
-                            controller:
-                                koperasiController,
+                            controller: koperasiController,
 
-                            label:
-                                'Koperasi',
+                            label: 'Koperasi',
                           ),
 
                           inputField(
-                            controller:
-                                ketrampilanController,
+                            controller: ketrampilanController,
 
-                            label:
-                                'Keterampilan',
+                            label: 'Keterampilan',
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    controller
-                                        .isLoading
-                                        .value,
+                                isLoading: controller.isLoading.value,
 
-                                onPressed:
-                                    controller
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                            if (_formKey
-                                                .currentState!
-                                                .validate()) {
-                                              /// SIMPAN DATA
-                                              controller
-                                                  .setStep3(
-                                                    klp:
-                                                        klpController
-                                                            .text,
+                                onPressed: controller.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          /// SIMPAN DATA
+                                          controller.setStep3(
+                                            klp: klpController.text,
 
-                                                    ibu:
-                                                        ibuPesertaController
-                                                            .text,
+                                            ibu: ibuPesertaController.text,
 
-                                                    ape:
-                                                        apeController
-                                                            .text,
+                                            ape: apeController.text,
 
-                                                    simulasi:
-                                                        kelSimulasiController
-                                                            .text,
+                                            simulasi:
+                                                kelSimulasiController.text,
 
-                                                    kfVal:
-                                                        tutorKFController
-                                                            .text,
+                                            kfVal: tutorKFController.text,
 
-                                                    paudTutorVal:
-                                                        tutorPaudController
-                                                            .text,
+                                            paudTutorVal:
+                                                tutorPaudController.text,
 
-                                                    bkbVal:
-                                                        kaderBKPController
-                                                            .text,
+                                            bkbVal: kaderBKPController.text,
 
-                                                    koperasiVal:
-                                                        koperasiController
-                                                            .text,
+                                            koperasiVal:
+                                                koperasiController.text,
 
-                                                    ketrampilanVal:
-                                                        ketrampilanController
-                                                            .text,
-                                                  );
+                                            ketrampilanVal:
+                                                ketrampilanController.text,
+                                          );
 
-                                              /// NEXT
-                                              Get.toNamed(
-                                                Routes
-                                                    .PENDIDIKAN4,
-                                              );
-                                            } else {
-                                              Get.snackbar(
-                                                'Error',
-                                                'Lengkapi Form',
+                                          /// NEXT
+                                          Get.toNamed(Routes.PENDIDIKAN4);
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
+                                            'Lengkapi Form',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .red,
+                                            backgroundColor: Colors.red,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-                                            }
-                                          },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

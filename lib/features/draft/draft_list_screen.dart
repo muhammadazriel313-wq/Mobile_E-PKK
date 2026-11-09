@@ -5,6 +5,7 @@ import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
 import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/features/draft/draft_registry.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/penghayatan/penghayatan_controller.dart';
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
@@ -113,7 +114,13 @@ class _DraftListScreenState extends State<DraftListScreen> {
     }
     final user = await PreferencesService.getUser();
     if (user == null || user.id != draft.idAkun) return;
-    if (draft.jenis == 'pancasila') {
+    final registration = DraftRegistry.lookup(draft.jenis);
+    if (registration != null && registration.key != 'pancasila') {
+      final formArgs = Map<String, dynamic>.from(_parentArgs);
+      formArgs['draft'] = draft;
+      await Get.toNamed(registration.route, arguments: formArgs);
+      await _draftController.loadDrafts(filterJenis: _filterJenis);
+    } else if (draft.jenis == 'pancasila') {
       final formArgs = Map<String, dynamic>.from(_parentArgs);
       formArgs['draft'] = draft;
       await Get.toNamed(Routes.PENGHAYATAN, arguments: formArgs);
@@ -135,7 +142,8 @@ class _DraftListScreenState extends State<DraftListScreen> {
         _draftController.sendingDraftIds.contains(draft.id)) {
       return;
     }
-    if (draft.jenis != 'pancasila') {
+    final registration = DraftRegistry.lookup(draft.jenis);
+    if (draft.jenis != 'pancasila' && registration?.sender == null) {
       Get.snackbar(
         'Segera Tersedia',
         'Pengiriman jenis ini akan tersedia pada tahap berikutnya.',
@@ -161,16 +169,33 @@ class _DraftListScreenState extends State<DraftListScreen> {
       if (freshDraft == null || freshDraft.idAkun != user.id) {
         throw StateError('Draf tidak ditemukan atau bukan milik akun aktif');
       }
-      final apiController = Get.isRegistered<PenghayatanPengamalanController>()
-          ? Get.find<PenghayatanPengamalanController>()
-          : Get.put(PenghayatanPengamalanController());
-      // TODO Tahap 6: kirim UUID draf sebagai kunci idempotensi setelah backend mendukungnya.
-      final result = await apiController.submitDraftData({
-        ...freshDraft.dataForm,
-        'id_user': user.id,
-        'tanggal_dibuat': freshDraft.tanggalDibuat,
-      });
-      if (result.success) {
+      var success = false;
+      var sessionExpired = false;
+      var statusCode = 0;
+      var networkFailure = false;
+      String? serverMessage;
+      if (freshDraft.jenis == 'pancasila') {
+        final apiController = Get.isRegistered<PenghayatanPengamalanController>()
+            ? Get.find<PenghayatanPengamalanController>()
+            : Get.put(PenghayatanPengamalanController());
+        // TODO Tahap 6: kirim UUID draf sebagai kunci idempotensi setelah backend mendukungnya.
+        final result = await apiController.submitDraftData({
+          ...freshDraft.dataForm,
+          'id_user': user.id,
+          'tanggal_dibuat': freshDraft.tanggalDibuat,
+        });
+        success = result.success;
+        sessionExpired = result.sessionExpired;
+        statusCode = result.statusCode ?? 0;
+        serverMessage = result.message;
+        networkFailure = result.networkFailure;
+      } else {
+        final result = await registration!.sender!(freshDraft);
+        success = result.success;
+        serverMessage = result.message;
+        networkFailure = !result.success;
+      }
+      if (success) {
         await service.hapusDraft(freshDraft.id);
         await _draftController.loadDrafts(filterJenis: _filterJenis);
         Get.snackbar(
@@ -178,36 +203,39 @@ class _DraftListScreenState extends State<DraftListScreen> {
           'Laporan berhasil dikirim dan menunggu persetujuan',
           snackPosition: SnackPosition.TOP,
         );
-      } else if (result.sessionExpired) {
-        await service.ubahStatus(
-          id: freshDraft.id,
-          status: 'gagal_kirim',
-          pesanError: 'Sesi login habis. Masuk kembali untuk mencoba lagi.',
-        );
+      } else if (sessionExpired) {
         Get.snackbar(
           'Sesi Habis',
           'Masuk kembali. Draf tetap tersimpan.',
           snackPosition: SnackPosition.TOP,
         );
       } else {
-        final error = result.statusCode == 422
-            ? (result.message ??
+        final isValidationError = statusCode == 422;
+        final error = isValidationError
+            ? (serverMessage ??
                   'Data tidak dapat diterima. Periksa kembali isian draf.')
-            : 'Gagal terkirim. Draf tetap tersimpan, coba lagi saat sinyal bagus.';
+            : networkFailure
+            ? (draft.jenis != 'pancasila' && serverMessage != null
+                  ? serverMessage
+                  : 'Gagal terkirim. Draf tetap tersimpan, coba lagi saat sinyal bagus.')
+            : (serverMessage ??
+                  'Gagal terkirim. Draf tetap tersimpan, coba lagi saat sinyal bagus.');
         await service.ubahStatus(
           id: freshDraft.id,
           status: 'gagal_kirim',
           pesanError: error,
         );
         await _draftController.loadDrafts(filterJenis: _filterJenis);
-        if (result.statusCode == 422) {
+        if (isValidationError) {
           Get.snackbar(
             'Periksa Isian',
             error,
             snackPosition: SnackPosition.TOP,
             duration: const Duration(seconds: 6),
           );
-          await _bukaFormEdit(freshDraft);
+          if (freshDraft.jenis == 'pancasila') {
+            await _bukaFormEdit(freshDraft);
+          }
         } else {
           Get.snackbar(
             'Gagal Mengirim',

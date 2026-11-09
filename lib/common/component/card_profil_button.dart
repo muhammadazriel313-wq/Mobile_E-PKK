@@ -40,7 +40,8 @@ class CardButtonRow extends StatelessWidget {
             Expanded(
               child: Text(
                 titleText,
-                style: textStyle ??
+                style:
+                    textStyle ??
                     TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,

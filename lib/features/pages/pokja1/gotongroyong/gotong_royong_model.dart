@@ -1,4 +1,4 @@
-﻿class ReportGotongRoyongModel {
+class ReportGotongRoyongModel {
   final int statusCode;
   final String message;
   final GotongRoyongEntry? data;

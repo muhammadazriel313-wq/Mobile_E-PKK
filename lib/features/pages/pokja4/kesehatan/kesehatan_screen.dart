@@ -11,20 +11,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class KesehatanScreen
-    extends StatefulWidget {
-  const KesehatanScreen({
-    super.key,
-  });
+class KesehatanScreen extends StatefulWidget {
+  const KesehatanScreen({super.key});
 
   @override
-  State<KesehatanScreen>
-  createState() =>
-      _KesehatanScreenState();
+  State<KesehatanScreen> createState() => _KesehatanScreenState();
 }
 
-class _KesehatanScreenState
-    extends State<KesehatanScreen> {
+class _KesehatanScreenState extends State<KesehatanScreen> {
   String? idUser;
   String? idRole;
   String? idOrganization;
@@ -32,29 +26,21 @@ class _KesehatanScreenState
   String? nameRole;
   String? nameOrganization;
 
-  final posyanduJumlahController =
-      TextEditingController();
+  final posyanduJumlahController = TextEditingController();
 
-  final posyanduTintegrasiController =
-      TextEditingController();
+  final posyanduTintegrasiController = TextEditingController();
 
-  final lansiaKlpController =
-      TextEditingController();
+  final lansiaKlpController = TextEditingController();
 
-  final lansiaAnggotaController =
-      TextEditingController();
+  final lansiaAnggotaController = TextEditingController();
 
-  final lansiaKartuController =
-      TextEditingController();
+  final lansiaKartuController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final KesehatanController
-  uploadReportController =
-      Get.put(
-        KesehatanController(),
-      );
+  final KesehatanController uploadReportController = Get.put(
+    KesehatanController(),
+  );
 
   @override
   void initState() {
@@ -70,11 +56,9 @@ class _KesehatanScreenState
 
     nameRole = args['name_role'];
 
-    idOrganization =
-        args['id_organization'];
+    idOrganization = args['id_organization'];
 
-    nameOrganization =
-        args['name_organization'];
+    nameOrganization = args['name_organization'];
 
     debugPrint(
       'Diterima dari argument: '
@@ -86,52 +70,40 @@ class _KesehatanScreenState
 
   @override
   void dispose() {
-    posyanduJumlahController
-        .dispose();
+    posyanduJumlahController.dispose();
 
-    posyanduTintegrasiController
-        .dispose();
+    posyanduTintegrasiController.dispose();
 
     lansiaKlpController.dispose();
 
-    lansiaAnggotaController
-        .dispose();
+    lansiaAnggotaController.dispose();
 
-    lansiaKartuController
-        .dispose();
+    lansiaKartuController.dispose();
 
     super.dispose();
   }
 
   void clearForm() {
-    posyanduJumlahController
-        .clear();
+    posyanduJumlahController.clear();
 
-    posyanduTintegrasiController
-        .clear();
+    posyanduTintegrasiController.clear();
 
     lansiaKlpController.clear();
 
-    lansiaAnggotaController
-        .clear();
+    lansiaAnggotaController.clear();
 
-    lansiaKartuController
-        .clear();
+    lansiaKartuController.clear();
   }
 
   Widget buildInput({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
 
-    TextInputAction action =
-        TextInputAction.next,
+    TextInputAction action = TextInputAction.next,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 20.h,
-      ),
+      padding: EdgeInsets.only(bottom: 20.h),
 
       child: InputFormField(
         controller: controller,
@@ -140,278 +112,202 @@ class _KesehatanScreenState
 
         label: label,
 
-        keyboardType:
-            TextInputType.number,
+        keyboardType: TextInputType.number,
 
         textInputAction: action,
 
-        validator: (value) =>
-            ValidatorForm
-                .validateDefault(
-                  value,
-                ),
+        validator: (value) => ValidatorForm.validateDefault(value),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
 
       backgroundColor: Colors.white,
 
-      appBar: AppBarSecondary(
-        title: 'Kesehatan',
-      ),
+      appBar: AppBarSecondary(title: 'Kesehatan'),
 
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 16.h),
+                          SizedBox(height: 16.h),
 
                           /// POSYANDU
-                          TypographyStyles
-                              .bodyCaptionSemiBold(
-                                'Posyandu',
+                          TypographyStyles.bodyCaptionSemiBold(
+                            'Posyandu',
 
-                                color:
-                                    TextColors
-                                        .grey900,
-                              ),
+                            color: TextColors.grey900,
+                          ),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           buildInput(
-                            controller:
-                                posyanduJumlahController,
+                            controller: posyanduJumlahController,
 
-                            label:
-                                'Jumlah Posyandu',
+                            label: 'Jumlah Posyandu',
                           ),
 
                           buildInput(
-                            controller:
-                                posyanduTintegrasiController,
+                            controller: posyanduTintegrasiController,
 
-                            label:
-                                'Posyandu Terintegrasi',
+                            label: 'Posyandu Terintegrasi',
                           ),
 
-                          SizedBox(
-                              height: 8.h),
+                          SizedBox(height: 8.h),
 
                           /// LANSIA
-                          TypographyStyles
-                              .bodyCaptionSemiBold(
-                                'Lansia',
+                          TypographyStyles.bodyCaptionSemiBold(
+                            'Lansia',
 
-                                color:
-                                    TextColors
-                                        .grey900,
-                              ),
+                            color: TextColors.grey900,
+                          ),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           buildInput(
-                            controller:
-                                lansiaKlpController,
+                            controller: lansiaKlpController,
 
-                            label:
-                                'Jumlah KLP',
+                            label: 'Jumlah KLP',
                           ),
 
                           buildInput(
-                            controller:
-                                lansiaAnggotaController,
+                            controller: lansiaAnggotaController,
 
-                            label:
-                                'Jumlah Anggota',
+                            label: 'Jumlah Anggota',
                           ),
 
                           buildInput(
-                            controller:
-                                lansiaKartuController,
+                            controller: lansiaKartuController,
 
-                            label:
-                                'Jumlah yang Memiliki Kartu Berobat Gratis',
+                            label: 'Jumlah yang Memiliki Kartu Berobat Gratis',
 
-                            action:
-                                TextInputAction
-                                    .done,
+                            action: TextInputAction.done,
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text: uploadReportController
-                                        .isLoading
-                                        .value
+                                text: uploadReportController.isLoading.value
                                     ? 'Loading...'
                                     : 'Kirim',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
                                 onPressed:
-                                    uploadReportController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () async {
-                                            final isFormValid =
-                                                _formKey
-                                                    .currentState!
-                                                    .validate();
+                                    uploadReportController.isLoading.value
+                                    ? null
+                                    : () async {
+                                        final isFormValid = _formKey
+                                            .currentState!
+                                            .validate();
 
-                                            if (!isFormValid) {
-                                              Get.snackbar(
-                                                'Error',
+                                        if (!isFormValid) {
+                                          Get.snackbar(
+                                            'Error',
 
-                                                'Form tidak valid! Mohon periksa kembali input Anda.',
+                                            'Form tidak valid! Mohon periksa kembali input Anda.',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .orange,
+                                            backgroundColor: Colors.orange,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
+                                            colorText: Colors.white,
+                                          );
 
-                                              return;
-                                            }
+                                          return;
+                                        }
 
-                                            await uploadReportController
-                                                .submitKesehatanData(
-                                                  idUser:
-                                                      idUser ??
-                                                          '',
+                                        await uploadReportController
+                                            .submitKesehatanData(
+                                              idUser: idUser ?? '',
 
-                                                  jumlahPosyandu:
-                                                      posyanduJumlahController
-                                                          .text,
+                                              jumlahPosyandu:
+                                                  posyanduJumlahController.text,
 
-                                                  jumlahPosyanduIterasi:
-                                                      posyanduTintegrasiController
-                                                          .text,
+                                              jumlahPosyanduIterasi:
+                                                  posyanduTintegrasiController
+                                                      .text,
 
-                                                  jumlahKip:
-                                                      lansiaKlpController
-                                                          .text,
+                                              jumlahKip:
+                                                  lansiaKlpController.text,
 
-                                                  jumlahAnggota:
-                                                      lansiaAnggotaController
-                                                          .text,
+                                              jumlahAnggota:
+                                                  lansiaAnggotaController.text,
 
-                                                  jumlahKartuGratis:
-                                                      lansiaKartuController
-                                                          .text,
+                                              jumlahKartuGratis:
+                                                  lansiaKartuController.text,
 
-                                                  idRole:
-                                                      idRole ??
-                                                          '',
+                                              idRole: idRole ?? '',
 
-                                                  idOrganization:
-                                                      idOrganization ??
-                                                          '',
-                                                );
+                                              idOrganization:
+                                                  idOrganization ?? '',
+                                            );
 
-                                            if (uploadReportController
-                                                        .reportData
-                                                        .value !=
-                                                    null &&
-                                                uploadReportController
-                                                        .reportData
-                                                        .value!
-                                                        .statusCode ==
-                                                    200) {
+                                        if (uploadReportController
+                                                    .reportData
+                                                    .value !=
+                                                null &&
+                                            uploadReportController
+                                                    .reportData
+                                                    .value!
+                                                    .statusCode ==
+                                                200) {
+                                          _formKey.currentState?.reset();
 
-                                              _formKey
-                                                  .currentState
-                                                  ?.reset();
+                                          clearForm();
 
-                                              clearForm();
-
-                                              Get.offAllNamed(
-                                                '/main',
-                                              );
-                                            }
-                                          },
+                                          Get.offAllNamed('/main');
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

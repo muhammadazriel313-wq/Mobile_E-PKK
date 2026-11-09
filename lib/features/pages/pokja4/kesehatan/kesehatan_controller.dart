@@ -36,26 +36,18 @@ class KesehatanController extends GetxController {
         data: {
           'id_user': idUser,
           'jumlah_posyandu': jumlahPosyandu,
-          'jumlah_posyandu_iterasi':
-              jumlahPosyanduIterasi,
+          'jumlah_posyandu_iterasi': jumlahPosyanduIterasi,
           'jumlah_klp': jumlahKip,
           'jumlah_anggota': jumlahAnggota,
-          'jumlah_kartu_gratis':
-              jumlahKartuGratis,
+          'jumlah_kartu_gratis': jumlahKartuGratis,
           'id_role': idRole,
-          'id_organization':
-              idOrganization,
-          if (catatan != null &&
-              catatan.isNotEmpty)
-            'catatan': catatan,
+          'id_organization': idOrganization,
+          if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
         },
       );
 
       if (response.statusCode == 200) {
-        final result =
-            ReportKesehatanModel.fromJson(
-          response.data,
-        );
+        final result = ReportKesehatanModel.fromJson(response.data);
 
         reportData(result);
 
@@ -70,37 +62,27 @@ class KesehatanController extends GetxController {
           duration: const Duration(seconds: 3),
         );
       } else {
-        errorMessage(
-          'Gagal mengirim data',
-        );
+        errorMessage('Gagal mengirim data');
 
         Get.snackbar(
           'Gagal',
           'Gagal mengirim data',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       }
     } on SocketException {
-      errorMessage(
-        'Tidak ada koneksi internet',
-      );
+      errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
         'Error',
         'Tidak ada koneksi internet',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } on TimeoutException {
       errorMessage('Server timeout');
@@ -108,13 +90,10 @@ class KesehatanController extends GetxController {
       Get.snackbar(
         'Error',
         'Server tidak merespons',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } catch (e) {
       errorMessage(e.toString());
@@ -122,13 +101,10 @@ class KesehatanController extends GetxController {
       Get.snackbar(
         'Error',
         e.toString(),
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } finally {
       isLoading(false);

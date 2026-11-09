@@ -16,6 +16,7 @@ class InfoAkunScreen extends StatefulWidget {
   @override
   State<InfoAkunScreen> createState() => _InfoAkunScreenState();
 }
+
 class _InfoAkunScreenState extends State<InfoAkunScreen> {
   final _formKey = GlobalKey<FormState>();
 
@@ -38,7 +39,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
 
   // [PERUBAHAN 08-10-2026] Dialog pemilihan sumber foto profil
   void _pilihSumberFoto() {
-    final hasPhoto = _selectedImageBytes != null ||
+    final hasPhoto =
+        _selectedImageBytes != null ||
         (controller.profilData.value.foto != null &&
             controller.profilData.value.foto!.isNotEmpty);
 
@@ -127,10 +129,7 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
         ),
         content: Text(
           'Apakah Anda yakin ingin menghapus foto profil?',
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: Colors.grey.shade700,
-          ),
+          style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700),
         ),
         actions: [
           TextButton(
@@ -350,44 +349,48 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                                 ),
                                 child: ClipOval(
                                   child: _selectedImageBytes != null
-                                    ? Image.memory(
-                                        _selectedImageBytes!,
-                                        fit: BoxFit.cover,
-                                        width: 76.r,
-                                        height: 76.r,
-                                      )
-                                    : (fotoUrl != null && fotoUrl.isNotEmpty)
-                                        ? Image.network(
-                                            fotoUrl,
-                                            fit: BoxFit.cover,
-                                            width: 76.r,
-                                            height: 76.r,
-                                            loadingBuilder: (context, child, progress) {
-                                              if (progress == null) return child;
-                                              return Center(
-                                                child: SizedBox(
-                                                  width: 22.w,
-                                                  height: 22.w,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: primaryColor,
+                                      ? Image.memory(
+                                          _selectedImageBytes!,
+                                          fit: BoxFit.cover,
+                                          width: 76.r,
+                                          height: 76.r,
+                                        )
+                                      : (fotoUrl != null && fotoUrl.isNotEmpty)
+                                      ? Image.network(
+                                          fotoUrl,
+                                          fit: BoxFit.cover,
+                                          width: 76.r,
+                                          height: 76.r,
+                                          loadingBuilder:
+                                              (context, child, progress) {
+                                                if (progress == null)
+                                                  return child;
+                                                return Center(
+                                                  child: SizedBox(
+                                                    width: 22.w,
+                                                    height: 22.w,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                          color: primaryColor,
+                                                        ),
                                                   ),
-                                                ),
-                                              );
-                                            },
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Icon(
-                                                Icons.person,
-                                                size: 38.sp,
-                                                color: primaryColor,
-                                              );
-                                            },
-                                          )
-                                        : Icon(
-                                            Icons.person,
-                                            size: 38.sp,
-                                            color: primaryColor,
-                                          ),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Icon(
+                                                  Icons.person,
+                                                  size: 38.sp,
+                                                  color: primaryColor,
+                                                );
+                                              },
+                                        )
+                                      : Icon(
+                                          Icons.person,
+                                          size: 38.sp,
+                                          color: primaryColor,
+                                        ),
                                 ),
                               ),
                               if (isUploading)
@@ -419,10 +422,15 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                                     decoration: BoxDecoration(
                                       color: primaryColor,
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.15),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.15,
+                                          ),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
@@ -527,7 +535,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                         /// BUTTON
                         // [PERUBAHAN 08-10-2026] Simpan perubahan menyimpan foto baru dan informasi akun
                         Obx(() {
-                          final isSaving = controller.isUpdating.value ||
+                          final isSaving =
+                              controller.isUpdating.value ||
                               controller.isUploadingPhoto.value;
 
                           return ButtonFill(
@@ -540,23 +549,25 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       // Jika pengguna telah memilih foto baru, unggah foto terlebih dahulu
                                       if (_selectedImageFile != null) {
-                                        final photoSuccess =
-                                            await controller.uploadProfilePhoto(
-                                          filePath: _selectedImageFile!.path,
-                                          fileBytes: _selectedImageBytes,
-                                          fileName: _selectedImageFile!.name,
-                                          showSuccessSnackbar: false,
-                                        );
+                                        final photoSuccess = await controller
+                                            .uploadProfilePhoto(
+                                              filePath:
+                                                  _selectedImageFile!.path,
+                                              fileBytes: _selectedImageBytes,
+                                              fileName:
+                                                  _selectedImageFile!.name,
+                                              showSuccessSnackbar: false,
+                                            );
                                         if (!photoSuccess) {
                                           return;
                                         }
                                       }
 
-                                      final success =
-                                          await controller.updateProfileInfo(
-                                        fullName: _nameController.text,
-                                        phoneNumber: _phoneController.text,
-                                      );
+                                      final success = await controller
+                                          .updateProfileInfo(
+                                            fullName: _nameController.text,
+                                            phoneNumber: _phoneController.text,
+                                          );
 
                                       if (success) {
                                         if (mounted) {
@@ -853,8 +864,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                         onPressed: isDeleting
                             ? null
                             : () async {
-                                final success =
-                                    await controller.deleteAccount();
+                                final success = await controller
+                                    .deleteAccount();
                                 if (success) {
                                   Get.back(); // Tutup dialog konfirmasi
                                   Get.snackbar(
@@ -899,4 +910,3 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
     );
   }
 }
-

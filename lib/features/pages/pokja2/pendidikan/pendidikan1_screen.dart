@@ -16,34 +16,25 @@ class Pendidikan1Screen extends StatefulWidget {
   const Pendidikan1Screen({super.key});
 
   @override
-  State<Pendidikan1Screen> createState() =>
-      _Pendidikan1ScreenState();
+  State<Pendidikan1Screen> createState() => _Pendidikan1ScreenState();
 }
 
-class _Pendidikan1ScreenState
-    extends State<Pendidikan1Screen> {
-  final PendidikanKeterampilanController
-  controller = Get.put(
+class _Pendidikan1ScreenState extends State<Pendidikan1Screen> {
+  final PendidikanKeterampilanController controller = Get.put(
     PendidikanKeterampilanController(),
   );
 
-  final jumlahButaController =
-      TextEditingController();
+  final jumlahButaController = TextEditingController();
 
-  final kelBelajarAController =
-      TextEditingController();
+  final kelBelajarAController = TextEditingController();
 
-  final wargaBelajarAController =
-      TextEditingController();
+  final wargaBelajarAController = TextEditingController();
 
-  final kelBelajarBController =
-      TextEditingController();
+  final kelBelajarBController = TextEditingController();
 
-  final wargaBelajarBController =
-      TextEditingController();
+  final wargaBelajarBController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -64,17 +55,12 @@ class _Pendidikan1ScreenState
     return Container(
       alignment: Alignment.centerLeft,
 
-      child: TypographyStyles
-          .bodyCaptionBold(
-        title,
-        color: TextColors.grey700,
-      ),
+      child: TypographyStyles.bodyCaptionBold(title, color: TextColors.grey700),
     );
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
@@ -87,14 +73,9 @@ class _Pendidikan1ScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
-          validator: (value) =>
-              ValidatorForm
-                  .validateDefault(
-                    value,
-                  ),
+          validator: (value) => ValidatorForm.validateDefault(value),
         ),
 
         SizedBox(height: 24.h),
@@ -104,11 +85,9 @@ class _Pendidikan1ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -116,8 +95,7 @@ class _Pendidikan1ScreenState
       backgroundColor: Colors.white,
 
       appBar: AppBarSecondary(
-        title:
-            'Pendidikan & Ketrampilan',
+        title: 'Pendidikan & Ketrampilan',
 
         onBack: () => Get.back(),
 
@@ -128,202 +106,139 @@ class _Pendidikan1ScreenState
 
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
                           /// TITLE
-                          sectionTitle(
-                            'Jumlah Kelompok Belajar',
-                          ),
+                          sectionTitle('Jumlah Kelompok Belajar'),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           /// INPUT
                           inputField(
-                            controller:
-                                jumlahButaController,
+                            controller: jumlahButaController,
 
-                            label:
-                                'Jumlah warga yang masih buta',
+                            label: 'Jumlah warga yang masih buta',
                           ),
 
                           /// PAKET A
-                          sectionTitle(
-                              'Paket A'),
+                          sectionTitle('Paket A'),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           inputField(
-                            controller:
-                                kelBelajarAController,
+                            controller: kelBelajarAController,
 
-                            label:
-                                'Kel. Belajar',
+                            label: 'Kel. Belajar',
                           ),
 
                           inputField(
-                            controller:
-                                wargaBelajarAController,
+                            controller: wargaBelajarAController,
 
-                            label:
-                                'Warga Belajar',
+                            label: 'Warga Belajar',
                           ),
 
                           /// PAKET B
-                          sectionTitle(
-                              'Paket B'),
+                          sectionTitle('Paket B'),
 
-                          SizedBox(
-                              height: 12.h),
+                          SizedBox(height: 12.h),
 
                           inputField(
-                            controller:
-                                kelBelajarBController,
+                            controller: kelBelajarBController,
 
-                            label:
-                                'Kel. Belajar',
+                            label: 'Kel. Belajar',
                           ),
 
                           inputField(
-                            controller:
-                                wargaBelajarBController,
+                            controller: wargaBelajarBController,
 
-                            label:
-                                'Warga Belajar',
+                            label: 'Warga Belajar',
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    controller
-                                        .isLoading
-                                        .value,
+                                isLoading: controller.isLoading.value,
 
-                                onPressed:
-                                    controller
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                            if (_formKey
-                                                .currentState!
-                                                .validate()) {
-                                              /// SIMPAN DATA
-                                              controller
-                                                  .setStep1(
-                                                    wargaButaVal:
-                                                        jumlahButaController
-                                                            .text,
+                                onPressed: controller.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          /// SIMPAN DATA
+                                          controller.setStep1(
+                                            wargaButaVal:
+                                                jumlahButaController.text,
 
-                                                    kelA:
-                                                        kelBelajarAController
-                                                            .text,
+                                            kelA: kelBelajarAController.text,
 
-                                                    wargaA:
-                                                        wargaBelajarAController
-                                                            .text,
+                                            wargaA:
+                                                wargaBelajarAController.text,
 
-                                                    kelB:
-                                                        kelBelajarBController
-                                                            .text,
+                                            kelB: kelBelajarBController.text,
 
-                                                    wargaB:
-                                                        wargaBelajarBController
-                                                            .text,
-                                                  );
+                                            wargaB:
+                                                wargaBelajarBController.text,
+                                          );
 
-                                              /// NEXT
-                                              Get.toNamed(
-                                                Routes
-                                                    .PENDIDIKAN2,
-                                              );
-                                            } else {
-                                              Get.snackbar(
-                                                'Error',
-                                                'Lengkapi Form',
+                                          /// NEXT
+                                          Get.toNamed(Routes.PENDIDIKAN2);
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
+                                            'Lengkapi Form',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .red,
+                                            backgroundColor: Colors.red,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-                                            }
-                                          },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

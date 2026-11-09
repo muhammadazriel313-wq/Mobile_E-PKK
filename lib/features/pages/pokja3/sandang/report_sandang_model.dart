@@ -15,9 +15,7 @@ class ReportSandangModel {
     return ReportSandangModel(
       statusCode: json['statusCode'] ?? 500,
       message: json['message']?.toString() ?? 'Unknown error',
-      data: json['data'] != null
-          ? SandangEntry.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? SandangEntry.fromJson(json['data']) : null,
       error: json['error'] != null
           ? ErrorMessage.fromJson(json['error'])
           : null,
@@ -82,10 +80,8 @@ class SandangEntry {
 
       status: json['status']?.toString() ?? 'Proses',
 
-      createdAt: DateTime.tryParse(json['created_at'] ?? '') ??
-          DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ??
-          DateTime.now(),
+      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
 
       role: Role.fromJson(json['role']),
       organization: Organization.fromJson(json['organization']),
@@ -131,11 +127,7 @@ class Role {
   final String uuid;
   final String name;
 
-  Role({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Role({required this.id, required this.uuid, required this.name});
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
@@ -146,11 +138,7 @@ class Role {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -159,11 +147,7 @@ class Organization {
   final String uuid;
   final String name;
 
-  Organization({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Organization({required this.id, required this.uuid, required this.name});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -174,10 +158,6 @@ class Organization {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }

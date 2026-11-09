@@ -54,15 +54,12 @@ class PickRoleController extends GetxController {
 
     final index = RoleBidangList.roleBidangList.indexOf(selectedRole);
 
-    if (index != -1 &&
-        index < RoleBidangList.roleBidangIDList.length) {
-      selectedRoleBidangID.value =
-          RoleBidangList.roleBidangIDList[index];
+    if (index != -1 && index < RoleBidangList.roleBidangIDList.length) {
+      selectedRoleBidangID.value = RoleBidangList.roleBidangIDList[index];
     } else {
       selectedRoleBidangID.value = 0;
     }
 
-    print(
-        'Role bidang: $selectedRole (${selectedRoleBidangID.value})');
+    print('Role bidang: $selectedRole (${selectedRoleBidangID.value})');
   }
 }

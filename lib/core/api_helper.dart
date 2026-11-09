@@ -8,9 +8,7 @@ class ApiHelper {
       baseUrl: 'http://127.0.0.1:8000/api',
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     ),
   );
 
@@ -19,10 +17,7 @@ class ApiHelper {
     String endpoint, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    return await _dio.get(
-      endpoint,
-      queryParameters: queryParameters,
-    );
+    return await _dio.get(endpoint, queryParameters: queryParameters);
   }
 
   /// ================= POST =================
@@ -74,11 +69,7 @@ class ApiHelper {
     return await _dio.post(
       endpoint,
       data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      ),
+      options: Options(headers: {'Content-Type': 'multipart/form-data'}),
     );
   }
 }

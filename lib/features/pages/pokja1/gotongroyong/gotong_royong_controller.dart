@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +14,7 @@ class GotongRoyongController extends GetxController {
   var reportData = Rxn<ReportGotongRoyongModel>();
   var isLoading = false.obs;
   var errorMessage = ''.obs;
+  var lastFailureWasNetwork = false.obs;
 
   Future<bool> submitGotongRoyong({
     required String idUser,
@@ -52,6 +54,7 @@ class GotongRoyongController extends GetxController {
   }) async {
     isLoading.value = true;
     errorMessage.value = '';
+    lastFailureWasNetwork.value = false;
 
     try {
       final response = await apiHelper.post(
@@ -62,22 +65,31 @@ class GotongRoyongController extends GetxController {
           'id_organization': idOrganization,
 
           // Sub-kolom KERJA BAKTI
-          if (kerjaBaktiKegiatan != null) 'kerja_bakti_kegiatan': kerjaBaktiKegiatan,
+          if (kerjaBaktiKegiatan != null)
+            'kerja_bakti_kegiatan': kerjaBaktiKegiatan,
           if (kerjaBaktiVol != null) 'kerja_bakti_vol': kerjaBaktiVol,
           if (kerjaBaktiMetode != null) 'kerja_bakti_metode': kerjaBaktiMetode,
-          if (kerjaBaktiSasaran != null) 'kerja_bakti_sasaran': kerjaBaktiSasaran,
+          if (kerjaBaktiSasaran != null)
+            'kerja_bakti_sasaran': kerjaBaktiSasaran,
 
           // Sub-kolom BANTUAN ANAK YATIM
-          if (bantuanYatimKegiatan != null) 'bantuan_yatim_kegiatan': bantuanYatimKegiatan,
+          if (bantuanYatimKegiatan != null)
+            'bantuan_yatim_kegiatan': bantuanYatimKegiatan,
           if (bantuanYatimVol != null) 'bantuan_yatim_vol': bantuanYatimVol,
-          if (bantuanYatimMetode != null) 'bantuan_yatim_metode': bantuanYatimMetode,
-          if (bantuanYatimSasaran != null) 'bantuan_yatim_sasaran': bantuanYatimSasaran,
+          if (bantuanYatimMetode != null)
+            'bantuan_yatim_metode': bantuanYatimMetode,
+          if (bantuanYatimSasaran != null)
+            'bantuan_yatim_sasaran': bantuanYatimSasaran,
 
           // Sub-kolom KEGIATAN SOSIAL
-          if (kegiatanSosialKegiatan != null) 'kegiatan_sosial_kegiatan': kegiatanSosialKegiatan,
-          if (kegiatanSosialVol != null) 'kegiatan_sosial_vol': kegiatanSosialVol,
-          if (kegiatanSosialMetode != null) 'kegiatan_sosial_metode': kegiatanSosialMetode,
-          if (kegiatanSosialSasaran != null) 'kegiatan_sosial_sasaran': kegiatanSosialSasaran,
+          if (kegiatanSosialKegiatan != null)
+            'kegiatan_sosial_kegiatan': kegiatanSosialKegiatan,
+          if (kegiatanSosialVol != null)
+            'kegiatan_sosial_vol': kegiatanSosialVol,
+          if (kegiatanSosialMetode != null)
+            'kegiatan_sosial_metode': kegiatanSosialMetode,
+          if (kegiatanSosialSasaran != null)
+            'kegiatan_sosial_sasaran': kegiatanSosialSasaran,
 
           // LEGACY & FALLBACK
           'kerja_bakti': kerjaBaktiVol ?? kerjaBakti,
@@ -125,7 +137,26 @@ class GotongRoyongController extends GetxController {
 
         return false;
       }
+    } on DioException catch (e) {
+      lastFailureWasNetwork.value =
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout;
+      errorMessage.value = 'Terjadi kesalahan';
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF5350),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 12,
+        duration: const Duration(seconds: 3),
+      );
+      return false;
     } on SocketException {
+      lastFailureWasNetwork.value = true;
       errorMessage.value = 'Tidak ada koneksi internet';
 
       Get.snackbar(
@@ -141,6 +172,7 @@ class GotongRoyongController extends GetxController {
 
       return false;
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage.value = 'Server timeout';
 
       Get.snackbar(

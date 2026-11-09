@@ -33,18 +33,13 @@ class SandangController extends GetxController {
           'sandang': sandang,
           'jasa': jasa,
           'id_role': idRole,
-          'id_organization':
-              idOrganization,
-          if (catatan != null)
-            'catatan': catatan,
+          'id_organization': idOrganization,
+          if (catatan != null) 'catatan': catatan,
         },
       );
 
       if (response.statusCode == 200) {
-        reportData.value =
-            ReportSandangModel.fromJson(
-          response.data,
-        );
+        reportData.value = ReportSandangModel.fromJson(response.data);
 
         Get.snackbar(
           'Berhasil',
@@ -57,19 +52,15 @@ class SandangController extends GetxController {
           duration: const Duration(seconds: 3),
         );
       } else {
-        errorMessage.value =
-            'Gagal upload';
+        errorMessage.value = 'Gagal upload';
 
         Get.snackbar(
           'Gagal',
           errorMessage.value,
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
@@ -78,21 +69,17 @@ class SandangController extends GetxController {
       if (e is DioException) {
         errorMessage.value =
             e.response?.data?['message'] ??
-                e.response?.data
-                    .toString() ??
-                'Terjadi kesalahan server';
+            e.response?.data.toString() ??
+            'Terjadi kesalahan server';
       }
 
       Get.snackbar(
         'Error',
         errorMessage.value,
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } finally {
       isLoading(false);
@@ -104,6 +91,5 @@ class SandangController extends GetxController {
     errorMessage('');
   }
 
-  SandangEntry? get entryData =>
-      reportData.value?.data;
+  SandangEntry? get entryData => reportData.value?.data;
 }

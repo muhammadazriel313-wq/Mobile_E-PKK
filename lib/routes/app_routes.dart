@@ -46,6 +46,7 @@ import 'package:epkk_nganjuk/features/akun/informasi_akun.dart';
 import 'package:epkk_nganjuk/features/akun/edit_password.dart';
 // [PERUBAHAN 08-10-2026] Import halaman Bantuan
 import 'package:epkk_nganjuk/features/akun/bantuan_screen.dart';
+import 'package:epkk_nganjuk/features/akun/panduan/panduan_screen.dart';
 // [PERUBAHAN 08-10-2026] Import halaman Riwayat Pengumuman
 import 'package:epkk_nganjuk/features/pengumuman/riwayat_pengumuman_screen.dart';
 
@@ -125,6 +126,9 @@ class Routes {
 
   // [PERUBAHAN 08-10-2026] Menambahkan route BANTUAN
   static const BANTUAN = '/bantuan';
+
+  // Route Layar Panduan E-PKK (Figma)
+  static const PANDUAN = '/panduan';
 
   // [PERUBAHAN 08-10-2026] Menambahkan route RIWAYAT_PENGUMUMAN
   static const RIWAYAT_PENGUMUMAN = '/riwayat_pengumuman';
@@ -248,7 +252,7 @@ class AppPages {
   static final List<GetPage> pages = [
     // ===== AUTH =====
     GetPage(name: Routes.INTRO_SPLASH, page: () => const IntroSplashScreen()),
-    
+
     GetPage(name: Routes.SPLASH, page: () => const SplashScreen()),
 
     GetPage(name: Routes.WELCOME, page: () => WelcomeScreen()),
@@ -284,7 +288,10 @@ class AppPages {
     GetPage(name: Routes.EDIT_PASSWORD, page: () => EditPasswordScreen()),
 
     // [PERUBAHAN 08-10-2026] Menambahkan GetPage BANTUAN
-    GetPage(name: Routes.BANTUAN, page: () => const BantuanScreen()),
+    GetPage(name: Routes.BANTUAN, page: () => const PanduanScreen()),
+
+    // GetPage PANDUAN
+    GetPage(name: Routes.PANDUAN, page: () => const PanduanScreen()),
 
     // [PERUBAHAN 08-10-2026] Menambahkan GetPage RIWAYAT_PENGUMUMAN
     // [CATATAN REVISI 08-10-2026] Rute halaman penuh ini tetap dipertahankan untuk kompatibilitas,

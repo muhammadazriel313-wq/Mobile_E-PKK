@@ -9,20 +9,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class KaderPokja4Screen
-    extends StatefulWidget {
-  const KaderPokja4Screen({
-    super.key,
-  });
+class KaderPokja4Screen extends StatefulWidget {
+  const KaderPokja4Screen({super.key});
 
   @override
-  State<KaderPokja4Screen>
-  createState() =>
-      _KaderPokja4ScreenState();
+  State<KaderPokja4Screen> createState() => _KaderPokja4ScreenState();
 }
 
-class _KaderPokja4ScreenState
-    extends State<KaderPokja4Screen> {
+class _KaderPokja4ScreenState extends State<KaderPokja4Screen> {
   String? idUser;
   String? idRole;
   String? idOrganization;
@@ -30,32 +24,23 @@ class _KaderPokja4ScreenState
   String? nameRole;
   String? nameOrganization;
 
-  final posyanduController =
-      TextEditingController();
+  final posyanduController = TextEditingController();
 
-  final giziController =
-      TextEditingController();
+  final giziController = TextEditingController();
 
-  final keslingController =
-      TextEditingController();
+  final keslingController = TextEditingController();
 
-  final narkobaController =
-      TextEditingController();
+  final narkobaController = TextEditingController();
 
-  final phbsController =
-      TextEditingController();
+  final phbsController = TextEditingController();
 
-  final kbController =
-      TextEditingController();
+  final kbController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final KaderPokja4Controller
-  uploadReportController =
-      Get.put(
-        KaderPokja4Controller(),
-      );
+  final KaderPokja4Controller uploadReportController = Get.put(
+    KaderPokja4Controller(),
+  );
 
   @override
   void initState() {
@@ -71,11 +56,9 @@ class _KaderPokja4ScreenState
 
     nameRole = args['name_role'];
 
-    idOrganization =
-        args['id_organization'];
+    idOrganization = args['id_organization'];
 
-    nameOrganization =
-        args['name_organization'];
+    nameOrganization = args['name_organization'];
 
     debugPrint(
       'Diterima dari argument: '
@@ -117,18 +100,14 @@ class _KaderPokja4ScreenState
   }
 
   Widget buildInput({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
 
-    TextInputAction action =
-        TextInputAction.next,
+    TextInputAction action = TextInputAction.next,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 20.h,
-      ),
+      padding: EdgeInsets.only(bottom: 20.h),
 
       child: InputFormField(
         controller: controller,
@@ -137,27 +116,20 @@ class _KaderPokja4ScreenState
 
         label: label,
 
-        keyboardType:
-            TextInputType.number,
+        keyboardType: TextInputType.number,
 
         textInputAction: action,
 
-        validator: (value) =>
-            ValidatorForm
-                .validateDefault(
-                  value,
-                ),
+        validator: (value) => ValidatorForm.validateDefault(value),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -165,241 +137,164 @@ class _KaderPokja4ScreenState
       backgroundColor: Colors.white,
 
       /// APPBAR
-      appBar: AppBarSecondary(
-        title: 'Kader Pokja IV',
-      ),
+      appBar: AppBarSecondary(title: 'Kader Pokja IV'),
 
       /// BODY
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 16.h),
+                          SizedBox(height: 16.h),
 
                           /// POSYANDU
                           buildInput(
-                            controller:
-                                posyanduController,
+                            controller: posyanduController,
 
-                            label:
-                                'Posyandu',
+                            label: 'Posyandu',
                           ),
 
                           /// GIZI
-                          buildInput(
-                            controller:
-                                giziController,
-
-                            label:
-                                'Gizi',
-                          ),
+                          buildInput(controller: giziController, label: 'Gizi'),
 
                           /// KESLING
                           buildInput(
-                            controller:
-                                keslingController,
+                            controller: keslingController,
 
-                            label:
-                                'Kesling',
+                            label: 'Kesling',
                           ),
 
                           /// NARKOBA
                           buildInput(
-                            controller:
-                                narkobaController,
+                            controller: narkobaController,
 
-                            label:
-                                'Penyuluhan Narkoba',
+                            label: 'Penyuluhan Narkoba',
                           ),
 
                           /// PHBS
-                          buildInput(
-                            controller:
-                                phbsController,
-
-                            label:
-                                'PHBS',
-                          ),
+                          buildInput(controller: phbsController, label: 'PHBS'),
 
                           /// KB
                           buildInput(
-                            controller:
-                                kbController,
+                            controller: kbController,
 
-                            label:
-                                'KB',
+                            label: 'KB',
 
-                            action:
-                                TextInputAction
-                                    .done,
+                            action: TextInputAction.done,
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text: uploadReportController
-                                        .isLoading
-                                        .value
+                                text: uploadReportController.isLoading.value
                                     ? 'Loading...'
                                     : 'Kirim',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
                                 onPressed:
-                                    uploadReportController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () async {
-                                            final isFormValid =
-                                                _formKey
-                                                    .currentState!
-                                                    .validate();
+                                    uploadReportController.isLoading.value
+                                    ? null
+                                    : () async {
+                                        final isFormValid = _formKey
+                                            .currentState!
+                                            .validate();
 
-                                            if (!isFormValid) {
-                                              Get.snackbar(
-                                                'Error',
+                                        if (!isFormValid) {
+                                          Get.snackbar(
+                                            'Error',
 
-                                                'Form tidak valid',
+                                            'Form tidak valid',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .orange,
+                                            backgroundColor: Colors.orange,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
+                                            colorText: Colors.white,
+                                          );
 
-                                              return;
-                                            }
+                                          return;
+                                        }
 
-                                            await uploadReportController
-                                                .submitDataKaderPokja4(
-                                                  idUser:
-                                                      idUser ??
-                                                          '',
+                                        await uploadReportController
+                                            .submitDataKaderPokja4(
+                                              idUser: idUser ?? '',
 
-                                                  posyandu:
-                                                      posyanduController
-                                                          .text,
+                                              posyandu: posyanduController.text,
 
-                                                  gizi:
-                                                      giziController
-                                                          .text,
+                                              gizi: giziController.text,
 
-                                                  kesling:
-                                                      keslingController
-                                                          .text,
+                                              kesling: keslingController.text,
 
-                                                  penyuluhanNarkoba:
-                                                      narkobaController
-                                                          .text,
+                                              penyuluhanNarkoba:
+                                                  narkobaController.text,
 
-                                                  phbs:
-                                                      phbsController
-                                                          .text,
+                                              phbs: phbsController.text,
 
-                                                  kb:
-                                                      kbController
-                                                          .text,
+                                              kb: kbController.text,
 
-                                                  idRole:
-                                                      idRole ??
-                                                          '',
+                                              idRole: idRole ?? '',
 
-                                                  idOrganization:
-                                                      idOrganization ??
-                                                          '',
-                                                );
+                                              idOrganization:
+                                                  idOrganization ?? '',
+                                            );
 
-                                            if (uploadReportController
-                                                        .reportData
-                                                        .value !=
-                                                    null &&
-                                                uploadReportController
-                                                        .reportData
-                                                        .value!
-                                                        .statusCode ==
-                                                    200) {
+                                        if (uploadReportController
+                                                    .reportData
+                                                    .value !=
+                                                null &&
+                                            uploadReportController
+                                                    .reportData
+                                                    .value!
+                                                    .statusCode ==
+                                                200) {
+                                          _formKey.currentState?.reset();
 
-                                              _formKey
-                                                  .currentState
-                                                  ?.reset();
+                                          clearForm();
 
-                                              clearForm();
-
-                                              Get.offAllNamed(
-                                                '/main',
-                                              );
-                                            }
-                                          },
+                                          Get.offAllNamed('/main');
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

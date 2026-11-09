@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-
 class WidgetCarouselBanner extends StatefulWidget {
   WidgetCarouselBanner({super.key});
 
@@ -32,11 +31,9 @@ class _WidgetCarouselBannerState extends State<WidgetCarouselBanner> {
               aspectRatio: 2.0,
               viewportFraction: 1,
               onPageChanged: (index, reason) {
-                setState(
-                  () {
-                    _current = index;
-                  },
-                );
+                setState(() {
+                  _current = index;
+                });
               },
             ),
           ),
@@ -44,25 +41,24 @@ class _WidgetCarouselBannerState extends State<WidgetCarouselBanner> {
         SizedBox(height: 10.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: homeController.imgList.asMap().entries.map(
-            (entry) {
-              return GestureDetector(
-                onTap: () => _carouselController.animateToPage(entry.key),
-                child: Container(
-                  width: 10.0,
-                  height: 10.0,
-                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: (Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : BrandColors.brandPrimary500)
-                        .withOpacity(_current == entry.key ? 0.9 : 0.4),
-                  ),
+          children: homeController.imgList.asMap().entries.map((entry) {
+            return GestureDetector(
+              onTap: () => _carouselController.animateToPage(entry.key),
+              child: Container(
+                width: 10.0,
+                height: 10.0,
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : BrandColors.brandPrimary500)
+                          .withOpacity(_current == entry.key ? 0.9 : 0.4),
                 ),
-              );
-            },
-          ).toList(),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );

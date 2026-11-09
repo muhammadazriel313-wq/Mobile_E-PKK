@@ -33,7 +33,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
   final TextEditingController _lokasiController = TextEditingController();
 
-  final TextEditingController _namaPesertaInputController = TextEditingController();
+  final TextEditingController _namaPesertaInputController =
+      TextEditingController();
 
   final List<String> _pesertaList = [];
 
@@ -329,8 +330,9 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       return;
     }
 
-    String? namaPesertaJson =
-        _pesertaList.isNotEmpty ? jsonEncode(_pesertaList) : null;
+    String? namaPesertaJson = _pesertaList.isNotEmpty
+        ? jsonEncode(_pesertaList)
+        : null;
 
     await _controller.submitDataGaleri(
       idUser: id_user!,
@@ -458,7 +460,10 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                                   // [PERUBAHAN 03-10-2026] Mendukung preview gambar di Flutter Web (Chrome); kode lama di bawah dinonaktifkan
                                   // child: Image.file(_image!, fit: BoxFit.cover),
                                   child: kIsWeb
-                                      ? Image.network(_image!.path, fit: BoxFit.cover)
+                                      ? Image.network(
+                                          _image!.path,
+                                          fit: BoxFit.cover,
+                                        )
                                       : Image.file(_image!, fit: BoxFit.cover),
                                 )
                               : Column(
@@ -516,7 +521,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                                 child: InputFormField(
                                   controller: _namaPesertaInputController,
                                   label: 'Nama Peserta',
-                                  hintText: 'Ketik nama peserta lalu klik Tambah',
+                                  hintText:
+                                      'Ketik nama peserta lalu klik Tambah',
                                   textInputAction: TextInputAction.done,
                                 ),
                               ),
@@ -524,7 +530,10 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                               ElevatedButton(
                                 onPressed: _tambahPeserta,
                                 style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 14.w,
+                                    vertical: 14.h,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.r),
                                   ),
@@ -533,9 +542,20 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.add, color: Colors.white, size: 18.sp),
+                                    Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 18.sp,
+                                    ),
                                     SizedBox(width: 4.w),
-                                    Text('Tambah', style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.w600)),
+                                    Text(
+                                      'Tambah',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -546,15 +566,25 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                             Wrap(
                               spacing: 8.w,
                               runSpacing: 6.h,
-                              children: List.generate(_pesertaList.length, (index) {
+                              children: List.generate(_pesertaList.length, (
+                                index,
+                              ) {
                                 return Chip(
                                   backgroundColor: Colors.blue.shade50,
                                   side: BorderSide(color: Colors.blue.shade200),
                                   label: Text(
                                     '${index + 1}. ${_pesertaList[index]}',
-                                    style: TextStyle(fontSize: 12.sp, color: Colors.blue.shade900, fontWeight: FontWeight.w500),
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.blue.shade900,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                  deleteIcon: Icon(Icons.close, size: 16.sp, color: Colors.red.shade400),
+                                  deleteIcon: Icon(
+                                    Icons.close,
+                                    size: 16.sp,
+                                    color: Colors.red.shade400,
+                                  ),
                                   onDeleted: () => _hapusPeserta(index),
                                 );
                               }),

@@ -18,46 +18,35 @@ class Posyandu2Screen extends StatefulWidget {
   const Posyandu2Screen({super.key});
 
   @override
-  State<Posyandu2Screen> createState() =>
-      _Posyandu2ScreenState();
+  State<Posyandu2Screen> createState() => _Posyandu2ScreenState();
 }
 
-class _Posyandu2ScreenState
-    extends State<Posyandu2Screen> {
+class _Posyandu2ScreenState extends State<Posyandu2Screen> {
   /// ================= ARGUMENT =================
 
   late Map<String, dynamic> data;
 
   /// ================= CONTROLLER =================
 
-  final kondomController =
-      TextEditingController();
+  final kondomController = TextEditingController();
 
-  final pilController =
-      TextEditingController();
+  final pilController = TextEditingController();
 
-  final implantController =
-      TextEditingController();
+  final implantController = TextEditingController();
 
-  final mopController =
-      TextEditingController();
+  final mopController = TextEditingController();
 
-  final mowController =
-      TextEditingController();
+  final mowController = TextEditingController();
 
-  final iudController =
-      TextEditingController();
+  final iudController = TextEditingController();
 
-  final suntikanController =
-      TextEditingController();
+  final suntikanController = TextEditingController();
 
-  final lainController =
-      TextEditingController();
+  final lainController = TextEditingController();
 
   /// ================= FORM =================
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -82,18 +71,14 @@ class _Posyandu2ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
-      resizeToAvoidBottomInset:
-          true,
+      resizeToAvoidBottomInset: true,
 
-      backgroundColor:
-          Colors.white,
+      backgroundColor: Colors.white,
 
       appBar: AppBarSecondary(
         title: 'Posyandu',
@@ -102,289 +87,164 @@ class _Posyandu2ScreenState
 
         totalSteps: 5,
 
-        onBack:
-            () => Get.back(),
+        onBack: () => Get.back(),
       ),
 
       body: SafeArea(
         child: GestureDetector(
-          onTap:
-              () => FocusScope.of(
-                context,
-              ).unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (
-                  context,
-                  constraints,
-                ) {
-                  return SingleChildScrollView(
-                    physics:
-                        const BouncingScrollPhysics(),
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
 
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior
-                            .manual,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.manual,
 
-                    padding: EdgeInsets.only(
-                      left:
-                          isTablet
-                              ? 40.w
-                              : 16.w,
+                padding: EdgeInsets.only(
+                  left: isTablet ? 40.w : 16.w,
 
-                      right:
-                          isTablet
-                              ? 40.w
-                              : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
-                      top: 20.h,
+                  top: 20.h,
 
-                      bottom:
-                          media
-                              .viewInsets
-                              .bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
+                ),
+
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 650 : double.infinity,
+
+                      minHeight: constraints.maxHeight,
                     ),
 
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints:
-                            BoxConstraints(
-                              maxWidth:
-                                  isTablet
-                                      ? 650
-                                      : double
-                                          .infinity,
+                    child: Form(
+                      key: _formKey,
 
-                              minHeight:
-                                  constraints
-                                      .maxHeight,
-                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
-                        child: Form(
-                          key: _formKey,
+                        children: [
+                          /// ======================
+                          /// KB
+                          /// ======================
+                          TypographyStyles.bodyCaptionSemiBold(
+                            'KB',
 
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
-
-                            children: [
-                              /// ======================
-                              /// KB
-                              /// ======================
-
-                              TypographyStyles
-                                  .bodyCaptionSemiBold(
-                                'KB',
-
-                                color:
-                                    TextColors
-                                        .grey900,
-                              ),
-
-                              SizedBox(
-                                height:
-                                    24.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    kondomController,
-
-                                label:
-                                    'Kondom',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    pilController,
-
-                                label:
-                                    'Pil',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    implantController,
-
-                                label:
-                                    'Implant',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    mopController,
-
-                                label:
-                                    'MOP',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    mowController,
-
-                                label:
-                                    'MOW',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    iudController,
-
-                                label:
-                                    'IUD',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    suntikanController,
-
-                                label:
-                                    'Suntikan',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-
-                              _inputNumber(
-                                controller:
-                                    lainController,
-
-                                label:
-                                    'Lain - lain',
-                              ),
-
-                              SizedBox(
-                                height:
-                                    30.h,
-                              ),
-
-                              /// ======================
-                              /// BUTTON
-                              /// ======================
-
-                              ZoomTapAnimation(
-                                child: ButtonFill(
-                                  text:
-                                      'Lanjut',
-
-                                  textColor:
-                                      Colors
-                                          .white,
-
-                                  onPressed:
-                                      () {
-                                        if (_formKey
-                                            .currentState!
-                                            .validate()) {
-                                          Get.toNamed(
-                                            Routes
-                                                .POSYANDU_3,
-
-                                            arguments: {
-                                              ...data,
-
-                                              'kondom':
-                                                  kondomController
-                                                      .text,
-
-                                              'pil':
-                                                  pilController
-                                                      .text,
-
-                                              'implant':
-                                                  implantController
-                                                      .text,
-
-                                              'mop':
-                                                  mopController
-                                                      .text,
-
-                                              'mow':
-                                                  mowController
-                                                      .text,
-
-                                              'iud':
-                                                  iudController
-                                                      .text,
-
-                                              'suntikan':
-                                                  suntikanController
-                                                      .text,
-
-                                              'lain_lain_kb':
-                                                  lainController
-                                                      .text,
-                                            },
-                                          );
-                                        } else {
-                                          Get.snackbar(
-                                            'Error',
-
-                                            'Lengkapi Form',
-
-                                            snackPosition:
-                                                SnackPosition
-                                                    .TOP,
-
-                                            backgroundColor:
-                                                Colors
-                                                    .red,
-
-                                            colorText:
-                                                Colors
-                                                    .white,
-                                          );
-                                        }
-                                      },
-                                ),
-                              ),
-
-                              SizedBox(
-                                height:
-                                    20.h,
-                              ),
-                            ],
+                            color: TextColors.grey900,
                           ),
-                        ),
+
+                          SizedBox(height: 24.h),
+
+                          _inputNumber(
+                            controller: kondomController,
+
+                            label: 'Kondom',
+                          ),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(controller: pilController, label: 'Pil'),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(
+                            controller: implantController,
+
+                            label: 'Implant',
+                          ),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(controller: mopController, label: 'MOP'),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(controller: mowController, label: 'MOW'),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(controller: iudController, label: 'IUD'),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(
+                            controller: suntikanController,
+
+                            label: 'Suntikan',
+                          ),
+
+                          SizedBox(height: 20.h),
+
+                          _inputNumber(
+                            controller: lainController,
+
+                            label: 'Lain - lain',
+                          ),
+
+                          SizedBox(height: 30.h),
+
+                          /// ======================
+                          /// BUTTON
+                          /// ======================
+                          ZoomTapAnimation(
+                            child: ButtonFill(
+                              text: 'Lanjut',
+
+                              textColor: Colors.white,
+
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  Get.toNamed(
+                                    Routes.POSYANDU_3,
+
+                                    arguments: {
+                                      ...data,
+
+                                      'kondom': kondomController.text,
+
+                                      'pil': pilController.text,
+
+                                      'implant': implantController.text,
+
+                                      'mop': mopController.text,
+
+                                      'mow': mowController.text,
+
+                                      'iud': iudController.text,
+
+                                      'suntikan': suntikanController.text,
+
+                                      'lain_lain_kb': lainController.text,
+                                    },
+                                  );
+                                } else {
+                                  Get.snackbar(
+                                    'Error',
+
+                                    'Lengkapi Form',
+
+                                    snackPosition: SnackPosition.TOP,
+
+                                    backgroundColor: Colors.red,
+
+                                    colorText: Colors.white,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+
+                          SizedBox(height: 20.h),
+                        ],
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -396,30 +256,23 @@ class _Posyandu2ScreenState
   /// ======================
 
   Widget _inputNumber({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
     return InputFormField(
       controller: controller,
 
-      hintText:
-          'Masukkan jumlah',
+      hintText: 'Masukkan jumlah',
 
       label: label,
 
-      keyboardType:
-          TextInputType.number,
+      keyboardType: TextInputType.number,
 
-      textInputAction:
-          TextInputAction.next,
+      textInputAction: TextInputAction.next,
 
       validator: (value) {
-        return ValidatorForm
-            .validateNumber(
-              value,
-            );
+        return ValidatorForm.validateNumber(value);
       },
     );
   }

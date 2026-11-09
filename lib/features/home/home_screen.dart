@@ -132,266 +132,271 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
 
-                    children: [
-                      SizedBox(height: 20.h),
+                      children: [
+                        SizedBox(height: 20.h),
 
-                      // ================= BANNER =================
-                      WidgetCarouselBanner(),
+                        // ================= BANNER =================
+                        WidgetCarouselBanner(),
 
-                      SizedBox(height: 20.h),
+                        SizedBox(height: 20.h),
 
-                      // ================= TITLE =================
-                      Text(
-                        'Layanan PKK',
+                        // ================= TITLE =================
+                        Text(
+                          'Layanan PKK',
 
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: TextColors.grey700,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                            color: TextColors.grey700,
+                          ),
                         ),
-                      ),
 
-                      SizedBox(height: 18.h),
+                        SizedBox(height: 18.h),
 
-                      // ================= BUTTON LAPORAN =================
-                      if (roleBidang == 'Bidang Umum') ...[
-                        CardButtonActions(
-                          backroundColor: ButtonActionsColors.fillLaporan,
+                        // ================= BUTTON LAPORAN =================
+                        if (roleBidang == 'Bidang Umum') ...[
+                          CardButtonActions(
+                            backroundColor: ButtonActionsColors.fillLaporan,
 
-                          strokeColor: ButtonActionsColors.strokeLaporan,
+                            strokeColor: ButtonActionsColors.strokeLaporan,
 
-                          titleText: 'Upload Laporan Umum',
+                            titleText: 'Upload Laporan Umum',
 
-                          subTitle: 'upload laporan umum PKK disini',
+                            subTitle: 'upload laporan umum PKK disini',
 
-                          imageAssets: 'assets/images/ic_report.png',
+                            imageAssets: 'assets/images/ic_report.png',
 
-                          onTab: () {
-                            Get.toNamed(
-                              Routes.LAPORAN_UMUM1,
+                            onTab: () {
+                              Get.toNamed(
+                                Routes.LAPORAN_UMUM1,
 
-                              arguments: {
-                                'id_user': idUser,
+                                arguments: {
+                                  'id_user': idUser,
 
-                                'full_name': fullName,
+                                  'full_name': fullName,
 
-                                'id_role': idRole,
+                                  'id_role': idRole,
 
-                                'name_role': role,
+                                  'name_role': role,
 
-                                'id_organization': idOrganization,
+                                  'id_organization': idOrganization,
 
-                                'name_organization': roleBidang,
-                              },
-                            );
-                          },
-                        ),
-                      ] else ...[
-                        CardButtonActions(
-                          backroundColor: ButtonActionsColors.fillLaporan,
-
-                          strokeColor: ButtonActionsColors.strokeLaporan,
-
-                          titleText: 'Upload Laporan',
-
-                          subTitle: 'upload laporan PKK disini',
-
-                          imageAssets: 'assets/images/ic_report.png',
-
-                          onTab: () {
-                            Get.toNamed(
-                              Routes.UPLOAD_LAPORAN,
-
-                              arguments: {
-                                'id_user': idUser,
-
-                                'full_name': fullName,
-
-                                'id_role': idRole,
-
-                                'name_role': role,
-
-                                'id_organization': idOrganization,
-
-                                'name_organization': roleBidang,
-                              },
-                            );
-                          },
-                        ),
-                      ],
-
-                      SizedBox(height: 14.h),
-
-                      // ================= BUTTON GALERI =================
-                      CardButtonActions(
-                        backroundColor: ButtonActionsColors.fillGalery,
-
-                        strokeColor: ButtonActionsColors.strokeGalery,
-
-                        titleText: 'Tambah Foto kegiatan',
-
-                        subTitle: 'upload kegiatan PKK disini',
-
-                        imageAssets: 'assets/images/ic_gallery.png',
-
-                        onTab: () {
-                          Get.toNamed(
-                            Routes.UPLOAD_GALERI,
-
-                            arguments: {
-                              'id_user': idUser,
-
-                              'full_name': fullName,
-
-                              'id_role': idRole,
-
-                              'name_role': role,
-
-                              'id_organization': idOrganization,
-
-                              'name_organization': roleBidang,
+                                  'name_organization': roleBidang,
+                                },
+                              );
                             },
-                          );
-                        },
-                      ),
+                          ),
+                        ] else ...[
+                          CardButtonActions(
+                            backroundColor: ButtonActionsColors.fillLaporan,
 
-                      SizedBox(height: 32.h),
+                            strokeColor: ButtonActionsColors.strokeLaporan,
 
-                      // ================= PENGUMUMAN =================
-                      Obx(() {
-                        // ================= LOADING =================
-                        if (pengumumanController.isWeeklyLoading.value &&
-                            pengumumanController.weeklyPengumumanList.isEmpty) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFF3F8FC1),
-                            ),
-                          );
-                        }
+                            titleText: 'Upload Laporan',
 
-                        final list = pengumumanController.weeklyPengumumanList;
+                            subTitle: 'upload laporan PKK disini',
 
-                        return Column(
-                          children: [
-                            // ================= TITLE =================
-                            WidgetTextPengumuman(
-                              firstText: 'Pengumuman',
-                              secondText: 'Pengumuman minggu ini',
-                              threeText: 'Lihat Semua',
-                              svgIcon: 'assets/icons/ic_arrow_right.svg',
-                              onTapThreeText: () {
-                                final NavController navController =
-                                    Get.find<NavController>();
-                                navController.changeTabIndex(2);
+                            imageAssets: 'assets/images/ic_report.png',
+
+                            onTab: () {
+                              Get.toNamed(
+                                Routes.UPLOAD_LAPORAN,
+
+                                arguments: {
+                                  'id_user': idUser,
+
+                                  'full_name': fullName,
+
+                                  'id_role': idRole,
+
+                                  'name_role': role,
+
+                                  'id_organization': idOrganization,
+
+                                  'name_organization': roleBidang,
+                                },
+                              );
+                            },
+                          ),
+                        ],
+
+                        SizedBox(height: 14.h),
+
+                        // ================= BUTTON GALERI =================
+                        CardButtonActions(
+                          backroundColor: ButtonActionsColors.fillGalery,
+
+                          strokeColor: ButtonActionsColors.strokeGalery,
+
+                          titleText: 'Tambah Foto kegiatan',
+
+                          subTitle: 'upload kegiatan PKK disini',
+
+                          imageAssets: 'assets/images/ic_gallery.png',
+
+                          onTab: () {
+                            Get.toNamed(
+                              Routes.UPLOAD_GALERI,
+
+                              arguments: {
+                                'id_user': idUser,
+
+                                'full_name': fullName,
+
+                                'id_role': idRole,
+
+                                'name_role': role,
+
+                                'id_organization': idOrganization,
+
+                                'name_organization': roleBidang,
                               },
-                            ),
+                            );
+                          },
+                        ),
 
-                            SizedBox(height: 16.h),
+                        SizedBox(height: 32.h),
 
-                            // [PERUBAHAN 08-10-2026] Tampilan lembut jika belum ada pengumuman minggu ini
-                            if (list.isEmpty)
-                              Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 24.h,
-                                  horizontal: 16.w,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF8FAFC),
-                                  borderRadius: BorderRadius.circular(16.r),
-                                  border: Border.all(
-                                    color: const Color(0xFFE7EDF3),
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Icon(
-                                      Icons.campaign_outlined,
-                                      size: 40.sp,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                    SizedBox(height: 10.h),
-                                    Text(
-                                      'Belum ada pengumuman minggu ini',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.grey.shade700,
-                                      ),
-                                    ),
-                                    SizedBox(height: 6.h),
-                                    Text(
-                                      'Lihat arsip pengumuman di Riwayat Pengumuman',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: Colors.grey.shade500,
-                                      ),
-                                    ),
-                                    SizedBox(height: 12.h),
-                                    TextButton.icon(
-                                      icon: Icon(
-                                        Icons.calendar_month_outlined,
-                                        size: 16.sp,
-                                        color: const Color(0xFF3F8FC1),
-                                      ),
-                                      label: Text(
-                                        'Buka Riwayat',
-                                        style: TextStyle(
-                                          fontSize: 13.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: const Color(0xFF3F8FC1),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Get.toNamed(Routes.RIWAYAT_PENGUMUMAN);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              )
-                            else
-                              // ================= LIST =================
-                              ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: list.length,
-                                itemBuilder: (context, index) {
-                                  final pengumuman = list[index];
+                        // ================= PENGUMUMAN =================
+                        Obx(() {
+                          // ================= LOADING =================
+                          if (pengumumanController.isWeeklyLoading.value &&
+                              pengumumanController
+                                  .weeklyPengumumanList
+                                  .isEmpty) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF3F8FC1),
+                              ),
+                            );
+                          }
 
-                                  return Padding(
-                                    padding: EdgeInsets.only(bottom: 16.h),
-                                    child: CardPengumuman(
-                                      title: pengumuman.judul,
-                                      subTitle: pengumuman.tempat,
-                                      dateText: DateFormat(
-                                        'dd-MM-yyyy',
-                                      ).format(pengumuman.tanggal),
-                                      onTab: () {
-                                        _showDetailPengumuman(
-                                          pengumuman.judul,
-                                          pengumuman.deskripsi,
-                                          pengumuman.tempat,
-                                        );
-                                      },
-                                    ),
-                                  );
+                          final list =
+                              pengumumanController.weeklyPengumumanList;
+
+                          return Column(
+                            children: [
+                              // ================= TITLE =================
+                              WidgetTextPengumuman(
+                                firstText: 'Pengumuman',
+                                secondText: 'Pengumuman minggu ini',
+                                threeText: 'Lihat Semua',
+                                svgIcon: 'assets/icons/ic_arrow_right.svg',
+                                onTapThreeText: () {
+                                  final NavController navController =
+                                      Get.find<NavController>();
+                                  navController.changeTabIndex(2);
                                 },
                               ),
-                          ],
-                        );
-                      }),
-                    ],
+
+                              SizedBox(height: 16.h),
+
+                              // [PERUBAHAN 08-10-2026] Tampilan lembut jika belum ada pengumuman minggu ini
+                              if (list.isEmpty)
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 24.h,
+                                    horizontal: 16.w,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF8FAFC),
+                                    borderRadius: BorderRadius.circular(16.r),
+                                    border: Border.all(
+                                      color: const Color(0xFFE7EDF3),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.campaign_outlined,
+                                        size: 40.sp,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      SizedBox(height: 10.h),
+                                      Text(
+                                        'Belum ada pengumuman minggu ini',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey.shade700,
+                                        ),
+                                      ),
+                                      SizedBox(height: 6.h),
+                                      Text(
+                                        'Lihat arsip pengumuman di Riwayat Pengumuman',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: Colors.grey.shade500,
+                                        ),
+                                      ),
+                                      SizedBox(height: 12.h),
+                                      TextButton.icon(
+                                        icon: Icon(
+                                          Icons.calendar_month_outlined,
+                                          size: 16.sp,
+                                          color: const Color(0xFF3F8FC1),
+                                        ),
+                                        label: Text(
+                                          'Buka Riwayat',
+                                          style: TextStyle(
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color(0xFF3F8FC1),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Get.toNamed(
+                                            Routes.RIWAYAT_PENGUMUMAN,
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              else
+                                // ================= LIST =================
+                                ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    final pengumuman = list[index];
+
+                                    return Padding(
+                                      padding: EdgeInsets.only(bottom: 16.h),
+                                      child: CardPengumuman(
+                                        title: pengumuman.judul,
+                                        subTitle: pengumuman.tempat,
+                                        dateText: DateFormat(
+                                          'dd-MM-yyyy',
+                                        ).format(pengumuman.tanggal),
+                                        onTab: () {
+                                          _showDetailPengumuman(
+                                            pengumuman.judul,
+                                            pengumuman.deskripsi,
+                                            pengumuman.tempat,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                            ],
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
             ),
           ],
         ),

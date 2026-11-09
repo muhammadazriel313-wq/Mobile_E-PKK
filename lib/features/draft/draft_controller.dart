@@ -1,5 +1,6 @@
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
 import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/features/draft/draft_registry.dart';
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -34,13 +35,9 @@ class DraftController extends GetxController {
     sendingDraftIds.remove(id);
   }
 
-  static const List<String> jenisLaporan = [
-    'pancasila',
-    'gotong_royong',
-    'kader_pokja1',
-  ];
+  static List<String> get jenisLaporan => DraftRegistry.laporanJenis;
 
-  static const List<String> jenisGaleri = ['galeri'];
+  static List<String> get jenisGaleri => DraftRegistry.galeriJenis;
 
   @override
   void onInit() {

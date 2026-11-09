@@ -14,8 +14,7 @@ class KaderPokja3Controller extends GetxController {
   var reportData = Rxn<ReportKaderPokja3Model>();
 
   // ================= FORM =================
-  KaderPokja3Entry form =
-      KaderPokja3EntryExtension.empty();
+  KaderPokja3Entry form = KaderPokja3EntryExtension.empty();
 
   // ================= USER =================
   String idUser = '';
@@ -29,16 +28,11 @@ class KaderPokja3Controller extends GetxController {
   }
 
   Future<void> loadUser() async {
-    final user =
-        await PreferencesService.getUser();
+    final user = await PreferencesService.getUser();
 
     idUser = user?.id?.toString() ?? '';
-    idRole =
-        user?.role?.id?.toString() ?? '';
-    idOrganization =
-        user?.organization?.id
-                ?.toString() ??
-            '';
+    idRole = user?.role?.id?.toString() ?? '';
+    idOrganization = user?.organization?.id?.toString() ?? '';
   }
 
   // ================= SET FIELD =================
@@ -49,18 +43,13 @@ class KaderPokja3Controller extends GetxController {
     String? catatan,
   }) {
     form = KaderPokja3Entry(
-      idKaderPokja3:
-          form.idKaderPokja3,
+      idKaderPokja3: form.idKaderPokja3,
       uuid: form.uuid,
       idUser: form.idUser,
       pangan: pangan ?? form.pangan,
-      sandang:
-          sandang ?? form.sandang,
-      tataLaksanaRumah:
-          tataLaksanaRumah ??
-              form.tataLaksanaRumah,
-      catatan:
-          catatan ?? form.catatan,
+      sandang: sandang ?? form.sandang,
+      tataLaksanaRumah: tataLaksanaRumah ?? form.tataLaksanaRumah,
+      catatan: catatan ?? form.catatan,
       status: form.status,
       createdAt: form.createdAt,
       updatedAt: form.updatedAt,
@@ -73,16 +62,12 @@ class KaderPokja3Controller extends GetxController {
   Future<bool> submit() async {
     if (isLoading.value) return false;
 
-    if (idUser.isEmpty ||
-        idRole.isEmpty ||
-        idOrganization.isEmpty) {
+    if (idUser.isEmpty || idRole.isEmpty || idOrganization.isEmpty) {
       Get.snackbar(
         'Error',
         'Session user belum siap',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
 
@@ -98,16 +83,12 @@ class KaderPokja3Controller extends GetxController {
         data: form.toRequest(
           idUser: idUser,
           idRole: idRole,
-          idOrganization:
-              idOrganization,
+          idOrganization: idOrganization,
         ),
       );
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201) {
-        reportData.value =
-            ReportKaderPokja3Model
-                .fromJson(response.data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        reportData.value = ReportKaderPokja3Model.fromJson(response.data);
 
         Get.snackbar(
           'Berhasil',
@@ -121,24 +102,17 @@ class KaderPokja3Controller extends GetxController {
         );
 
         // RESET FORM
-        form =
-            KaderPokja3EntryExtension
-                .empty();
+        form = KaderPokja3EntryExtension.empty();
 
         return true;
       } else {
         Get.snackbar(
           'Gagal',
           'Upload gagal',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(
-                seconds: 3,
-              ),
+          duration: const Duration(seconds: 3),
         );
 
         return false;
@@ -150,32 +124,21 @@ class KaderPokja3Controller extends GetxController {
         Get.snackbar(
           'Server Error',
           e.response?.data?['message'] ??
-              e.response?.data
-                  .toString() ??
+              e.response?.data.toString() ??
               'Terjadi kesalahan',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(
-                seconds: 3,
-              ),
+          duration: const Duration(seconds: 3),
         );
       } else {
         Get.snackbar(
           'Error',
           e.toString(),
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(
-                seconds: 3,
-              ),
+          duration: const Duration(seconds: 3),
         );
       }
 

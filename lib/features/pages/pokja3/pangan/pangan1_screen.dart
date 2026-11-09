@@ -18,12 +18,10 @@ class Pangan1Screen extends StatefulWidget {
   const Pangan1Screen({super.key});
 
   @override
-  State<Pangan1Screen> createState() =>
-      _Pangan1ScreenState();
+  State<Pangan1Screen> createState() => _Pangan1ScreenState();
 }
 
-class _Pangan1ScreenState
-    extends State<Pangan1Screen> {
+class _Pangan1ScreenState extends State<Pangan1Screen> {
   String? id_user;
   String? id_role;
   String? id_organization;
@@ -31,19 +29,13 @@ class _Pangan1ScreenState
   String? name_role;
   String? name_organization;
 
-  final berasController =
-      TextEditingController();
+  final berasController = TextEditingController();
 
-  final nonBerasController =
-      TextEditingController();
+  final nonBerasController = TextEditingController();
 
-  final _formKey =
-      GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  final PanganController
-  uploadController = Get.put(
-    PanganController(),
-  );
+  final PanganController uploadController = Get.put(PanganController());
 
   void clearForm() {
     berasController.clear();
@@ -65,11 +57,9 @@ class _Pangan1ScreenState
 
     name_role = args['name_role'];
 
-    id_organization =
-        args['id_organization'];
+    id_organization = args['id_organization'];
 
-    name_organization =
-        args['name_organization'];
+    name_organization = args['name_organization'];
   }
 
   @override
@@ -82,16 +72,14 @@ class _Pangan1ScreenState
   }
 
   Widget sectionTitle(String title) {
-    return TypographyStyles
-        .bodyCaptionSemiBold(
+    return TypographyStyles.bodyCaptionSemiBold(
       title,
       color: TextColors.grey900,
     );
   }
 
   Widget inputField({
-    required TextEditingController
-    controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
@@ -104,14 +92,9 @@ class _Pangan1ScreenState
 
           label: label,
 
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
 
-          validator: (value) =>
-              ValidatorForm
-                  .validateDefault(
-                    value,
-                  ),
+          validator: (value) => ValidatorForm.validateDefault(value),
         ),
 
         SizedBox(height: 20.h),
@@ -121,11 +104,9 @@ class _Pangan1ScreenState
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
+    final media = MediaQuery.of(context);
 
-    final isTablet =
-        media.size.width >= 600;
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -146,172 +127,121 @@ class _Pangan1ScreenState
       /// BODY
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
+          onTap: () => FocusScope.of(context).unfocus(),
 
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .onDrag,
+                    ScrollViewKeyboardDismissBehavior.onDrag,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
 
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          SizedBox(
-                              height: 6.h),
+                          SizedBox(height: 6.h),
 
                           /// TITLE
-                          sectionTitle(
-                            'Makanan Pokok',
-                          ),
+                          sectionTitle('Makanan Pokok'),
 
-                          SizedBox(
-                              height: 24.h),
+                          SizedBox(height: 24.h),
 
                           /// BERAS
                           inputField(
-                            controller:
-                                berasController,
+                            controller: berasController,
 
-                            label:
-                                'Beras',
+                            label: 'Beras',
                           ),
 
                           /// NON BERAS
                           inputField(
-                            controller:
-                                nonBerasController,
+                            controller: nonBerasController,
 
-                            label:
-                                'Non Beras',
+                            label: 'Non Beras',
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text:
-                                    'Lanjut',
+                                text: 'Lanjut',
 
-                                textColor:
-                                    Colors
-                                        .white,
+                                textColor: Colors.white,
 
-                                isLoading:
-                                    uploadController
-                                        .isLoading
-                                        .value,
+                                isLoading: uploadController.isLoading.value,
 
-                                onPressed:
-                                    uploadController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () {
-                                            if (_formKey
-                                                .currentState!
-                                                .validate()) {
-                                              Get.toNamed(
-                                                Routes
-                                                    .PANGAN2,
+                                onPressed: uploadController.isLoading.value
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState!.validate()) {
+                                          Get.toNamed(
+                                            Routes.PANGAN2,
 
-                                                arguments: {
-                                                  'id_user':
-                                                      id_user,
+                                            arguments: {
+                                              'id_user': id_user,
 
-                                                  'full_name':
-                                                      full_name,
+                                              'full_name': full_name,
 
-                                                  'id_role':
-                                                      id_role,
+                                              'id_role': id_role,
 
-                                                  'name_role':
-                                                      name_role,
+                                              'name_role': name_role,
 
-                                                  'id_organization':
-                                                      id_organization,
+                                              'id_organization':
+                                                  id_organization,
 
-                                                  'name_organization':
-                                                      name_organization,
+                                              'name_organization':
+                                                  name_organization,
 
-                                                  'beras':
-                                                      berasController
-                                                          .text,
+                                              'beras': berasController.text,
 
-                                                  'non_beras':
-                                                      nonBerasController
-                                                          .text,
-                                                },
-                                              );
-                                            } else {
-                                              Get.snackbar(
-                                                'Error',
+                                              'non_beras':
+                                                  nonBerasController.text,
+                                            },
+                                          );
+                                        } else {
+                                          Get.snackbar(
+                                            'Error',
 
-                                                'Lengkapi Form',
+                                            'Lengkapi Form',
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
+                                            snackPosition: SnackPosition.TOP,
 
-                                                backgroundColor:
-                                                    Colors
-                                                        .red,
+                                            backgroundColor: Colors.red,
 
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-                                            }
-                                          },
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 20.h),
                         ],
                       ),
                     ),

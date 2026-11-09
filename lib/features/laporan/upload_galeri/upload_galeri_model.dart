@@ -113,7 +113,7 @@ class GaleriEntry {
       'role': role.toJson(),
       'organization': organization.toJson(),
 
-     // LOKASI & PESERTA
+      // LOKASI & PESERTA
       'lokasi': lokasi,
       'latitude': latitude,
       'longitude': longitude,

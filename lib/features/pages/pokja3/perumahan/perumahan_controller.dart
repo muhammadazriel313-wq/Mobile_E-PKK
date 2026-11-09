@@ -28,27 +28,17 @@ class PerumahanController extends GetxController {
 
       final data = {
         'id_user': idUser,
-        'layak_huni':
-            int.tryParse(layakHuni) ?? 0,
-        'tidak_layak':
-            int.tryParse(tidakLayak) ?? 0,
+        'layak_huni': int.tryParse(layakHuni) ?? 0,
+        'tidak_layak': int.tryParse(tidakLayak) ?? 0,
         'id_role': idRole,
-        'id_organization':
-            idOrganization,
-        if (catatan != null)
-          'catatan': catatan,
+        'id_organization': idOrganization,
+        if (catatan != null) 'catatan': catatan,
       };
 
-      final response = await apiHelper.post(
-        '/report/perumahan',
-        data: data,
-      );
+      final response = await apiHelper.post('/report/perumahan', data: data);
 
       if (response.statusCode == 200) {
-        reportData.value =
-            ReportPerumahanModel.fromJson(
-          response.data,
-        );
+        reportData.value = ReportPerumahanModel.fromJson(response.data);
 
         // SUCCESS
         Get.snackbar(
@@ -62,21 +52,16 @@ class PerumahanController extends GetxController {
           duration: const Duration(seconds: 3),
         );
       } else {
-        errorMessage(
-          'Upload gagal',
-        );
+        errorMessage('Upload gagal');
 
         // GAGAL
         Get.snackbar(
           'Gagal',
           'Upload gagal',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
@@ -87,28 +72,21 @@ class PerumahanController extends GetxController {
         Get.snackbar(
           'Server Error',
           e.response?.data?['message'] ??
-              e.response?.data
-                  .toString() ??
+              e.response?.data.toString() ??
               'Terjadi kesalahan',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       } else {
         Get.snackbar(
           'Error',
           e.toString(),
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       }
     } finally {
@@ -123,6 +101,5 @@ class PerumahanController extends GetxController {
   }
 
   // ================= GETTER =================
-  PerumahanEntry? get entryData =>
-      reportData.value?.data;
+  PerumahanEntry? get entryData => reportData.value?.data;
 }

@@ -18,38 +18,29 @@ class KegiatanPokja42Screen extends StatefulWidget {
   const KegiatanPokja42Screen({super.key});
 
   @override
-  State<KegiatanPokja42Screen> createState() =>
-      _KegiatanPokja42ScreenState();
+  State<KegiatanPokja42Screen> createState() => _KegiatanPokja42ScreenState();
 }
 
-class _KegiatanPokja42ScreenState
-    extends State<KegiatanPokja42Screen> {
+class _KegiatanPokja42ScreenState extends State<KegiatanPokja42Screen> {
   /// ================= ARGUMENT =================
 
   late Map<String, dynamic> data;
 
   /// ================= CONTROLLER =================
 
-  final jambanWcController =
-      TextEditingController();
+  final jambanWcController = TextEditingController();
 
-  final spalController =
-      TextEditingController();
+  final spalController = TextEditingController();
 
-  final tpsController =
-      TextEditingController();
+  final tpsController = TextEditingController();
 
-  final jumlahMckController =
-      TextEditingController();
+  final jumlahMckController = TextEditingController();
 
-  final pdamController =
-      TextEditingController();
+  final pdamController = TextEditingController();
 
-  final sumurController =
-      TextEditingController();
+  final sumurController = TextEditingController();
 
-  final lainLainController =
-      TextEditingController();
+  final lainLainController = TextEditingController();
 
   /// ================= FORM =================
 
@@ -109,65 +100,49 @@ class _KegiatanPokja42ScreenState
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
 
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
+                    ScrollViewKeyboardDismissBehavior.manual,
 
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
+                  left: isTablet ? 40.w : 16.w,
 
-                  right:
-                      isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
 
                   top: 20.h,
 
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  bottom: media.viewInsets.bottom + 20.h,
                 ),
 
                 child: Center(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxWidth:
-                          isTablet
-                              ? 650
-                              : double.infinity,
+                      maxWidth: isTablet ? 650 : double.infinity,
 
-                      minHeight:
-                          constraints.maxHeight,
+                      minHeight: constraints.maxHeight,
                     ),
 
                     child: Form(
                       key: _formKey,
 
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
                           /// ======================
                           /// LINGKUNGAN
                           /// ======================
-
-                          TypographyStyles
-                              .bodyCaptionSemiBold(
+                          TypographyStyles.bodyCaptionSemiBold(
                             'Lingkungan',
 
-                            color:
-                                TextColors.grey900,
+                            color: TextColors.grey900,
                           ),
 
                           SizedBox(height: 24.h),
 
                           _inputField(
-                            controller:
-                                jambanWcController,
+                            controller: jambanWcController,
 
                             label: 'Jamban WC',
                           ),
@@ -175,36 +150,27 @@ class _KegiatanPokja42ScreenState
                           _space(),
 
                           _inputField(
-                            controller:
-                                spalController,
+                            controller: spalController,
 
                             label: 'SPAL',
                           ),
 
                           _space(),
 
-                          _inputField(
-                            controller:
-                                tpsController,
+                          _inputField(controller: tpsController, label: 'TPS'),
 
-                            label: 'TPS',
+                          _space(),
+
+                          _inputField(
+                            controller: jumlahMckController,
+
+                            label: 'Jumlah MCK',
                           ),
 
                           _space(),
 
                           _inputField(
-                            controller:
-                                jumlahMckController,
-
-                            label:
-                                'Jumlah MCK',
-                          ),
-
-                          _space(),
-
-                          _inputField(
-                            controller:
-                                pdamController,
+                            controller: pdamController,
 
                             label: 'PDAM',
                           ),
@@ -212,8 +178,7 @@ class _KegiatanPokja42ScreenState
                           _space(),
 
                           _inputField(
-                            controller:
-                                sumurController,
+                            controller: sumurController,
 
                             label: 'Sumur',
                           ),
@@ -221,11 +186,9 @@ class _KegiatanPokja42ScreenState
                           _space(),
 
                           _inputField(
-                            controller:
-                                lainLainController,
+                            controller: lainLainController,
 
-                            label:
-                                'Lain-lain',
+                            label: 'Lain-lain',
                           ),
 
                           SizedBox(height: 30.h),
@@ -233,52 +196,33 @@ class _KegiatanPokja42ScreenState
                           /// ======================
                           /// BUTTON
                           /// ======================
-
                           ZoomTapAnimation(
                             child: ButtonFill(
                               text: 'Lanjut',
 
-                              textColor:
-                                  Colors.white,
+                              textColor: Colors.white,
 
                               onPressed: () {
-                                if (_formKey
-                                    .currentState!
-                                    .validate()) {
+                                if (_formKey.currentState!.validate()) {
                                   Get.toNamed(
-                                    Routes
-                                        .KEGIATAN_POKJA4_3,
+                                    Routes.KEGIATAN_POKJA4_3,
 
                                     arguments: {
                                       ...data,
 
-                                      'jamban_wc':
-                                          jambanWcController
-                                              .text,
+                                      'jamban_wc': jambanWcController.text,
 
-                                      'spal':
-                                          spalController
-                                              .text,
+                                      'spal': spalController.text,
 
-                                      'tps':
-                                          tpsController
-                                              .text,
+                                      'tps': tpsController.text,
 
-                                      'jumlah_mck':
-                                          jumlahMckController
-                                              .text,
+                                      'jumlah_mck': jumlahMckController.text,
 
-                                      'pdam':
-                                          pdamController
-                                              .text,
+                                      'pdam': pdamController.text,
 
-                                      'sumur':
-                                          sumurController
-                                              .text,
+                                      'sumur': sumurController.text,
 
-                                      'lain_lain':
-                                          lainLainController
-                                              .text,
+                                      'lain_lain': lainLainController.text,
                                     },
                                   );
                                 } else {
@@ -287,15 +231,11 @@ class _KegiatanPokja42ScreenState
 
                                     'Lengkapi Form',
 
-                                    snackPosition:
-                                        SnackPosition
-                                            .TOP,
+                                    snackPosition: SnackPosition.TOP,
 
-                                    backgroundColor:
-                                        Colors.red,
+                                    backgroundColor: Colors.red,
 
-                                    colorText:
-                                        Colors.white,
+                                    colorText: Colors.white,
                                   );
                                 }
                               },
@@ -321,8 +261,7 @@ class _KegiatanPokja42ScreenState
   /// ======================
 
   Widget _inputField({
-    required TextEditingController
-        controller,
+    required TextEditingController controller,
 
     required String label,
   }) {
@@ -333,16 +272,12 @@ class _KegiatanPokja42ScreenState
 
       label: label,
 
-      keyboardType:
-          TextInputType.number,
+      keyboardType: TextInputType.number,
 
-      textInputAction:
-          TextInputAction.next,
+      textInputAction: TextInputAction.next,
 
       validator: (value) {
-        return ValidatorForm.validateNumber(
-          value,
-        );
+        return ValidatorForm.validateNumber(value);
       },
     );
   }
@@ -351,6 +286,5 @@ class _KegiatanPokja42ScreenState
   /// SPACE
   /// ======================
 
-  Widget _space() =>
-      SizedBox(height: 20.h);
+  Widget _space() => SizedBox(height: 20.h);
 }

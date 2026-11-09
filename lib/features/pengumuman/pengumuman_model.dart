@@ -40,13 +40,17 @@ class PengumumanResponse {
     return PengumumanResponse(
       statusCode: json['statusCode'] ?? 500,
       message: json['message'] ?? 'Unknown error',
-      data: (json['data'] as List?)
-          ?.map((e) => Pengumuman.fromJson(e))
-          .toList() ?? [],
-      pagination: json['pagination'] != null 
-          ? Pagination.fromJson(json['pagination']) 
+      data:
+          (json['data'] as List?)
+              ?.map((e) => Pengumuman.fromJson(e))
+              .toList() ??
+          [],
+      pagination: json['pagination'] != null
+          ? Pagination.fromJson(json['pagination'])
           : null,
-      error: json['error'] != null ? ErrorMessage.fromJson(json['error']) : null,
+      error: json['error'] != null
+          ? ErrorMessage.fromJson(json['error'])
+          : null,
     );
   }
 
@@ -85,9 +89,15 @@ class Pengumuman {
       judul: json['judul_pengumuman'] ?? 'Tidak ada judul',
       deskripsi: json['deskripsi_pengumuman'] ?? 'Tidak ada deskripsi',
       tempat: json['tempat_pengumuman'] ?? 'Tidak ada tempat',
-      tanggal: DateTime.parse(json['tanggal_pengumuman'] ?? DateTime.now().toString()),
-      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toString()),
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toString()),
+      tanggal: DateTime.parse(
+        json['tanggal_pengumuman'] ?? DateTime.now().toString(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'] ?? DateTime.now().toString(),
+      ),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toString(),
+      ),
     );
   }
 
@@ -110,9 +120,7 @@ class ErrorMessage {
   ErrorMessage({required this.message});
 
   factory ErrorMessage.fromJson(Map<String, dynamic> json) {
-    return ErrorMessage(
-      message: json['message'] ?? 'Unknown error',
-    );
+    return ErrorMessage(message: json['message'] ?? 'Unknown error');
   }
 
   Map<String, dynamic> toJson() {

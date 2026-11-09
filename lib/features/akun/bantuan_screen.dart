@@ -254,8 +254,11 @@ class _BantuanScreenState extends State<BantuanScreen> {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: Icon(Icons.copy_rounded,
-                          size: 16.sp, color: Colors.white),
+                      icon: Icon(
+                        Icons.copy_rounded,
+                        size: 16.sp,
+                        color: Colors.white,
+                      ),
                       label: Text(
                         'Salin Nomor',
                         style: TextStyle(
@@ -715,8 +718,11 @@ class _BantuanScreenState extends State<BantuanScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.schedule_rounded,
-                  size: 16.sp, color: Colors.grey.shade600),
+              Icon(
+                Icons.schedule_rounded,
+                size: 16.sp,
+                color: Colors.grey.shade600,
+              ),
               SizedBox(width: 6.w),
               Expanded(
                 child: Text(
@@ -733,11 +739,7 @@ class _BantuanScreenState extends State<BantuanScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              icon: Icon(
-                Icons.chat_outlined,
-                size: 18.sp,
-                color: Colors.white,
-              ),
+              icon: Icon(Icons.chat_outlined, size: 18.sp, color: Colors.white),
               label: Text(
                 'Hubungi Admin lewat WhatsApp',
                 style: TextStyle(
@@ -773,10 +775,7 @@ class _BantuanScreenState extends State<BantuanScreen> {
             nilai: 'E-PKK Kabupaten Nganjuk',
           ),
           SizedBox(height: 8.h),
-          _buildBarisInfo(
-            label: 'Versi',
-            nilai: BantuanScreen.appVersion,
-          ),
+          _buildBarisInfo(label: 'Versi', nilai: BantuanScreen.appVersion),
           SizedBox(height: 8.h),
           _buildBarisInfo(
             label: 'Pengembang',
@@ -787,20 +786,14 @@ class _BantuanScreenState extends State<BantuanScreen> {
     );
   }
 
-  Widget _buildBarisInfo({
-    required String label,
-    required String nilai,
-  }) {
+  Widget _buildBarisInfo({required String label, required String nilai}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
         ),
         SizedBox(width: 12.w),
         Flexible(
