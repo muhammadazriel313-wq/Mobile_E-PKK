@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +14,8 @@ class LaporanUmumController extends GetxController {
   var isLoading = false.obs;
 
   var errorMessage = ''.obs;
+
+  var lastFailureWasNetwork = false.obs;
 
   var reportData = Rxn<ReportUmumModel>();
 
@@ -44,6 +47,7 @@ class LaporanUmumController extends GetxController {
       isLoading(true);
 
       errorMessage('');
+      lastFailureWasNetwork(false);
 
       reportData(null);
 
@@ -103,6 +107,7 @@ class LaporanUmumController extends GetxController {
         );
       }
     } on SocketException {
+      lastFailureWasNetwork(true);
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -114,7 +119,25 @@ class LaporanUmumController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } on TimeoutException {
+      lastFailureWasNetwork(true);
       errorMessage('Server tidak merespons');
+
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    } on DioException catch (e) {
+      lastFailureWasNetwork(
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout,
+      );
+      errorMessage(e.response?.data?['message']?.toString() ?? e.message ?? 'Terjadi kesalahan jaringan');
 
       Get.snackbar(
         'Error',

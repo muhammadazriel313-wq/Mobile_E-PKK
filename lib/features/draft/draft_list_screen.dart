@@ -118,7 +118,14 @@ class _DraftListScreenState extends State<DraftListScreen> {
     if (registration != null && registration.key != 'pancasila') {
       final formArgs = Map<String, dynamic>.from(_parentArgs);
       formArgs['draft'] = draft;
-      await Get.toNamed(registration.route, arguments: formArgs);
+      String targetRoute = registration.route;
+      if (draft.jenis == 'laporan_umum') {
+        final step = draft.dataForm['langkah'];
+        if (step == 2) targetRoute = Routes.LAPORAN_UMUM2;
+        if (step == 3) targetRoute = Routes.LAPORAN_UMUM3;
+        if (step == 4) targetRoute = Routes.LAPORAN_UMUM4;
+      }
+      await Get.toNamed(targetRoute, arguments: formArgs);
       await _draftController.loadDrafts(filterJenis: _filterJenis);
     } else if (draft.jenis == 'pancasila') {
       final formArgs = Map<String, dynamic>.from(_parentArgs);

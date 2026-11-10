@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/laporan/laporan_umum/laporan_umum_controller.dart';
 import 'package:epkk_nganjuk/features/laporan/upload_galeri/upload_galerii_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/gotongroyong/gotong_royong_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/kaderpokja1/kader_pokja1_controller.dart';
@@ -61,6 +62,12 @@ class DraftRegistry {
       galeri: true,
       sender: _sendGaleri,
     ),
+    'laporan_umum': DraftRegistration(
+      key: 'laporan_umum',
+      title: 'Laporan Umum',
+      route: Routes.LAPORAN_UMUM1,
+      sender: _sendLaporanUmum,
+    ),
   };
 
   static DraftRegistration? lookup(String key) => entries[key];
@@ -118,6 +125,7 @@ class DraftRegistry {
     return DraftSendResult(
       success: result?.statusCode == 200,
       message: result?.message ?? controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
     );
   }
 
@@ -175,6 +183,79 @@ class DraftRegistry {
     );
 
     final success = controller.galeriData.value != null;
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendLaporanUmum(DraftModel draft) async {
+    final controller = Get.isRegistered<LaporanUmumController>()
+        ? Get.find<LaporanUmumController>()
+        : Get.put(LaporanUmumController());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = [
+      'dusun_lingkungan',
+      'PKK_RW',
+      'PKK_RT',
+      'desa_wisma',
+      'KRT',
+      'KK',
+      'jiwa_laki',
+      'jiwa_perempuan',
+      'anggota_laki',
+      'anggota_perempuan',
+      'umum_laki',
+      'umum_perempuan',
+      'khusus_laki',
+      'khusus_perempuan',
+      'honorer_laki',
+      'honorer_perempuan',
+      'bantuan_laki',
+      'bantuan_perempuan',
+    ];
+
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    await controller.submitUmumData(
+      idUser: draft.idAkun,
+      dusunLingkungan: data['dusun_lingkungan']?.toString() ?? '',
+      pkkRw: data['PKK_RW']?.toString() ?? '',
+      pkkRt: data['PKK_RT']?.toString() ?? '',
+      desaWisma: data['desa_wisma']?.toString() ?? '',
+      krt: data['KRT']?.toString() ?? '',
+      kk: data['KK']?.toString() ?? '',
+      jiwaLaki: data['jiwa_laki']?.toString() ?? '',
+      jiwaPerempuan: data['jiwa_perempuan']?.toString() ?? '',
+      anggotaLaki: data['anggota_laki']?.toString() ?? '',
+      anggotaPerempuan: data['anggota_perempuan']?.toString() ?? '',
+      umumLaki: data['umum_laki']?.toString() ?? '',
+      umumPerempuan: data['umum_perempuan']?.toString() ?? '',
+      khususLaki: data['khusus_laki']?.toString() ?? '',
+      khususPerempuan: data['khusus_perempuan']?.toString() ?? '',
+      honorerLaki: data['honorer_laki']?.toString() ?? '',
+      honorerPerempuan: data['honorer_perempuan']?.toString() ?? '',
+      bantuanLaki: data['bantuan_laki']?.toString() ?? '',
+      bantuanPerempuan: data['bantuan_perempuan']?.toString() ?? '',
+      idRole: data['id_role']?.toString() ?? '',
+      idOrganization: data['id_organization']?.toString() ?? '',
+      catatan: data['catatan']?.toString(),
+    );
+
+    final success = controller.reportData.value != null;
     return DraftSendResult(
       success: success,
       message: success ? null : controller.errorMessage.value,

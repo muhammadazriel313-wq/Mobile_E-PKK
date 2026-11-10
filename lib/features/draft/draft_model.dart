@@ -133,6 +133,10 @@ class DraftModel {
         final desc = dataForm['deskripsi']?.toString().trim() ?? '';
         if (desc.isNotEmpty) return desc;
         return 'Galeri Kegiatan';
+      case 'laporan_umum':
+        final dusun = dataForm['dusun_lingkungan']?.toString().trim() ?? '';
+        if (dusun.isNotEmpty) return 'Dusun/Lingkungan: $dusun';
+        return 'Laporan Umum';
       default:
         return 'Laporan Draf';
     }
@@ -148,6 +152,8 @@ class DraftModel {
         return 'Kader Pokja 1';
       case 'galeri':
         return 'Upload Kegiatan';
+      case 'laporan_umum':
+        return 'Laporan Umum';
       default:
         return 'Laporan';
     }

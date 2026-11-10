@@ -4,7 +4,13 @@ import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/common/colors.dart';
 import 'package:epkk_nganjuk/common/typography.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
 import 'package:epkk_nganjuk/features/laporan/laporan_umum/laporan_umum_controller.dart';
+import 'package:epkk_nganjuk/routes/app_routes.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -22,12 +28,137 @@ class _LaporanUmum4ScreenState extends State<LaporanUmum4Screen> {
       Get.find<LaporanUmumController>();
 
   late Map<String, dynamic> data;
+  DraftModel? _editingDraft;
+  bool _isSavingDraft = false;
+
+  Map<String, dynamic> _collectFormData() {
+    final existingData = _editingDraft?.dataForm ?? {};
+    final result = Map<String, dynamic>.from(existingData);
+    data.forEach((key, value) {
+      if (key != 'draft') {
+        result[key] = value;
+      }
+    });
+    result['langkah'] = 4;
+    return result;
+  }
+
+  Future<bool> _simpanDraf({bool showFeedback = false}) async {
+    if (_isSavingDraft || uploadController.isLoading.value) return false;
+
+    setState(() => _isSavingDraft = true);
+    try {
+      String idUser = data['id_user']?.toString() ?? '';
+      if (idUser.isEmpty) {
+        final user = await PreferencesService.getUser();
+        idUser = user?.id ?? '';
+      }
+      if (idUser.isEmpty) {
+        Get.snackbar(
+          'Sesi Tidak Ditemukan',
+          'Masuk kembali untuk menyimpan draf.',
+          snackPosition: SnackPosition.TOP,
+        );
+        return false;
+      }
+
+      final collectedData = _collectFormData();
+      final service = DraftService();
+      if (_editingDraft != null) {
+        await service.updateDraft(
+          _editingDraft!.copyWith(
+            dataForm: collectedData,
+            status: 'draf',
+            pesanError: null,
+          ),
+        );
+      } else {
+        await service.simpanDraft(
+          idAkun: idUser,
+          jenis: 'laporan_umum',
+          dataForm: collectedData,
+          originalPhotoPaths: [],
+        );
+      }
+
+      final draftController = Get.isRegistered<DraftController>()
+          ? Get.find<DraftController>()
+          : Get.put(DraftController());
+      await draftController.refreshAllCount();
+
+      if (showFeedback) {
+        _showSnackbarDrafDisimpan();
+      }
+      return true;
+    } catch (_) {
+      Get.snackbar(
+        'Gagal',
+        'Draf tidak dapat disimpan.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
+
+  void _showSnackbarDrafDisimpan() {
+    double horizontalMargin = 20.w;
+    final ctx = Get.context;
+    if (ctx != null) {
+      final screenWidth = MediaQuery.of(ctx).size.width;
+      if (screenWidth > 220) {
+        horizontalMargin = (screenWidth - 220) / 2;
+      }
+    }
+
+    Get.snackbar(
+      '',
+      '',
+      titleText: Center(
+        child: Text(
+          'Draf disimpan',
+          style: TextStyle(
+            fontFamily: TypographyStyles.fontFamily,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      messageText: const SizedBox.shrink(),
+      maxWidth: 220,
+      margin: EdgeInsets.only(
+        top: 12.h,
+        left: horizontalMargin,
+        right: horizontalMargin,
+      ),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      borderRadius: 24.r,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 2),
+      backgroundColor: const Color(0xFF3F8FC1),
+      colorText: Colors.white,
+    );
+  }
+
+  Future<bool> _simpanDrafLaluKembali() async {
+    if (!await _simpanDraf()) return false;
+    Get.closeAllSnackbars();
+    Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+    Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
+    return true;
+  }
 
   @override
   void initState() {
     super.initState();
 
-    data = Get.arguments ?? {};
+    final args = (Get.arguments ?? {}) as Map;
+    data = Map<String, dynamic>.from(args);
+    if (args['draft'] is DraftModel) {
+      _editingDraft = args['draft'] as DraftModel;
+    }
   }
 
   @override
@@ -354,20 +485,35 @@ class _LaporanUmum4ScreenState extends State<LaporanUmum4Screen> {
                       SizedBox(height: 30.h),
 
                       // ================= BUTTON =================
-                      ZoomTapAnimation(
-                        child: Obx(
-                          () => ButtonFill(
-                            text: uploadController.isLoading.value
-                                ? 'Loading...'
-                                : 'Kirim',
-
-                            textColor: Colors.white,
-
-                            isLoading: uploadController.isLoading.value,
-
-                            onPressed: uploadController.isLoading.value
-                                ? null
-                                : () async {
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ZoomTapAnimation(
+                              child: ButtonSecondaryOutline(
+                                text: _isSavingDraft
+                                    ? 'Menyimpan...'
+                                    : (_editingDraft != null
+                                        ? 'Simpan Perubahan'
+                                        : 'Simpan Draf'),
+                                onPressed: _isSavingDraft || uploadController.isLoading.value
+                                    ? null
+                                    : () async => _simpanDrafLaluKembali(),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: ZoomTapAnimation(
+                              child: Obx(
+                                () => ButtonFill(
+                                  text: uploadController.isLoading.value
+                                      ? 'Loading...'
+                                      : 'Kirim',
+                                  textColor: Colors.white,
+                                  isLoading: uploadController.isLoading.value,
+                                  onPressed: uploadController.isLoading.value || _isSavingDraft
+                                      ? null
+                                      : () async {
                                     await uploadController.submitUmumData(
                                       idUser: (data['id_user'] ?? '')
                                           .toString(),
@@ -438,20 +584,46 @@ class _LaporanUmum4ScreenState extends State<LaporanUmum4Screen> {
                                     );
 
                                     // SUCCESS
-
                                     if (uploadController
                                         .errorMessage
                                         .value
                                         .isEmpty) {
+                                      if (_editingDraft != null) {
+                                        await DraftService().hapusDraft(_editingDraft!.id);
+                                      }
                                       await Future.delayed(
                                         const Duration(milliseconds: 1500),
                                       );
 
                                       Get.offAllNamed('/main');
+                                    } else if (uploadController.lastFailureWasNetwork.value && mounted) {
+                                      final saveAsDraft = await Get.dialog<bool>(
+                                        AlertDialog(
+                                          title: const Text('Gagal terkirim'),
+                                          content: const Text('Simpan sebagai draf agar isian tidak hilang?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Get.back(result: false),
+                                              child: const Text('Tutup'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () => Get.back(result: true),
+                                              child: const Text('Simpan Draf'),
+                                            ),
+                                          ],
+                                        ),
+                                        barrierDismissible: false,
+                                      );
+                                      if (saveAsDraft == true) {
+                                        await _simpanDrafLaluKembali();
+                                      }
                                     }
                                   },
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
 
                       SizedBox(height: 20.h),
