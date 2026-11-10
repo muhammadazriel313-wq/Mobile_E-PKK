@@ -147,9 +147,16 @@ class DraftModel {
       case 'kader_pokja1':
         return 'Kader Pokja 1';
       case 'galeri':
-        return 'Galeri';
+        return 'Upload Kegiatan';
       default:
         return 'Laporan';
     }
+  }
+
+  int get jumlahFoto {
+    if (daftarFoto.isNotEmpty) return daftarFoto.length;
+    final base64Str = dataForm['foto_base64']?.toString();
+    if (base64Str != null && base64Str.isNotEmpty) return 1;
+    return 0;
   }
 }

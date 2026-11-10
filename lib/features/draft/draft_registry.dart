@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/laporan/upload_galeri/upload_galerii_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/gotongroyong/gotong_royong_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/kaderpokja1/kader_pokja1_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
@@ -50,6 +53,13 @@ class DraftRegistry {
       title: 'Kader Pokja 1',
       route: Routes.KADER_POKJA1,
       sender: _sendKaderPokja1,
+    ),
+    'galeri': DraftRegistration(
+      key: 'galeri',
+      title: 'Upload Kegiatan',
+      route: Routes.UPLOAD_GALERI,
+      galeri: true,
+      sender: _sendGaleri,
     ),
   };
 
@@ -108,6 +118,67 @@ class DraftRegistry {
     return DraftSendResult(
       success: result?.statusCode == 200,
       message: result?.message ?? controller.errorMessage.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendGaleri(DraftModel draft) async {
+    final controller = Get.isRegistered<GaleriController>()
+        ? Get.find<GaleriController>()
+        : Get.put(GaleriController());
+    controller.galeriData.value = null;
+    final data = draft.dataForm;
+
+    Uint8List? gambarBytes;
+    String gambarPath = '';
+    String? namaFile;
+
+    if (kIsWeb) {
+      final base64Str = data['foto_base64']?.toString();
+      if (base64Str != null && base64Str.isNotEmpty) {
+        try {
+          gambarBytes = base64Decode(base64Str);
+        } catch (_) {}
+      }
+      namaFile = data['foto_nama']?.toString() ?? 'upload.jpg';
+      gambarPath = namaFile;
+    } else {
+      if (draft.daftarFoto.isNotEmpty) {
+        gambarPath = draft.daftarFoto.first;
+      }
+      namaFile = data['foto_nama']?.toString();
+    }
+
+    double? lat;
+    if (data['latitude'] != null) {
+      lat = double.tryParse(data['latitude'].toString());
+    }
+    double? lng;
+    if (data['longitude'] != null) {
+      lng = double.tryParse(data['longitude'].toString());
+    }
+
+    await controller.submitDataGaleri(
+      idUser: draft.idAkun,
+      deskripsi: data['deskripsi']?.toString() ?? '',
+      gambar: gambarPath,
+      gambarBytes: gambarBytes,
+      namaFile: namaFile,
+      pokja: data['pokja']?.toString() ?? '',
+      bidang: data['bidang']?.toString() ?? '',
+      idRole: data['id_role']?.toString() ?? '',
+      idOrganization: data['id_organization']?.toString() ?? '',
+      namaPeserta: data['nama_peserta']?.toString(),
+      lokasi: data['lokasi']?.toString(),
+      latitude: lat,
+      longitude: lng,
+      status: data['status']?.toString(),
+    );
+
+    final success = controller.galeriData.value != null;
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
     );
   }
 }

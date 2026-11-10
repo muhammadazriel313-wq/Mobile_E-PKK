@@ -20,6 +20,8 @@ class GaleriController extends GetxController {
 
   var errorMessage = ''.obs;
 
+  var lastFailureWasNetwork = false.obs;
+
   var galeriData = Rxn<GaleriModel>();
 
   /// SUBMIT GALERI
@@ -44,6 +46,7 @@ class GaleriController extends GetxController {
       isLoading.value = true;
 
       errorMessage.value = '';
+      lastFailureWasNetwork.value = false;
 
       galeriData.value = null;
 
@@ -140,6 +143,7 @@ class GaleriController extends GetxController {
         );
       }
     } on SocketException {
+      lastFailureWasNetwork.value = true;
       errorMessage.value = 'Tidak ada koneksi internet';
 
       Get.snackbar(
@@ -153,6 +157,7 @@ class GaleriController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage.value = 'Server tidak merespons';
 
       Get.snackbar(
@@ -166,6 +171,11 @@ class GaleriController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } on DioException catch (e) {
+      lastFailureWasNetwork.value =
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout;
       errorMessage.value =
           e.response?.data['message'] ?? 'Terjadi kesalahan jaringan';
 

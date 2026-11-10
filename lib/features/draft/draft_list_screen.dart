@@ -527,7 +527,7 @@ class _DraftListScreenState extends State<DraftListScreen> {
                   _formatTanggal(draft.tanggalDibuat),
                   color: TextColors.grey500,
                 ),
-                if (draft.daftarFoto.isNotEmpty) ...[
+                if (draft.jumlahFoto > 0) ...[
                   SizedBox(width: 12.w),
                   Icon(
                     Icons.photo_outlined,
@@ -536,7 +536,7 @@ class _DraftListScreenState extends State<DraftListScreen> {
                   ),
                   SizedBox(width: 4.w),
                   TypographyStyles.captionReguler(
-                    '${draft.daftarFoto.length} foto',
+                    '${draft.jumlahFoto} foto',
                     color: TextColors.grey500,
                   ),
                 ],
