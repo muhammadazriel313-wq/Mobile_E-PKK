@@ -50,7 +50,7 @@ class GaleriEntry {
   final Role role;
   final Organization organization;
 
-  // LOKASI & NAMA PESERTA TUNGGAL (OPSIONAL)
+  // LOKASI
   final String? lokasi;
   final double? latitude;
   final double? longitude;
@@ -94,7 +94,7 @@ class GaleriEntry {
       role: Role.fromJson(json['role']),
       organization: Organization.fromJson(json['organization']),
 
-      // LOKASI & PESERTA
+      // LOKASI
       lokasi: json['lokasi'],
       latitude: json['latitude'] != null
           ? double.tryParse(json['latitude'].toString())
@@ -141,7 +141,7 @@ class GaleriEntry {
       'role': role.toJson(),
       'organization': organization.toJson(),
 
-      // LOKASI & PESERTA
+      // LOKASI
       'lokasi': lokasi,
       'latitude': latitude,
       'longitude': longitude,
