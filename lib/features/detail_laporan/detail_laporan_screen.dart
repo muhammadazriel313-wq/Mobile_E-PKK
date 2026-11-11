@@ -1,4 +1,5 @@
 import 'package:epkk_nganjuk/common/colors.dart';
+import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/detail_laporan_controller.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/edit_laporan_screen.dart';
 import 'package:flutter/material.dart';
@@ -238,7 +239,13 @@ class DetailLaporanScreen extends StatelessWidget {
     ];
 
     final displayData = Map.from(data)
-      ..removeWhere((key, value) => hiddenFields.contains(key));
+      ..removeWhere(
+        (key, value) =>
+            hiddenFields.contains(key) ||
+            // Jabatan hanya untuk akun Bidang Umum
+            (key == 'jabatan' &&
+                idOrganization.toString() != kIdOrganisasiBidangUmum),
+      );
 
     return Column(
       children: displayData.entries.map((entry) {
@@ -267,7 +274,10 @@ class DetailLaporanScreen extends StatelessWidget {
 
             children: [
               Text(
-                _getFieldLabel(entry.key),
+                _getFieldLabel(
+                  entry.key,
+                  isKegiatan: data.containsKey('gambar_url'),
+                ),
 
                 style: TextStyle(
                   fontSize: 12.sp,
@@ -358,10 +368,16 @@ class DetailLaporanScreen extends StatelessWidget {
     return text.isEmpty ? '-' : text;
   }
 
-  String _getFieldLabel(String fieldName) {
+  String _getFieldLabel(String fieldName, {bool isKegiatan = false}) {
     switch (fieldName) {
       case 'nama_kegiatan':
-        return 'Nama Kegiatan';
+        return isKegiatan ? 'Uraian Kegiatan' : 'Nama Kegiatan';
+
+      case 'lokasi':
+        return isKegiatan ? 'Tempat Kegiatan' : 'Lokasi';
+
+      case 'jabatan':
+        return 'Jabatan';
 
       case 'nama_peserta':
         return 'Nama Peserta';

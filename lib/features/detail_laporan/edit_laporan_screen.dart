@@ -1,3 +1,4 @@
+import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/detail_laporan_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -140,7 +141,10 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
             key == 'id_organization' ||
             // khusus Kegiatan: tidak boleh diedit dari mobile
             key == 'gambar_url' ||
-            key == 'bidang',
+            key == 'bidang' ||
+            // Jabatan hanya untuk akun Bidang Umum
+            (key == 'jabatan' &&
+                widget.orgId.toString() != kIdOrganisasiBidangUmum),
       );
 
     return editableData.entries.map((entry) {
@@ -183,7 +187,10 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
 
             SizedBox(height: 10.h),
 
-            TextFormField(
+            if (entry.key == 'jabatan')
+              _buildJabatanField()
+            else
+              TextFormField(
               initialValue: entry.value?.toString() ?? '',
 
               minLines: 1,
@@ -253,10 +260,79 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
     }).toList();
   }
 
+  // Data Kegiatan (upload foto) ditandai dengan adanya gambar_url
+  bool get _isKegiatan => _formData.containsKey('gambar_url');
+
+  Widget _buildJabatanField() {
+    final current = _formData['jabatan']?.toString();
+
+    return DropdownButtonFormField<String>(
+      // Nilai lama (isian bebas) yang tidak ada di daftar dikosongkan,
+      // sehingga pengguna wajib memilih salah satu dari 15 pilihan.
+      // ignore: deprecated_member_use
+      value: kJabatanOptions.contains(current) ? current : null,
+
+      isExpanded: true,
+
+      hint: Text(
+        'Pilih Jabatan',
+        style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade400),
+      ),
+
+      style: TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w600,
+        color: Colors.black87,
+      ),
+
+      decoration: InputDecoration(
+        filled: true,
+
+        fillColor: const Color(0xFFF8FAFC),
+
+        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14.r),
+
+          borderSide: BorderSide.none,
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14.r),
+
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14.r),
+
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+      ),
+
+      items: kJabatanOptions
+          .map((j) => DropdownMenuItem<String>(value: j, child: Text(j)))
+          .toList(),
+
+      onChanged: (value) => _formData['jabatan'] = value,
+
+      onSaved: (value) => _formData['jabatan'] = value,
+
+      validator: (value) => value == null ? 'Pilih jabatan' : null,
+    );
+  }
+
   String _getFieldLabel(String fieldName) {
     switch (fieldName) {
       case 'nama_kegiatan':
-        return 'Nama Kegiatan';
+        return _isKegiatan ? 'Uraian Kegiatan' : 'Nama Kegiatan';
+
+      case 'lokasi':
+        return _isKegiatan ? 'Tempat Kegiatan' : 'Lokasi';
+
+      case 'jabatan':
+        return 'Jabatan';
 
       case 'nama_peserta':
         return 'Nama Peserta';

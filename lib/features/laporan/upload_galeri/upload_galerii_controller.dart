@@ -34,6 +34,7 @@ class GaleriController extends GetxController {
     Uint8List? gambarBytes,
     String? namaFile,
     List<String> namaPeserta = const [],
+    String? jabatan,
     String? lokasi,
     double? latitude,
     double? longitude,
@@ -61,6 +62,8 @@ class GaleriController extends GetxController {
           'id_user': idUser,
           'deskripsi': deskripsi,
           'nama_peserta': jsonEncode(namaPeserta),
+
+          if (jabatan != null && jabatan.isNotEmpty) 'jabatan': jabatan,
           'gambar': file,
           'pokja': pokja,
           'bidang': bidang,
