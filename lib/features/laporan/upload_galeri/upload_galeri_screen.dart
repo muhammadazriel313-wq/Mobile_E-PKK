@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/common/colors.dart';
+import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/drop_down.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
@@ -54,6 +55,11 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
   final _picker = ImagePicker();
 
   String? _selectedBidang;
+
+  // ================= JABATAN (khusus Bidang Umum) =================
+  String? _selectedJabatan;
+
+  bool get _isBidangUmum => id_organization == kIdOrganisasiBidangUmum;
 
   List<String> _bidangList = [];
 
@@ -319,7 +325,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
     if (_lokasiController.text.isEmpty) {
       Get.snackbar(
         'Error',
-        'Lokasi wajib diisi',
+        'Tempat kegiatan wajib diisi',
 
         snackPosition: SnackPosition.TOP,
 
@@ -349,6 +355,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
       namaPeserta: List<String>.from(_peserta),
 
+      jabatan: _isBidangUmum ? _selectedJabatan : null,
+
       pokja: name_organization!,
 
       bidang: _selectedBidang!,
@@ -377,6 +385,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       _imageName = null;
       _peserta.clear();
       _selectedBidang = null;
+      _selectedJabatan = null;
     });
   }
 
@@ -394,6 +403,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
           if (_namaKegiatanController.text.isEmpty &&
               !_hasImage &&
               _peserta.isEmpty &&
+              _selectedJabatan == null &&
               _selectedBidang == null) {
             Get.back();
           } else {
@@ -500,12 +510,12 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                       InputFormField(
                         controller: _namaKegiatanController,
 
-                        label: 'Nama Kegiatan',
+                        label: 'Uraian Kegiatan',
 
-                        hintText: 'Masukkan nama kegiatan',
+                        hintText: 'Masukkan uraian kegiatan',
 
                         validator: (value) =>
-                            value!.isEmpty ? 'Harap isi nama kegiatan' : null,
+                            value!.isEmpty ? 'Harap isi uraian kegiatan' : null,
                       ),
 
                       SizedBox(height: 20.h),
@@ -556,13 +566,38 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
                       SizedBox(height: 20.h),
 
+                      /// JABATAN (khusus akun Bidang Umum)
+                      if (_isBidangUmum) ...[
+                        DropdownComponent(
+                          hintText: 'Pilih Jabatan',
+
+                          randomlabel: 'Jabatan',
+
+                          errorKosong: 'Pilih jabatan',
+
+                          svgIconPath: 'assets/icons/ic_user_tag.svg',
+
+                          listItem: kJabatanOptions,
+
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedJabatan = value;
+                            });
+                          },
+
+                          selectedValue: _selectedJabatan,
+                        ),
+
+                        SizedBox(height: 20.h),
+                      ],
+
                       /// LOKASI
                       InputFormField(
                         controller: _lokasiController,
 
-                        label: 'Lokasi Kegiatan',
+                        label: 'Tempat Kegiatan',
 
-                        hintText: 'Masukkan lokasi atau klik icon GPS',
+                        hintText: 'Masukkan tempat atau klik icon GPS',
 
                         keyboardType: TextInputType.streetAddress,
 
@@ -570,7 +605,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Lokasi wajib diisi';
+                            return 'Tempat kegiatan wajib diisi';
                           }
 
                           return null;

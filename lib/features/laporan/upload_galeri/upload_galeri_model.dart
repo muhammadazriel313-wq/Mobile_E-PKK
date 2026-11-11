@@ -40,6 +40,7 @@ class GaleriEntry {
   final String idUser;
   final String deskripsi;
   final List<String> namaPeserta;
+  final String? jabatan;
   final String gambar;
   final String pokja;
   final String bidang;
@@ -61,6 +62,7 @@ class GaleriEntry {
     required this.idUser,
     required this.deskripsi,
     this.namaPeserta = const [],
+    this.jabatan,
     required this.gambar,
     required this.pokja,
     required this.bidang,
@@ -82,6 +84,7 @@ class GaleriEntry {
       idUser: json['id_user'].toString(),
       deskripsi: json['deskripsi'] ?? '',
       namaPeserta: _parsePeserta(json['nama_peserta']),
+      jabatan: json['jabatan']?.toString(),
       gambar: json['gambar'] ?? '',
       pokja: json['pokja'] ?? '',
       bidang: json['bidang'] ?? '',
@@ -128,6 +131,7 @@ class GaleriEntry {
       'id_user': idUser,
       'deskripsi': deskripsi,
       'nama_peserta': namaPeserta,
+      'jabatan': jabatan,
       'gambar': gambar,
       'pokja': pokja,
       'bidang': bidang,
