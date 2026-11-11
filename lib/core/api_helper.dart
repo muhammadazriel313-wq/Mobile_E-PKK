@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 /// Kalau memakai HP fisik, ganti [_lokalHp] dengan IP laptop di WiFi yang
 /// sama, contoh: 'http://192.168.1.10/Website_PKK/public/api'
 /// =====================================================================
-const bool kPakaiServerLokal = true;
+const bool kPakaiServerLokal = false;
 
 class ApiHelper {
   static const String _produksi = 'https://epkknganjuk.pbltifnganjuk.com/api';
