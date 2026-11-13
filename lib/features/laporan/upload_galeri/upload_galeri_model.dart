@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class GaleriModel {
   final int statusCode;
   final String message;
@@ -37,6 +39,8 @@ class GaleriEntry {
   final String uuid;
   final String idUser;
   final String deskripsi;
+  final List<String> namaPeserta;
+  final String? jabatan;
   final String gambar;
   final String pokja;
   final String bidang;
@@ -46,17 +50,19 @@ class GaleriEntry {
   final Role role;
   final Organization organization;
 
-  //TAMBAHAN LOKASI & NAMA PESERTA
+  // LOKASI
   final String? lokasi;
   final double? latitude;
   final double? longitude;
-  final String? namaPeserta;
+  final String? namaPesertaString; // Menggunakan nama berbeda agar tidak bentrok
 
   GaleriEntry({
     required this.id,
     required this.uuid,
     required this.idUser,
     required this.deskripsi,
+    this.namaPeserta = const [],
+    this.jabatan,
     required this.gambar,
     required this.pokja,
     required this.bidang,
@@ -68,7 +74,7 @@ class GaleriEntry {
     this.lokasi,
     this.latitude,
     this.longitude,
-    this.namaPeserta,
+    this.namaPesertaString,
   });
 
   factory GaleriEntry.fromJson(Map<String, dynamic> json) {
@@ -77,6 +83,8 @@ class GaleriEntry {
       uuid: json['uuid'] ?? '',
       idUser: json['id_user'].toString(),
       deskripsi: json['deskripsi'] ?? '',
+      namaPeserta: _parsePeserta(json['nama_peserta']),
+      jabatan: json['jabatan']?.toString(),
       gambar: json['gambar'] ?? '',
       pokja: json['pokja'] ?? '',
       bidang: json['bidang'] ?? '',
@@ -86,7 +94,7 @@ class GaleriEntry {
       role: Role.fromJson(json['role']),
       organization: Organization.fromJson(json['organization']),
 
-      //LOKASI & PESERTA
+      // LOKASI
       lokasi: json['lokasi'],
       latitude: json['latitude'] != null
           ? double.tryParse(json['latitude'].toString())
@@ -94,8 +102,26 @@ class GaleriEntry {
       longitude: json['longitude'] != null
           ? double.tryParse(json['longitude'].toString())
           : null,
-      namaPeserta: json['nama_peserta']?.toString(),
+      namaPesertaString: json['nama_peserta']?.toString(),
     );
+  }
+
+  /// nama_peserta dari server bisa berupa List atau JSON string
+  static List<String> _parsePeserta(dynamic raw) {
+    if (raw == null) return [];
+    if (raw is List) {
+      return raw.map((e) => e.toString()).toList();
+    }
+    if (raw is String && raw.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is List) {
+          return decoded.map((e) => e.toString()).toList();
+        }
+      } catch (_) {}
+      return [raw];
+    }
+    return [];
   }
 
   Map<String, dynamic> toJson() {
@@ -104,6 +130,8 @@ class GaleriEntry {
       'uuid': uuid,
       'id_user': idUser,
       'deskripsi': deskripsi,
+      'nama_peserta': namaPeserta,
+      'jabatan': jabatan,
       'gambar': gambar,
       'pokja': pokja,
       'bidang': bidang,
@@ -113,16 +141,14 @@ class GaleriEntry {
       'role': role.toJson(),
       'organization': organization.toJson(),
 
-     // LOKASI & PESERTA
+      // LOKASI
       'lokasi': lokasi,
       'latitude': latitude,
       'longitude': longitude,
-      'nama_peserta': namaPeserta,
     };
   }
 }
 
-// ErrorMessage, Role, dan Organization menggunakan definisi yang sama seperti contoh sebelumnya
 class ErrorMessage {
   final String message;
 

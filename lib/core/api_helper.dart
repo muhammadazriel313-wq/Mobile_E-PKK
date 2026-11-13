@@ -1,15 +1,45 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+/// =====================================================================
+/// SAKLAR SERVER
+///   true  -> server LOKAL (XAMPP di laptop)  : untuk testing / demo lokal
+///   false -> server PRODUKSI (hosting)       : untuk push / rilis
+///
+/// Cukup ubah satu baris ini. Alamat lokal dipilih otomatis:
+///   Chrome (web)     -> http://localhost/...
+///   Android emulator -> http://10.0.2.2/...
+///
+/// Kalau memakai HP fisik, ganti [_lokalHp] dengan IP laptop di WiFi yang
+/// sama, contoh: 'http://192.168.1.10/Website_PKK/public/api'
+/// =====================================================================
+const bool kPakaiServerLokal = false;
 
 class ApiHelper {
+  static const String _produksi = 'https://epkknganjuk.pbltifnganjuk.com/api';
+
+  static const String _lokalWeb = 'http://localhost/Website_PKK/public/api';
+
+  static const String _lokalEmulator = 'http://10.0.2.2/Website_PKK/public/api';
+
+  static String get _baseUrl {
+    if (!kPakaiServerLokal) return _produksi;
+
+    return kIsWeb ? _lokalWeb : _lokalEmulator;
+  }
+
   final Dio _dio = Dio(
     BaseOptions(
-      // [PERUBAHAN 03-10-2026] Mengembalikan baseUrl ke http://127.0.0.1:8000/api (menggunakan adb reverse di emulator); 10.0.2.2 dinonaktifkan
-      // baseUrl: 'http://10.0.2.2:8000/api',
-      baseUrl: 'http://127.0.0.1:8000/api',
+      baseUrl: _baseUrl,
       connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+
+      // Upload foto bisa lebih lama dari request biasa
+      sendTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
+
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     ),
   );

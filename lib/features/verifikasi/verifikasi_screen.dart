@@ -5,6 +5,7 @@ import 'package:epkk_nganjuk/features/auth/component/header_text.dart';
 import 'package:epkk_nganjuk/features/auth/component/icon_button_back.dart';
 import 'package:epkk_nganjuk/features/auth/component/pin_code_fields.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -138,9 +139,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               return;
                             }
 
-                            /// CEK OTP
-                            if (_codeController.text !=
-                                authController.generatedOtp) {
+                            /// CEK OTP (1234 diterima hanya di mode debug)
+                            final isBypass =
+                                kDebugMode && _codeController.text == '1234';
+
+                            if (!isBypass &&
+                                _codeController.text !=
+                                    authController.generatedOtp) {
                               Get.snackbar(
                                 'Error',
 

@@ -1,4 +1,5 @@
 import 'package:epkk_nganjuk/common/colors.dart';
+import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/detail_laporan_controller.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/edit_laporan_screen.dart';
 import 'package:flutter/material.dart';
@@ -238,10 +239,21 @@ class DetailLaporanScreen extends StatelessWidget {
     ];
 
     final displayData = Map.from(data)
-      ..removeWhere((key, value) => hiddenFields.contains(key));
+      ..removeWhere(
+        (key, value) =>
+            hiddenFields.contains(key) ||
+            // Jabatan hanya untuk akun Bidang Umum
+            (key == 'jabatan' &&
+                idOrganization.toString() != kIdOrganisasiBidangUmum),
+      );
 
     return Column(
       children: displayData.entries.map((entry) {
+        // Foto kegiatan (khusus Kegiatan)
+        if (entry.key == 'gambar_url') {
+          return _buildFotoCard(entry.value?.toString());
+        }
+
         return Container(
           width: double.infinity,
 
@@ -262,7 +274,10 @@ class DetailLaporanScreen extends StatelessWidget {
 
             children: [
               Text(
-                _getFieldLabel(entry.key),
+                _getFieldLabel(
+                  entry.key,
+                  isKegiatan: data.containsKey('gambar_url'),
+                ),
 
                 style: TextStyle(
                   fontSize: 12.sp,
@@ -274,7 +289,7 @@ class DetailLaporanScreen extends StatelessWidget {
               SizedBox(height: 8.h),
 
               Text(
-                entry.value?.toString() ?? '-',
+                _formatFieldValue(entry.key, entry.value),
 
                 style: TextStyle(
                   fontSize: 14.sp,
@@ -290,8 +305,83 @@ class DetailLaporanScreen extends StatelessWidget {
     );
   }
 
-  String _getFieldLabel(String fieldName) {
+  Widget _buildFotoCard(String? url) {
+    if (url == null || url.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+
+      margin: EdgeInsets.only(bottom: 14.h),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(18.r),
+
+        border: Border.all(color: const Color(0xFFE7EDF3)),
+      ),
+
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18.r),
+
+        child: Image.network(
+          url,
+
+          fit: BoxFit.cover,
+
+          errorBuilder: (context, error, stackTrace) => Padding(
+            padding: EdgeInsets.all(20.w),
+
+            child: Text(
+              'Foto tidak dapat ditampilkan',
+
+              textAlign: TextAlign.center,
+
+              style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatFieldValue(String key, dynamic value) {
+    final text = value?.toString() ?? '';
+
+    // Nama peserta: satu nama per baris -> tampil bernomor
+    if (key == 'nama_peserta') {
+      final names = text
+          .split('\n')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+
+      if (names.isEmpty) return '-';
+
+      return names
+          .asMap()
+          .entries
+          .map((e) => '${e.key + 1}. ${e.value}')
+          .join('\n');
+    }
+
+    return text.isEmpty ? '-' : text;
+  }
+
+  String _getFieldLabel(String fieldName, {bool isKegiatan = false}) {
     switch (fieldName) {
+      case 'nama_kegiatan':
+        return isKegiatan ? 'Uraian Kegiatan' : 'Nama Kegiatan';
+
+      case 'lokasi':
+        return isKegiatan ? 'Tempat Kegiatan' : 'Lokasi';
+
+      case 'jabatan':
+        return 'Jabatan';
+
+      case 'nama_peserta':
+        return 'Nama Peserta';
+
       case 'nama_kader':
         return 'Nama Kader';
 
