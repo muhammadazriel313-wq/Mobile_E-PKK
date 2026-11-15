@@ -2,6 +2,11 @@ import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/common/colors.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/pages/pokja2/pendidikan/pendidikan_ketrampilan_controller.dart';
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
+import 'package:epkk_nganjuk/routes/app_routes.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +23,47 @@ class PendidikanKetrampilan5Screen extends StatefulWidget {
 
 class _PendidikanKetrampilan5ScreenState
     extends State<PendidikanKetrampilan5Screen> {
-  final controller = Get.find<PendidikanKeterampilanController>();
+  final controller = Get.isRegistered<PendidikanKeterampilanController>()
+      ? Get.find<PendidikanKeterampilanController>()
+      : Get.put(PendidikanKeterampilanController());
+  DraftModel? _editingDraft;
+  bool _isSavingDraft = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    if (args is Map && args['draft'] is DraftModel) {
+      _editingDraft = args['draft'] as DraftModel;
+      controller.restoreDraft(_editingDraft!.dataForm);
+    }
+  }
+
+  Future<bool> _saveDraft() async {
+    if (_isSavingDraft || controller.isLoading.value) return false;
+    if (controller.idUser.isEmpty) return false;
+    setState(() => _isSavingDraft = true);
+    try {
+      final data = controller.draftData(langkah: 5)..['id_user'] = controller.idUser;
+      final service = DraftService();
+      if (_editingDraft != null) {
+        await service.updateDraft(_editingDraft!.copyWith(dataForm: data, status: 'draf', pesanError: null));
+      } else {
+        await service.simpanDraft(idAkun: controller.idUser, jenis: 'pendidikan', dataForm: data, originalPhotoPaths: []);
+      }
+      final drafts = Get.isRegistered<DraftController>() ? Get.find<DraftController>() : Get.put(DraftController());
+      await drafts.refreshAllCount();
+      Get.closeAllSnackbars();
+      Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+      Future.delayed(const Duration(milliseconds: 150), () => Get.snackbar('Draf disimpan', '', snackPosition: SnackPosition.TOP));
+      return true;
+    } catch (_) {
+      Get.snackbar('Gagal', 'Draf tidak dapat disimpan.', snackPosition: SnackPosition.TOP);
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
 
   // ================= HELPER =================
 
@@ -409,10 +454,19 @@ class _PendidikanKetrampilan5ScreenState
 
                       SizedBox(height: 24.h),
 
-                      // ================= BUTTON =================
-                      ZoomTapAnimation(
-                        child: Obx(
-                          () => ButtonFill(
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ButtonSecondaryOutline(
+                              text: _isSavingDraft ? 'Menyimpan...' : 'Simpan Draf',
+                              onPressed: _isSavingDraft || controller.isLoading.value ? null : _saveDraft,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: ZoomTapAnimation(
+                              child: Obx(
+                                () => ButtonFill(
                             text: controller.isLoading.value
                                 ? 'Loading...'
                                 : 'Kirim',
@@ -423,13 +477,31 @@ class _PendidikanKetrampilan5ScreenState
                                 ? null
                                 : () async {
                                     final success = await controller.submit();
-
                                     if (success) {
+                                      if (_editingDraft != null) {
+                                        await DraftService().hapusDraft(_editingDraft!.id);
+                                      }
                                       Get.offAllNamed('/main');
+                                    } else if (controller.lastFailureWasNetwork.value && mounted) {
+                                      final saveAsDraft = await Get.dialog<bool>(
+                                        AlertDialog(
+                                          title: const Text('Gagal terkirim'),
+                                          content: const Text('Simpan sebagai draf agar isian tidak hilang?'),
+                                          actions: [
+                                            TextButton(onPressed: () => Get.back(result: false), child: const Text('Tutup')),
+                                            ElevatedButton(onPressed: () => Get.back(result: true), child: const Text('Simpan Draf')),
+                                          ],
+                                        ),
+                                        barrierDismissible: false,
+                                      );
+                                      if (saveAsDraft == true) await _saveDraft();
                                     }
                                   },
                           ),
-                        ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
 
                       SizedBox(height: 20.h),

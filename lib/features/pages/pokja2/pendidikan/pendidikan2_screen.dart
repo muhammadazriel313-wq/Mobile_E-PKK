@@ -5,6 +5,10 @@ import 'package:epkk_nganjuk/core/validators/validator_form.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
 import 'package:epkk_nganjuk/features/pages/pokja2/pendidikan/pendidikan_ketrampilan_controller.dart';
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
 import 'package:flutter/material.dart';
@@ -22,7 +26,9 @@ class PendidikanKetrampilan2Screen extends StatefulWidget {
 
 class _Pendidikan2ScreenState extends State<PendidikanKetrampilan2Screen> {
   final PendidikanKeterampilanController controller =
-      Get.find<PendidikanKeterampilanController>();
+      Get.isRegistered<PendidikanKeterampilanController>()
+          ? Get.find<PendidikanKeterampilanController>()
+          : Get.put(PendidikanKeterampilanController());
 
   final paketCKelController = TextEditingController();
 
@@ -37,6 +43,58 @@ class _Pendidikan2ScreenState extends State<PendidikanKetrampilan2Screen> {
   final tamanBacaanController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  DraftModel? _editingDraft;
+  bool _isSavingDraft = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    if (args is Map && args['draft'] is DraftModel) {
+      _editingDraft = args['draft'] as DraftModel;
+      controller.restoreDraft(_editingDraft!.dataForm);
+      paketCKelController.text = controller.kelBelajarC;
+      paketCWargaController.text = controller.wargaBelajarC;
+      paketKFKelController.text = controller.kelBelajarKF;
+      paketKFWargaController.text = controller.wargaBelajarKF;
+      paudController.text = controller.paud;
+      tamanBacaanController.text = controller.tamanBacaan;
+    }
+  }
+
+  Future<bool> _saveDraft() async {
+    if (_isSavingDraft || controller.isLoading.value) return false;
+    controller.setStep2(
+      kelC: paketCKelController.text,
+      wargaC: paketCWargaController.text,
+      kelKF: paketKFKelController.text,
+      wargaKF: paketKFWargaController.text,
+      paudVal: paudController.text,
+      taman: tamanBacaanController.text,
+    );
+    if (controller.idUser.isEmpty) return false;
+    setState(() => _isSavingDraft = true);
+    try {
+      final data = controller.draftData(langkah: 2)..['id_user'] = controller.idUser;
+      final service = DraftService();
+      if (_editingDraft != null) {
+        await service.updateDraft(_editingDraft!.copyWith(dataForm: data, status: 'draf', pesanError: null));
+      } else {
+        await service.simpanDraft(idAkun: controller.idUser, jenis: 'pendidikan', dataForm: data, originalPhotoPaths: []);
+      }
+      final drafts = Get.isRegistered<DraftController>() ? Get.find<DraftController>() : Get.put(DraftController());
+      await drafts.refreshAllCount();
+      Get.closeAllSnackbars();
+      Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+      Future.delayed(const Duration(milliseconds: 150), () => Get.snackbar('Draf disimpan', '', snackPosition: SnackPosition.TOP));
+      return true;
+    } catch (_) {
+      Get.snackbar('Gagal', 'Draf tidak dapat disimpan.', snackPosition: SnackPosition.TOP);
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -200,10 +258,19 @@ class _Pendidikan2ScreenState extends State<PendidikanKetrampilan2Screen> {
 
                           SizedBox(height: 10.h),
 
-                          /// BUTTON
-                          ZoomTapAnimation(
-                            child: Obx(
-                              () => ButtonFill(
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ButtonSecondaryOutline(
+                                  text: _isSavingDraft ? 'Menyimpan...' : 'Simpan Draf',
+                                  onPressed: _isSavingDraft || controller.isLoading.value ? null : _saveDraft,
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: ZoomTapAnimation(
+                                  child: Obx(
+                                    () => ButtonFill(
                                 text: 'Lanjut',
 
                                 textColor: Colors.white,
@@ -231,7 +298,7 @@ class _Pendidikan2ScreenState extends State<PendidikanKetrampilan2Screen> {
                                           );
 
                                           /// NEXT
-                                          Get.toNamed(Routes.PENDIDIKAN3);
+                                          Get.toNamed(Routes.PENDIDIKAN3, arguments: {'draft': _editingDraft});
                                         } else {
                                           Get.snackbar(
                                             'Error',
@@ -245,8 +312,11 @@ class _Pendidikan2ScreenState extends State<PendidikanKetrampilan2Screen> {
                                           );
                                         }
                                       },
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
 
                           SizedBox(height: 20.h),

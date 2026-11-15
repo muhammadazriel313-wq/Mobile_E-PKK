@@ -5,6 +5,8 @@ import 'package:epkk_nganjuk/features/laporan/laporan_umum/laporan_umum_controll
 import 'package:epkk_nganjuk/features/laporan/upload_galeri/upload_galerii_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/gotongroyong/gotong_royong_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja1/kaderpokja1/kader_pokja1_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja2/pendidikan/pendidikan_ketrampilan_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja2/pengembangan/pengembangan_kehidupan_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 import 'package:get/get.dart';
 
@@ -67,6 +69,18 @@ class DraftRegistry {
       title: 'Laporan Umum',
       route: Routes.LAPORAN_UMUM1,
       sender: _sendLaporanUmum,
+    ),
+    'pengembangan': DraftRegistration(
+      key: 'pengembangan',
+      title: 'Pengembangan Kehidupan Berkoperasi',
+      route: Routes.PENGEMBANGAN1,
+      sender: _sendPengembangan,
+    ),
+    'pendidikan': DraftRegistration(
+      key: 'pendidikan',
+      title: 'Pendidikan Ketrampilan',
+      route: Routes.PENDIDIKAN1,
+      sender: _sendPendidikan,
     ),
   };
 
@@ -175,7 +189,19 @@ class DraftRegistry {
       bidang: data['bidang']?.toString() ?? '',
       idRole: data['id_role']?.toString() ?? '',
       idOrganization: data['id_organization']?.toString() ?? '',
-      namaPeserta: data['nama_peserta']?.toString(),
+      namaPeserta: () {
+        final raw = data['nama_peserta'];
+        if (raw == null) return <String>[];
+        if (raw is List) return raw.map((e) => e.toString()).toList();
+        if (raw is String && raw.trim().isNotEmpty) {
+          try {
+            final decoded = jsonDecode(raw);
+            if (decoded is List) return decoded.map((e) => e.toString()).toList();
+          } catch (_) {}
+          return [raw];
+        }
+        return <String>[];
+      }(),
       lokasi: data['lokasi']?.toString(),
       latitude: lat,
       longitude: lng,
@@ -256,6 +282,158 @@ class DraftRegistry {
     );
 
     final success = controller.reportData.value != null;
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendPengembangan(DraftModel draft) async {
+    final controller = Get.isRegistered<PengembanganKehidupanController>()
+        ? Get.find<PengembanganKehidupanController>()
+        : Get.put(PengembanganKehidupanController());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = [
+      'jumlah_kelompok_pemula',
+      'jumlah_peserta_pemula',
+      'jumlah_kelompok_madya',
+      'jumlah_peserta_madya',
+      'jumlah_kelompok_utama',
+      'jumlah_peserta_utama',
+      'jumlah_kelompok_mandiri',
+      'jumlah_peserta_mandiri',
+      'jumlah_kelompok_hukum',
+      'jumlah_peserta_hukum',
+    ];
+
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    controller.idUser = draft.idAkun;
+    controller.idRole = data['id_role']?.toString() ?? '';
+    controller.idOrganization = data['id_organization']?.toString() ?? '';
+
+    controller.setField(
+      jumlahKelompokPemula: data['jumlah_kelompok_pemula']?.toString(),
+      jumlahPesertaPemula: data['jumlah_peserta_pemula']?.toString(),
+      jumlahKelompokMadya: data['jumlah_kelompok_madya']?.toString(),
+      jumlahPesertaMadya: data['jumlah_peserta_madya']?.toString(),
+      jumlahKelompokUtama: data['jumlah_kelompok_utama']?.toString(),
+      jumlahPesertaUtama: data['jumlah_peserta_utama']?.toString(),
+      jumlahKelompokMandiri: data['jumlah_kelompok_mandiri']?.toString(),
+      jumlahPesertaMandiri: data['jumlah_peserta_mandiri']?.toString(),
+      jumlahKelompokHukum: data['jumlah_kelompok_hukum']?.toString(),
+      jumlahPesertaHukum: data['jumlah_peserta_hukum']?.toString(),
+      catatan: data['catatan']?.toString(),
+    );
+
+    final success = await controller.submit();
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendPendidikan(DraftModel draft) async {
+    final controller = Get.isRegistered<PendidikanKeterampilanController>()
+        ? Get.find<PendidikanKeterampilanController>()
+        : Get.put(PendidikanKeterampilanController());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = [
+      'warga_buta',
+      'kel_belajarA',
+      'warga_belajarA',
+      'kel_belajarB',
+      'warga_belajarB',
+      'kel_belajarC',
+      'warga_belajarC',
+      'kel_belajarKF',
+      'warga_belajarKF',
+      'paud',
+      'taman_bacaan',
+      'jumlah_klp',
+      'jumlah_ibu_peserta',
+      'jumlah_ape',
+      'jumlah_kel_simulasi',
+      'KF',
+      'paud_tutor',
+      'BKB',
+      'koperasi',
+      'ketrampilan',
+      'LP3PKK',
+      'TP3PKK',
+      'damas_pkk',
+    ];
+
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    controller.idUser = draft.idAkun;
+    controller.idRole = data['id_role']?.toString() ?? '';
+    controller.idOrganization = data['id_organization']?.toString() ?? '';
+
+    controller.restoreDraft(data);
+
+    controller.setStep1(
+      wargaButaVal: data['warga_buta']?.toString() ?? '',
+      kelA: data['kel_belajarA']?.toString() ?? '',
+      wargaA: data['warga_belajarA']?.toString() ?? '',
+      kelB: data['kel_belajarB']?.toString() ?? '',
+      wargaB: data['warga_belajarB']?.toString() ?? '',
+    );
+
+    controller.setStep2(
+      kelC: data['kel_belajarC']?.toString() ?? '',
+      wargaC: data['warga_belajarC']?.toString() ?? '',
+      kelKF: data['kel_belajarKF']?.toString() ?? '',
+      wargaKF: data['warga_belajarKF']?.toString() ?? '',
+      paudVal: data['paud']?.toString() ?? '',
+      taman: data['taman_bacaan']?.toString() ?? '',
+    );
+
+    controller.setStep3(
+      klp: data['jumlah_klp']?.toString() ?? '',
+      ibu: data['jumlah_ibu_peserta']?.toString() ?? '',
+      ape: data['jumlah_ape']?.toString() ?? '',
+      simulasi: data['jumlah_kel_simulasi']?.toString() ?? '',
+      kfVal: data['KF']?.toString() ?? '',
+      paudTutorVal: data['paud_tutor']?.toString() ?? '',
+      bkbVal: data['BKB']?.toString() ?? '',
+      koperasiVal: data['koperasi']?.toString() ?? '',
+      ketrampilanVal: data['ketrampilan']?.toString() ?? '',
+    );
+
+    controller.setStep4(
+      lp3: data['LP3PKK']?.toString() ?? '',
+      tp3: data['TP3PKK']?.toString() ?? '',
+      damas: data['damas_pkk']?.toString() ?? '',
+    );
+
+    final success = await controller.submitDraftData(data);
     return DraftSendResult(
       success: success,
       message: success ? null : controller.errorMessage.value,

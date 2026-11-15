@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja2/pengembangan/report_pengembangan_kehidupan.dart';
@@ -11,6 +14,7 @@ class PengembanganKehidupanController extends GetxController {
   // ================= STATE =================
   var isLoading = false.obs;
   var errorMessage = ''.obs;
+  var lastFailureWasNetwork = false.obs;
   var reportData = Rxn<ReportPengembanganKehidupanModel>();
 
   // ================= FORM =================
@@ -92,6 +96,7 @@ class PengembanganKehidupanController extends GetxController {
     try {
       isLoading(true);
       errorMessage('');
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/pengembangan-kehidupan',
@@ -134,10 +139,43 @@ class PengembanganKehidupanController extends GetxController {
 
         return false;
       }
+    } on SocketException {
+      lastFailureWasNetwork.value = true;
+      errorMessage('Tidak ada koneksi internet');
+
+      Get.snackbar(
+        'Error',
+        'Tidak ada koneksi internet',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+
+      return false;
+    } on TimeoutException {
+      lastFailureWasNetwork.value = true;
+      errorMessage('Koneksi timeout');
+
+      Get.snackbar(
+        'Error',
+        'Koneksi timeout',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+
+      return false;
     } catch (e) {
       errorMessage(e.toString());
 
       if (e is DioException) {
+        lastFailureWasNetwork.value =
+            e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout;
         Get.snackbar(
           'Server Error',
           e.response?.data?['message'] ??

@@ -66,6 +66,8 @@ class _LaporanUmum3ScreenState extends State<LaporanUmum3Screen> {
 
   final perempuan2Controller = TextEditingController();
 
+  final keteranganController = TextEditingController();
+
   // ================= FORM =================
 
   final _formKey = GlobalKey<FormState>();
@@ -312,6 +314,8 @@ class _LaporanUmum3ScreenState extends State<LaporanUmum3Screen> {
 
     perempuan2Controller.dispose();
 
+    keteranganController.dispose();
+
     super.dispose();
   }
 
@@ -387,6 +391,25 @@ class _LaporanUmum3ScreenState extends State<LaporanUmum3Screen> {
 
                           _input(perempuan2Controller, 'Perempuan'),
 
+                          // ================= KETERANGAN =================
+                          _section('Keterangan'),
+
+                          InputFormField(
+                            controller: keteranganController,
+
+                            hintText: 'Masukkan keterangan (opsional)',
+
+                            label: 'Keterangan',
+
+                            minLines: 3,
+
+                            maxLines: 5,
+
+                            keyboardType: TextInputType.multiline,
+
+                            textInputAction: TextInputAction.newline,
+                          ),
+
                           SizedBox(height: 30.h),
 
                           // ================= BUTTON =================
@@ -405,6 +428,7 @@ class _LaporanUmum3ScreenState extends State<LaporanUmum3Screen> {
                                         : () async => _simpanDrafLaluKembali(),
                                   ),
                                 ),
+
                               ),
                               SizedBox(width: 12.w),
                               Expanded(

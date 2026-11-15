@@ -5,6 +5,10 @@ import 'package:epkk_nganjuk/core/validators/validator_form.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
 import 'package:epkk_nganjuk/features/pages/pokja2/pendidikan/pendidikan_ketrampilan_controller.dart';
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
 import 'package:flutter/material.dart';
@@ -22,7 +26,9 @@ class PendidikanKetrampilan3Screen extends StatefulWidget {
 
 class _Pendidikan3ScreenState extends State<PendidikanKetrampilan3Screen> {
   final PendidikanKeterampilanController controller =
-      Get.find<PendidikanKeterampilanController>();
+      Get.isRegistered<PendidikanKeterampilanController>()
+          ? Get.find<PendidikanKeterampilanController>()
+          : Get.put(PendidikanKeterampilanController());
 
   final klpController = TextEditingController();
 
@@ -43,6 +49,64 @@ class _Pendidikan3ScreenState extends State<PendidikanKetrampilan3Screen> {
   final ketrampilanController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  DraftModel? _editingDraft;
+  bool _isSavingDraft = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    if (args is Map && args['draft'] is DraftModel) {
+      _editingDraft = args['draft'] as DraftModel;
+      controller.restoreDraft(_editingDraft!.dataForm);
+      klpController.text = controller.jumlahKlp;
+      ibuPesertaController.text = controller.jumlahIbuPeserta;
+      apeController.text = controller.jumlahApe;
+      kelSimulasiController.text = controller.jumlahKelSimulasi;
+      tutorKFController.text = controller.kf;
+      tutorPaudController.text = controller.paudTutor;
+      kaderBKPController.text = controller.bkb;
+      koperasiController.text = controller.koperasi;
+      ketrampilanController.text = controller.ketrampilan;
+    }
+  }
+
+  Future<bool> _saveDraft() async {
+    if (_isSavingDraft || controller.isLoading.value) return false;
+    controller.setStep3(
+      klp: klpController.text,
+      ibu: ibuPesertaController.text,
+      ape: apeController.text,
+      simulasi: kelSimulasiController.text,
+      kfVal: tutorKFController.text,
+      paudTutorVal: tutorPaudController.text,
+      bkbVal: kaderBKPController.text,
+      koperasiVal: koperasiController.text,
+      ketrampilanVal: ketrampilanController.text,
+    );
+    if (controller.idUser.isEmpty) return false;
+    setState(() => _isSavingDraft = true);
+    try {
+      final data = controller.draftData(langkah: 3)..['id_user'] = controller.idUser;
+      final service = DraftService();
+      if (_editingDraft != null) {
+        await service.updateDraft(_editingDraft!.copyWith(dataForm: data, status: 'draf', pesanError: null));
+      } else {
+        await service.simpanDraft(idAkun: controller.idUser, jenis: 'pendidikan', dataForm: data, originalPhotoPaths: []);
+      }
+      final drafts = Get.isRegistered<DraftController>() ? Get.find<DraftController>() : Get.put(DraftController());
+      await drafts.refreshAllCount();
+      Get.closeAllSnackbars();
+      Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+      Future.delayed(const Duration(milliseconds: 150), () => Get.snackbar('Draf disimpan', '', snackPosition: SnackPosition.TOP));
+      return true;
+    } catch (_) {
+      Get.snackbar('Gagal', 'Draf tidak dapat disimpan.', snackPosition: SnackPosition.TOP);
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -231,10 +295,19 @@ class _Pendidikan3ScreenState extends State<PendidikanKetrampilan3Screen> {
 
                           SizedBox(height: 10.h),
 
-                          /// BUTTON
-                          ZoomTapAnimation(
-                            child: Obx(
-                              () => ButtonFill(
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ButtonSecondaryOutline(
+                                  text: _isSavingDraft ? 'Menyimpan...' : 'Simpan Draf',
+                                  onPressed: _isSavingDraft || controller.isLoading.value ? null : _saveDraft,
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: ZoomTapAnimation(
+                                  child: Obx(
+                                    () => ButtonFill(
                                 text: 'Lanjut',
 
                                 textColor: Colors.white,
@@ -271,7 +344,7 @@ class _Pendidikan3ScreenState extends State<PendidikanKetrampilan3Screen> {
                                           );
 
                                           /// NEXT
-                                          Get.toNamed(Routes.PENDIDIKAN4);
+                                          Get.toNamed(Routes.PENDIDIKAN4, arguments: {'draft': _editingDraft});
                                         } else {
                                           Get.snackbar(
                                             'Error',
@@ -285,10 +358,12 @@ class _Pendidikan3ScreenState extends State<PendidikanKetrampilan3Screen> {
                                           );
                                         }
                                       },
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-
                           SizedBox(height: 20.h),
                         ],
                       ),

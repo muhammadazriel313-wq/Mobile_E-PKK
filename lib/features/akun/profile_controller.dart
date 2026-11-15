@@ -130,6 +130,7 @@ class ProfilController extends GetxController {
       );
 
       if (response.statusCode == 200) {
+        await loadProfil();
         profilData.value = Profil(
           id: profilData.value.id,
           uuid: profilData.value.uuid,

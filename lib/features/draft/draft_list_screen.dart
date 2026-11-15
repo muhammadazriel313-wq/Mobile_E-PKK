@@ -125,6 +125,18 @@ class _DraftListScreenState extends State<DraftListScreen> {
         if (step == 3) targetRoute = Routes.LAPORAN_UMUM3;
         if (step == 4) targetRoute = Routes.LAPORAN_UMUM4;
       }
+      if (draft.jenis == 'pengembangan') {
+        final step = draft.dataForm['langkah'];
+        if (step == 2) targetRoute = Routes.PENGEMBANGAN2;
+        if (step == 3) targetRoute = Routes.PENGEMBANGAN3;
+      }
+      if (draft.jenis == 'pendidikan') {
+        final step = draft.dataForm['langkah'];
+        if (step == 2) targetRoute = Routes.PENDIDIKAN2;
+        if (step == 3) targetRoute = Routes.PENDIDIKAN3;
+        if (step == 4) targetRoute = Routes.PENDIDIKAN4;
+        if (step == 5) targetRoute = Routes.PENDIDIKAN5;
+      }
       await Get.toNamed(targetRoute, arguments: formArgs);
       await _draftController.loadDrafts(filterJenis: _filterJenis);
     } else if (draft.jenis == 'pancasila') {

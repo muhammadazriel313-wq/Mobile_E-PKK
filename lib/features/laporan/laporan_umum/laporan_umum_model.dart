@@ -57,6 +57,7 @@ class UmumEntry {
   final String bantuanLaki;
   final String bantuanPerempuan;
   final String? catatan;
+  final String? keterangan;
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -88,6 +89,7 @@ class UmumEntry {
     required this.bantuanLaki,
     required this.bantuanPerempuan,
     this.catatan,
+    this.keterangan,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -141,6 +143,8 @@ class UmumEntry {
 
       catatan: json['catatan']?.toString(),
 
+      keterangan: json['keterangan']?.toString(),
+
       status: json['status']?.toString() ?? 'Proses',
 
       createdAt:
@@ -183,6 +187,7 @@ class UmumEntry {
       'bantuan_laki': bantuanLaki,
       'bantuan_perempuan': bantuanPerempuan,
       'catatan': catatan,
+      'keterangan': keterangan,
       'status': status,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),

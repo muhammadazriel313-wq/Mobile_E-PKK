@@ -137,6 +137,14 @@ class DraftModel {
         final dusun = dataForm['dusun_lingkungan']?.toString().trim() ?? '';
         if (dusun.isNotEmpty) return 'Dusun/Lingkungan: $dusun';
         return 'Laporan Umum';
+      case 'pengembangan':
+        final pemula = dataForm['jumlah_kelompok_pemula']?.toString().trim() ?? '';
+        if (pemula.isNotEmpty) return 'Pemula: $pemula';
+        return 'Pengembangan Kehidupan Berkoperasi';
+      case 'pendidikan':
+        final buta = dataForm['warga_buta']?.toString().trim() ?? '';
+        if (buta.isNotEmpty) return 'Warga Buta: $buta';
+        return 'Pendidikan Ketrampilan';
       default:
         return 'Laporan Draf';
     }
@@ -154,6 +162,10 @@ class DraftModel {
         return 'Upload Kegiatan';
       case 'laporan_umum':
         return 'Laporan Umum';
+      case 'pengembangan':
+        return 'Pengembangan Kehidupan Berkoperasi';
+      case 'pendidikan':
+        return 'Pendidikan Ketrampilan';
       default:
         return 'Laporan';
     }
