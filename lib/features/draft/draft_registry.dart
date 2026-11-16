@@ -7,6 +7,10 @@ import 'package:epkk_nganjuk/features/pages/pokja1/gotongroyong/gotong_royong_co
 import 'package:epkk_nganjuk/features/pages/pokja1/kaderpokja1/kader_pokja1_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja2/pendidikan/pendidikan_ketrampilan_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja2/pengembangan/pengembangan_kehidupan_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja3/jumlah_kader/kader_pokja3_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja3/pangan/pangan_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja3/perumahan/perumahan_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja3/sandang/sandang_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 import 'package:get/get.dart';
 
@@ -81,6 +85,30 @@ class DraftRegistry {
       title: 'Pendidikan Ketrampilan',
       route: Routes.PENDIDIKAN1,
       sender: _sendPendidikan,
+    ),
+    'kader_pokja3': DraftRegistration(
+      key: 'kader_pokja3',
+      title: 'Kader Pokja III',
+      route: Routes.KADER_POKJA3,
+      sender: _sendKaderPokja3,
+    ),
+    'pangan': DraftRegistration(
+      key: 'pangan',
+      title: 'Pangan',
+      route: Routes.PANGAN1,
+      sender: _sendPangan,
+    ),
+    'sandang': DraftRegistration(
+      key: 'sandang',
+      title: 'Industri Rumah Tangga',
+      route: Routes.SANDANG,
+      sender: _sendSandang,
+    ),
+    'perumahan': DraftRegistration(
+      key: 'perumahan',
+      title: 'Perumahan & Tata Laksana',
+      route: Routes.PERUMAHAN,
+      sender: _sendPerumahan,
     ),
   };
 
@@ -434,6 +462,171 @@ class DraftRegistry {
     );
 
     final success = await controller.submitDraftData(data);
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendKaderPokja3(DraftModel draft) async {
+    final controller = Get.isRegistered<KaderPokja3Controller>()
+        ? Get.find<KaderPokja3Controller>()
+        : Get.put(KaderPokja3Controller());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = ['pangan', 'sandang', 'tata_laksana_rumah'];
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    controller.idUser = draft.idAkun;
+    controller.idRole = data['id_role']?.toString() ?? '';
+    controller.idOrganization = data['id_organization']?.toString() ?? '';
+
+    controller.setField(
+      pangan: data['pangan']?.toString(),
+      sandang: data['sandang']?.toString(),
+      tataLaksanaRumah: data['tata_laksana_rumah']?.toString(),
+      catatan: data['catatan']?.toString(),
+    );
+
+    final success = await controller.submit();
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendPangan(DraftModel draft) async {
+    final controller = Get.isRegistered<PanganController>()
+        ? Get.find<PanganController>()
+        : Get.put(PanganController());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = [
+      'beras',
+      'non_beras',
+      'peternakan',
+      'perikanan',
+      'warung_hidup',
+      'lumbung_hidup',
+      'toga',
+      'tanaman_keras',
+      'tanaman_lainnya',
+    ];
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    final success = await controller.submitDataPangan(
+      beras: data['beras']?.toString() ?? '',
+      nonBeras: data['non_beras']?.toString() ?? '',
+      peternakan: data['peternakan']?.toString() ?? '',
+      perikanan: data['perikanan']?.toString() ?? '',
+      warungHidup: data['warung_hidup']?.toString() ?? '',
+      lumbungHidup: data['lumbung_hidup']?.toString() ?? '',
+      toga: data['toga']?.toString() ?? '',
+      tanamanKeras: data['tanaman_keras']?.toString() ?? '',
+      tanamanLainnya: data['tanaman_lainnya']?.toString() ?? '',
+      idUser: draft.idAkun,
+      idRole: data['id_role']?.toString() ?? '',
+      idOrganization: data['id_organization']?.toString() ?? '',
+      catatan: data['catatan']?.toString(),
+    );
+
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendSandang(DraftModel draft) async {
+    final controller = Get.isRegistered<SandangController>()
+        ? Get.find<SandangController>()
+        : Get.put(SandangController());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = ['pangan', 'sandang', 'jasa'];
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    final success = await controller.submitDataSandang(
+      pangan: data['pangan']?.toString() ?? '',
+      sandang: data['sandang']?.toString() ?? '',
+      jasa: data['jasa']?.toString() ?? '',
+      idRole: data['id_role']?.toString() ?? '',
+      idOrganization: data['id_organization']?.toString() ?? '',
+      idUser: draft.idAkun,
+      catatan: data['catatan']?.toString(),
+    );
+
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendPerumahan(DraftModel draft) async {
+    final controller = Get.isRegistered<PerumahanController>()
+        ? Get.find<PerumahanController>()
+        : Get.put(PerumahanController());
+    controller.reportData.value = null;
+    final data = draft.dataForm;
+
+    final requiredKeys = ['layak_huni', 'tidak_layak'];
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    final success = await controller.submitDataPerumahan(
+      layakHuni: data['layak_huni']?.toString() ?? '',
+      tidakLayak: data['tidak_layak']?.toString() ?? '',
+      idRole: data['id_role']?.toString() ?? '',
+      idOrganization: data['id_organization']?.toString() ?? '',
+      idUser: draft.idAkun,
+      catatan: data['catatan']?.toString(),
+    );
+
     return DraftSendResult(
       success: success,
       message: success ? null : controller.errorMessage.value,

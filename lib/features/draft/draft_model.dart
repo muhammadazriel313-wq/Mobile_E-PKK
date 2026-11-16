@@ -145,6 +145,35 @@ class DraftModel {
         final buta = dataForm['warga_buta']?.toString().trim() ?? '';
         if (buta.isNotEmpty) return 'Warga Buta: $buta';
         return 'Pendidikan Ketrampilan';
+      case 'kader_pokja3':
+        final pangan = dataForm['pangan']?.toString().trim() ?? '';
+        final sandang = dataForm['sandang']?.toString().trim() ?? '';
+        if (pangan.isNotEmpty || sandang.isNotEmpty) {
+          return 'Pangan: ${pangan.isEmpty ? "0" : pangan}, Sandang: ${sandang.isEmpty ? "0" : sandang}';
+        }
+        return 'Kader Pokja III';
+      case 'pangan':
+        final beras = dataForm['beras']?.toString().trim() ?? '';
+        final nonBeras = dataForm['non_beras']?.toString().trim() ?? '';
+        if (beras.isNotEmpty || nonBeras.isNotEmpty) {
+          return 'Beras: ${beras.isEmpty ? "0" : beras}, Non Beras: ${nonBeras.isEmpty ? "0" : nonBeras}';
+        }
+        return 'Pangan';
+      case 'sandang':
+        final p = dataForm['pangan']?.toString().trim() ?? '';
+        final s = dataForm['sandang']?.toString().trim() ?? '';
+        final j = dataForm['jasa']?.toString().trim() ?? '';
+        if (p.isNotEmpty || s.isNotEmpty || j.isNotEmpty) {
+          return 'Pangan: ${p.isEmpty ? "0" : p}, Sandang: ${s.isEmpty ? "0" : s}, Jasa: ${j.isEmpty ? "0" : j}';
+        }
+        return 'Industri Rumah Tangga';
+      case 'perumahan':
+        final layak = dataForm['layak_huni']?.toString().trim() ?? '';
+        final tidakLayak = dataForm['tidak_layak']?.toString().trim() ?? '';
+        if (layak.isNotEmpty || tidakLayak.isNotEmpty) {
+          return 'Layak: ${layak.isEmpty ? "0" : layak}, Tidak Layak: ${tidakLayak.isEmpty ? "0" : tidakLayak}';
+        }
+        return 'Perumahan & Tata Laksana';
       default:
         return 'Laporan Draf';
     }
@@ -166,6 +195,14 @@ class DraftModel {
         return 'Pengembangan Kehidupan Berkoperasi';
       case 'pendidikan':
         return 'Pendidikan Ketrampilan';
+      case 'kader_pokja3':
+        return 'Kader Pokja III';
+      case 'pangan':
+        return 'Pangan';
+      case 'sandang':
+        return 'Industri Rumah Tangga';
+      case 'perumahan':
+        return 'Perumahan & Tata Laksana';
       default:
         return 'Laporan';
     }

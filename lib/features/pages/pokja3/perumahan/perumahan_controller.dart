@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja3/perumahan/report_perumahan_model.dart';
@@ -11,9 +14,10 @@ class PerumahanController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var reportData = Rxn<ReportPerumahanModel>();
+  var lastFailureWasNetwork = false.obs;
 
   // ================= SUBMIT =================
-  Future<void> submitDataPerumahan({
+  Future<bool> submitDataPerumahan({
     required String idUser,
     required String layakHuni,
     required String tidakLayak,
@@ -25,6 +29,7 @@ class PerumahanController extends GetxController {
       isLoading(true);
       errorMessage('');
       reportData(null);
+      lastFailureWasNetwork.value = false;
 
       final data = {
         'id_user': idUser,
@@ -51,6 +56,7 @@ class PerumahanController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 3),
         );
+        return true;
       } else {
         errorMessage('Upload gagal');
 
@@ -63,12 +69,23 @@ class PerumahanController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } catch (e) {
+      if (e is SocketException || e is TimeoutException) {
+        lastFailureWasNetwork.value = true;
+      }
       errorMessage(e.toString());
 
       // ERROR
       if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
         Get.snackbar(
           'Server Error',
           e.response?.data?['message'] ??
@@ -89,6 +106,7 @@ class PerumahanController extends GetxController {
           duration: const Duration(seconds: 3),
         );
       }
+      return false;
     } finally {
       isLoading(false);
     }

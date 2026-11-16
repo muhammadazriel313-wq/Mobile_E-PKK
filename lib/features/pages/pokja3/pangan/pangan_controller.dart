@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja3/pangan/report_pangan_model.dart';
@@ -11,6 +14,7 @@ class PanganController extends GetxController {
   var isLoading = false.obs;
   var reportData = Rxn<ReportPanganModel>();
   var errorMessage = ''.obs;
+  var lastFailureWasNetwork = false.obs;
 
   // ================= FORM =================
   var beras = ''.obs;
@@ -43,7 +47,7 @@ class PanganController extends GetxController {
   }
 
   // ================= METHOD BARU =================
-  Future<void> submitDataPangan({
+  Future<bool> submitDataPangan({
     required String idUser,
     required String beras,
     required String nonBeras,
@@ -61,6 +65,7 @@ class PanganController extends GetxController {
     try {
       isLoading(true);
       errorMessage('');
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/pangan',
@@ -94,6 +99,7 @@ class PanganController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 3),
         );
+        return true;
       } else {
         errorMessage.value = 'Gagal upload data';
 
@@ -105,11 +111,22 @@ class PanganController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } catch (e) {
+      if (e is SocketException || e is TimeoutException) {
+        lastFailureWasNetwork.value = true;
+      }
       errorMessage.value = e.toString();
 
       if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
         errorMessage.value =
             e.response?.data?['message'] ??
             e.response?.data.toString() ??
@@ -124,6 +141,7 @@ class PanganController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } finally {
       isLoading(false);
     }
@@ -133,6 +151,7 @@ class PanganController extends GetxController {
   Future<bool> submit() async {
     try {
       isLoading(true);
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/pangan',
@@ -178,6 +197,18 @@ class PanganController extends GetxController {
 
       return false;
     } catch (e) {
+      if (e is SocketException || e is TimeoutException) {
+        lastFailureWasNetwork.value = true;
+      }
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
+      }
       Get.snackbar(
         'Error',
         e.toString(),

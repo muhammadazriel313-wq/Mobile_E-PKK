@@ -137,6 +137,11 @@ class _DraftListScreenState extends State<DraftListScreen> {
         if (step == 4) targetRoute = Routes.PENDIDIKAN4;
         if (step == 5) targetRoute = Routes.PENDIDIKAN5;
       }
+      if (draft.jenis == 'pangan') {
+        final step = draft.dataForm['langkah'];
+        if (step == 2) targetRoute = Routes.PANGAN2;
+        if (step == 3) targetRoute = Routes.PANGAN3;
+      }
       await Get.toNamed(targetRoute, arguments: formArgs);
       await _draftController.loadDrafts(filterJenis: _filterJenis);
     } else if (draft.jenis == 'pancasila') {
