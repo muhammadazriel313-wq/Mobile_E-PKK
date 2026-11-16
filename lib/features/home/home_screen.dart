@@ -17,6 +17,9 @@ import 'package:epkk_nganjuk/features/home/nav_controller.dart';
 
 import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 
+// [PERUBAHAN BARU] Import section Peringkat
+import 'package:epkk_nganjuk/features/peringkat/peringkat_home_section.dart';
+
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
@@ -261,6 +264,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
 
                       SizedBox(height: 32.h),
+
+                      // ================= PERINGKAT (BARU) =================
+                      // [PERUBAHAN BARU] Peringkat Desa & Kecamatan di beranda
+                      const PeringkatHomeSection(),
+
+                      SizedBox(height: 24.h),
 
                       // ================= PENGUMUMAN =================
                       Obx(() {
