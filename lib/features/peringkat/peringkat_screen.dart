@@ -10,7 +10,17 @@ class PeringkatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.put(PeringkatController(), tag: 'penuh');
+    final args = Get.arguments;
+    final awal = (args is Map && args['jenis'] == 'kecamatan')
+        ? PeringkatJenis.kecamatan
+        : PeringkatJenis.desa;
+
+    final c = Get.put(
+      PeringkatController()
+        ..jenis.value = awal
+        ..periode.value = PeringkatPeriode.bulanIni,
+      tag: 'penuh',
+    );
 
     return Scaffold(
       backgroundColor: PeringkatColors.navy,

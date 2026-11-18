@@ -19,6 +19,7 @@ import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 
 // [PERUBAHAN BARU] Import section Peringkat
 import 'package:epkk_nganjuk/features/peringkat/peringkat_home_section.dart';
+import 'package:epkk_nganjuk/features/peringkat/peringkat_model.dart';
 
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
@@ -267,7 +268,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                       // ================= PERINGKAT (BARU) =================
                       // [PERUBAHAN BARU] Peringkat Desa & Kecamatan di beranda
-                      const PeringkatHomeSection(),
+                      // Podium mengikuti jenis akun: kecamatan -> peringkat
+                      // kecamatan, selain itu -> peringkat desa.
+                      if (role.isNotEmpty)
+                        PeringkatHomeSection(
+                          jenis: role.toLowerCase().contains('kecamatan')
+                              ? PeringkatJenis.kecamatan
+                              : PeringkatJenis.desa,
+                        ),
 
                       SizedBox(height: 24.h),
 
