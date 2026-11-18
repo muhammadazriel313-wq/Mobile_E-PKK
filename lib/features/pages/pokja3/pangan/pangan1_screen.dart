@@ -102,7 +102,7 @@ class _Pangan1ScreenState extends State<Pangan1Screen> {
     setState(() => _isSavingDraft = true);
     try {
       final user = await PreferencesService.getUser();
-      final idAkun = user?.id?.toString() ?? id_user ?? '';
+      final idAkun = user?.id.toString() ?? id_user ?? '';
       if (idAkun.isEmpty) {
         Get.snackbar(
           'Gagal',

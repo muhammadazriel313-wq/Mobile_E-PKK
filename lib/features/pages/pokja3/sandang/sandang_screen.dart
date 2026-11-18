@@ -105,7 +105,7 @@ class _SandangScreenState extends State<SandangScreen> {
     setState(() => _isSavingDraft = true);
     try {
       final user = await PreferencesService.getUser();
-      final idAkun = user?.id?.toString() ?? id_user ?? '';
+      final idAkun = user?.id.toString() ?? id_user ?? '';
       if (idAkun.isEmpty) {
         Get.snackbar(
           'Gagal',

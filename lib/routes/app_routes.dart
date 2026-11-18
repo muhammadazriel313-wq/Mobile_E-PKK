@@ -45,7 +45,6 @@ import 'package:epkk_nganjuk/features/home/home_screen.dart';
 import 'package:epkk_nganjuk/features/akun/informasi_akun.dart';
 import 'package:epkk_nganjuk/features/akun/edit_password.dart';
 // [PERUBAHAN 08-10-2026] Import halaman Bantuan
-import 'package:epkk_nganjuk/features/akun/bantuan_screen.dart';
 import 'package:epkk_nganjuk/features/akun/panduan/panduan_screen.dart';
 // [PERUBAHAN 08-10-2026] Import halaman Riwayat Pengumuman
 import 'package:epkk_nganjuk/features/pengumuman/riwayat_pengumuman_screen.dart';
@@ -412,8 +411,17 @@ class AppPages {
     /// ===============================
     GetPage(
       name: Routes.POSYANDU_1,
-
-      page: () => Posyandu1Screen(kategori: Get.arguments['kategori']),
+      page: () {
+        final args = Get.arguments;
+        String kategori = '';
+        if (args is Map) {
+          kategori =
+              args['kategori']?.toString() ??
+              args['draft']?.dataForm?['kategori']?.toString() ??
+              '';
+        }
+        return Posyandu1Screen(kategori: kategori);
+      },
     ),
 
     GetPage(name: Routes.POSYANDU_2, page: () => const Posyandu2Screen()),

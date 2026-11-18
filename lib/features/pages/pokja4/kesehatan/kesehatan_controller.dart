@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/kesehatan/report_kesehatan_model.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class KesehatanController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var reportData = Rxn<ReportKesehatanModel>();
+  var lastFailureWasNetwork = false.obs;
 
   // ================= SUBMIT DATA =================
-  Future<void> submitKesehatanData({
+  Future<bool> submitKesehatanData({
     required String idUser,
     required String jumlahPosyandu,
     required String jumlahPosyanduIterasi,
@@ -30,6 +32,7 @@ class KesehatanController extends GetxController {
       isLoading(true);
       errorMessage('');
       reportData(null);
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/kesehatan',
@@ -61,6 +64,7 @@ class KesehatanController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 3),
         );
+        return true;
       } else {
         errorMessage('Gagal mengirim data');
 
@@ -72,8 +76,10 @@ class KesehatanController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } on SocketException {
+      lastFailureWasNetwork.value = true;
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -84,7 +90,9 @@ class KesehatanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage('Server timeout');
 
       Get.snackbar(
@@ -95,7 +103,17 @@ class KesehatanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } catch (e) {
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
+      }
       errorMessage(e.toString());
 
       Get.snackbar(
@@ -106,6 +124,7 @@ class KesehatanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } finally {
       isLoading(false);
     }

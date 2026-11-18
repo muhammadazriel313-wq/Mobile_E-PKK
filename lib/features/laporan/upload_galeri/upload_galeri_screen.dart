@@ -649,10 +649,6 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       return;
     }
 
-    String? namaPesertaJson = _pesertaList.isNotEmpty
-        ? jsonEncode(_pesertaList)
-        : null;
-
     await _controller.submitDataGaleri(
       idUser: id_user!,
       deskripsi: _namaKegiatanController.text,

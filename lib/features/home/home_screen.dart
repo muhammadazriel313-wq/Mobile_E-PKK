@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (user != null) {
       setState(() {
-        idUser = user.id ?? 'id user tidak diketahui';
+        idUser = user.id;
 
         fullName = user.fullName;
 

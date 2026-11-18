@@ -70,7 +70,7 @@ class _Pengembangan3State extends State<Pengembangan3> {
     setState(() => _isSavingDraft = true);
     try {
       final user = await PreferencesService.getUser();
-      final idAkun = user?.id?.toString() ?? idUser ?? '';
+      final idAkun = user?.id.toString() ?? idUser ?? '';
       if (idAkun.isEmpty) {
         Get.snackbar('Gagal', 'Sesi pengguna tidak valid.', snackPosition: SnackPosition.TOP);
         return false;

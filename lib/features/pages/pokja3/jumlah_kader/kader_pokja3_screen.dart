@@ -10,7 +10,6 @@ import 'package:epkk_nganjuk/features/draft/draft_exit_dialog.dart';
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
 import 'package:epkk_nganjuk/features/draft/draft_service.dart';
 import 'package:epkk_nganjuk/features/pages/pokja3/jumlah_kader/kader_pokja3_controller.dart';
-import 'package:epkk_nganjuk/routes/app_routes.dart';
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 
 import 'package:flutter/material.dart';
@@ -102,7 +101,7 @@ class _KaderPokja3ScreenState extends State<KaderPokja3Screen> {
     setState(() => _isSavingDraft = true);
     try {
       final user = await PreferencesService.getUser();
-      final idAkun = user?.id?.toString() ?? idUser ?? '';
+      final idAkun = user?.id.toString() ?? idUser ?? '';
       if (idAkun.isEmpty) {
         Get.snackbar('Gagal', 'Sesi pengguna tidak valid.', snackPosition: SnackPosition.TOP);
         return false;

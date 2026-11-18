@@ -174,6 +174,48 @@ class DraftModel {
           return 'Layak: ${layak.isEmpty ? "0" : layak}, Tidak Layak: ${tidakLayak.isEmpty ? "0" : tidakLayak}';
         }
         return 'Perumahan & Tata Laksana';
+      case 'kader_pokja4':
+        final posyandu = dataForm['posyandu']?.toString().trim() ?? '';
+        final gizi = dataForm['gizi']?.toString().trim() ?? '';
+        if (posyandu.isNotEmpty || gizi.isNotEmpty) {
+          return 'Posyandu: ${posyandu.isEmpty ? "0" : posyandu}, Gizi: ${gizi.isEmpty ? "0" : gizi}';
+        }
+        return 'Kader Pokja IV';
+      case 'kesehatan':
+        final posyandu = dataForm['jumlah_posyandu']?.toString().trim() ?? '';
+        final lansia = dataForm['jumlah_klp']?.toString().trim() ?? '';
+        if (posyandu.isNotEmpty || lansia.isNotEmpty) {
+          return 'Posyandu: ${posyandu.isEmpty ? "0" : posyandu}, Lansia: ${lansia.isEmpty ? "0" : lansia}';
+        }
+        return 'Kesehatan';
+      case 'perencanaan':
+        final pus = dataForm['J_Psubur']?.toString().trim() ?? '';
+        final wus = dataForm['J_Wsubur']?.toString().trim() ?? '';
+        if (pus.isNotEmpty || wus.isNotEmpty) {
+          return 'PUS: ${pus.isEmpty ? "0" : pus}, WUS: ${wus.isEmpty ? "0" : wus}';
+        }
+        return 'Jumlah Rumah Yang Memiliki';
+      case 'kelestarian':
+        final jamban = dataForm['jamban']?.toString().trim() ?? '';
+        final pdam = dataForm['pdam']?.toString().trim() ?? '';
+        if (jamban.isNotEmpty || pdam.isNotEmpty) {
+          return 'Jamban: ${jamban.isEmpty ? "0" : jamban}, PDAM: ${pdam.isEmpty ? "0" : pdam}';
+        }
+        return 'Kelestarian Lingkungan';
+      case 'inovasi_kegiatan':
+        final kategori = dataForm['kategori']?.toString().trim() ?? '';
+        final kader = dataForm['kader_kesehatan']?.toString().trim() ?? '';
+        if (kategori.isNotEmpty || kader.isNotEmpty) {
+          return 'Kategori: ${kategori.isEmpty ? "-" : kategori}, Kader Kes: ${kader.isEmpty ? "0" : kader}';
+        }
+        return 'Inovasi - Kegiatan Pokja 4';
+      case 'inovasi_posyandu':
+        final bulan = dataForm['bulan']?.toString().trim() ?? '';
+        final bumil = dataForm['jml_ibu_hamil']?.toString().trim() ?? '';
+        if (bulan.isNotEmpty || bumil.isNotEmpty) {
+          return 'Bulan: ${bulan.isEmpty ? "-" : bulan}, Ibu Hamil: ${bumil.isEmpty ? "0" : bumil}';
+        }
+        return 'Inovasi - Posyandu';
       default:
         return 'Laporan Draf';
     }
@@ -203,6 +245,18 @@ class DraftModel {
         return 'Industri Rumah Tangga';
       case 'perumahan':
         return 'Perumahan & Tata Laksana';
+      case 'kader_pokja4':
+        return 'Kader Pokja IV';
+      case 'kesehatan':
+        return 'Kesehatan';
+      case 'perencanaan':
+        return 'Jumlah Rumah Yang Memiliki';
+      case 'kelestarian':
+        return 'Kelestarian Lingkungan';
+      case 'inovasi_kegiatan':
+        return 'Inovasi - Kegiatan Pokja 4';
+      case 'inovasi_posyandu':
+        return 'Inovasi - Posyandu';
       default:
         return 'Laporan';
     }

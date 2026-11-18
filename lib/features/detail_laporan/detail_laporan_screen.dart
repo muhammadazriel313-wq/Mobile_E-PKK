@@ -2,6 +2,7 @@ import 'package:epkk_nganjuk/common/colors.dart';
 import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/detail_laporan_controller.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/edit_laporan_screen.dart';
+import 'package:epkk_nganjuk/features/detail_laporan/pokja1/pokja1_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -214,7 +215,130 @@ class DetailLaporanScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildPokja1DetailFields(Map<String, dynamic> data) {
+    final fields = Pokja1Config.getFieldsForUuid(uuid);
+    final List<Widget> children = [];
+    String? currentSection;
+
+    for (final field in fields) {
+      if (field.section != null && field.section != currentSection) {
+        currentSection = field.section;
+        children.add(
+          Padding(
+            padding: EdgeInsets.only(top: children.isEmpty ? 0 : 12.h, bottom: 10.h),
+            child: Text(
+              currentSection!,
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1F2937),
+              ),
+            ),
+          ),
+        );
+      }
+
+      final rawValue = data[field.key];
+      final displayValue = (rawValue == null || rawValue.toString().trim().isEmpty)
+          ? '-'
+          : rawValue.toString().trim();
+
+      children.add(
+        Container(
+          width: double.infinity,
+          margin: EdgeInsets.only(bottom: 14.h),
+          padding: EdgeInsets.all(14.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18.r),
+            border: Border.all(color: const Color(0xFFE7EDF3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                field.label,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                displayValue,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Tampilkan updated_at di paling bawah setelah semua field form
+    final rawUpdatedAt = data['updated_at'];
+    String formattedUpdatedAt = '-';
+    if (rawUpdatedAt != null) {
+      final parsedDate = DateTime.tryParse(rawUpdatedAt.toString());
+      if (parsedDate != null) {
+        formattedUpdatedAt = DateFormat('dd-MM-yyyy HH:mm').format(parsedDate);
+      } else {
+        formattedUpdatedAt = rawUpdatedAt.toString();
+      }
+    }
+
+    children.add(
+      Container(
+        width: double.infinity,
+        margin: EdgeInsets.only(bottom: 14.h),
+        padding: EdgeInsets.all(14.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18.r),
+          border: Border.all(color: const Color(0xFFE7EDF3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Terakhir diperbarui',
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              formattedUpdatedAt,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
+  }
+
   Widget _buildDetailFields(Map<String, dynamic> data) {
+    if (Pokja1Config.isPokja1(uuid)) {
+      return _buildPokja1DetailFields(data);
+    }
+
     final hiddenFields = [
       'uuid',
       'id_user',

@@ -112,9 +112,9 @@ class PendidikanKeterampilanController extends GetxController {
     final user = await PreferencesService.getUser();
 
     if (user != null) {
-      idUser = user.id?.toString() ?? '';
-      idRole = user.role?.id?.toString() ?? '';
-      idOrganization = user.organization?.id?.toString() ?? '';
+      idUser = user.id.toString();
+      idRole = user.role?.id.toString() ?? '';
+      idOrganization = user.organization?.id.toString() ?? '';
 
       print("LOGIN USER -> $idUser | $idRole | $idOrganization");
     } else {

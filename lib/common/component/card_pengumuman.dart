@@ -1,5 +1,4 @@
 import 'package:epkk_nganjuk/common/colors.dart';
-import 'package:epkk_nganjuk/common/typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
