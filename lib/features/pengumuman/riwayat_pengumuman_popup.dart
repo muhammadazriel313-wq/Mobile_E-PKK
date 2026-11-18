@@ -31,10 +31,7 @@ class RiwayatPengumumanPopup extends StatefulWidget {
         );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curvedAnimation),
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation, child: child),
         );
       },
     );
@@ -179,7 +176,10 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                               });
                             },
                             child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 6.w,
+                                vertical: 4.h,
+                              ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -351,7 +351,10 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                       color: primaryColor,
                     ),
                   ),
-                  icon: Icon(Icons.arrow_drop_down_rounded, color: primaryColor),
+                  icon: Icon(
+                    Icons.arrow_drop_down_rounded,
+                    color: primaryColor,
+                  ),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
@@ -411,9 +414,11 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
           ),
           itemBuilder: (context, index) {
             final monthIndex = index + 1;
-            final isSelected = (_selectedMonth.year == _pickerYear &&
+            final isSelected =
+                (_selectedMonth.year == _pickerYear &&
                 _selectedMonth.month == monthIndex);
-            final isCurrentMonth = (DateTime.now().year == _pickerYear &&
+            final isCurrentMonth =
+                (DateTime.now().year == _pickerYear &&
                 DateTime.now().month == monthIndex);
 
             return InkWell(
@@ -432,15 +437,15 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                   color: isSelected
                       ? primaryColor
                       : (isCurrentMonth
-                          ? primaryColor.withOpacity(0.08)
-                          : const Color(0xFFF8FAFC)),
+                            ? primaryColor.withOpacity(0.08)
+                            : const Color(0xFFF8FAFC)),
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: isSelected
                         ? primaryColor
                         : (isCurrentMonth
-                            ? primaryColor
-                            : const Color(0xFFE7EDF3)),
+                              ? primaryColor
+                              : const Color(0xFFE7EDF3)),
                     width: isCurrentMonth && !isSelected ? 1.5 : 1,
                   ),
                 ),
@@ -499,12 +504,15 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                 dayNumber,
               );
               final dateKey = DateFormat('yyyy-MM-dd').format(cellDate);
-              final hasAnnouncement = groupedMap.containsKey(dateKey) &&
+              final hasAnnouncement =
+                  groupedMap.containsKey(dateKey) &&
                   groupedMap[dateKey]!.isNotEmpty;
-              final isToday = (today.year == cellDate.year &&
+              final isToday =
+                  (today.year == cellDate.year &&
                   today.month == cellDate.month &&
                   today.day == cellDate.day);
-              final isSelected = (_selectedDate != null &&
+              final isSelected =
+                  (_selectedDate != null &&
                   _selectedDate!.year == cellDate.year &&
                   _selectedDate!.month == cellDate.month &&
                   _selectedDate!.day == cellDate.day);
@@ -537,8 +545,8 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                       color: isSelected
                           ? primaryColor
                           : (isToday
-                              ? primaryColor.withOpacity(0.08)
-                              : Colors.transparent),
+                                ? primaryColor.withOpacity(0.08)
+                                : Colors.transparent),
                       shape: BoxShape.circle,
                       border: isToday && !isSelected
                           ? Border.all(color: primaryColor, width: 1.5)
@@ -566,9 +574,7 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                                 : FontWeight.w500,
                             color: isSelected
                                 ? Colors.white
-                                : (isToday
-                                    ? primaryColor
-                                    : Colors.black87),
+                                : (isToday ? primaryColor : Colors.black87),
                           ),
                         ),
                       ],
@@ -753,9 +759,10 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
     );
   }
 
-
-
-  void _showDetailPengumuman(BuildContext parentContext, Pengumuman pengumuman) {
+  void _showDetailPengumuman(
+    BuildContext parentContext,
+    Pengumuman pengumuman,
+  ) {
     showDialog(
       context: parentContext,
       builder: (detailContext) {
@@ -838,7 +845,10 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                   SizedBox(height: 14.h),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.w,
+                      vertical: 12.h,
+                    ),
                     decoration: BoxDecoration(
                       color: primaryColor.withOpacity(0.06),
                       borderRadius: BorderRadius.circular(14.r),
@@ -869,7 +879,10 @@ class _RiwayatPengumumanPopupState extends State<RiwayatPengumumanPopup> {
                   ),
                   SizedBox(height: 12.h),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(100.r),

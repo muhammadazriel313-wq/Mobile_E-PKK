@@ -20,10 +20,7 @@ class DetailLaporanController extends GetxController {
     try {
       final response = await apiHelper.get(
         '/report/detail', //  sesuaikan
-        queryParameters: {
-          'uuid': uuid,
-          'org_id': orgId,
-        },
+        queryParameters: {'uuid': uuid, 'org_id': orgId},
       );
 
       final data = response.data;
@@ -51,11 +48,7 @@ class DetailLaporanController extends GetxController {
 
       final response = await apiHelper.post(
         '/report/update', //  sesuaikan
-        data: {
-          'uuid': uuid,
-          'org_id': orgId,
-          'data': data,
-        },
+        data: {'uuid': uuid, 'org_id': orgId, 'data': data},
       );
 
       if (response.data['statusCode'] != 200) {
@@ -72,17 +65,11 @@ class DetailLaporanController extends GetxController {
   }
 
   // ================= CANCEL =================
-  Future<void> cancelLaporan({
-    required String uuid,
-    required int orgId,
-  }) async {
+  Future<void> cancelLaporan({required String uuid, required int orgId}) async {
     try {
       final response = await apiHelper.post(
         '/report/cancel', //  sesuaikan
-        data: {
-          'uuid': uuid,
-          'org_id': orgId,
-        },
+        data: {'uuid': uuid, 'org_id': orgId},
       );
 
       if (response.data['statusCode'] != 200) {

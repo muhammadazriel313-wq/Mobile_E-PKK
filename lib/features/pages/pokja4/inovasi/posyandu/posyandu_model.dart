@@ -1,4 +1,3 @@
-
 /// =======================================================
 /// FILE : report_posyandu_model.dart
 /// =======================================================
@@ -19,17 +18,13 @@ class ReportPosyanduModel {
     this.error,
   });
 
-  factory ReportPosyanduModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ReportPosyanduModel.fromJson(Map<String, dynamic> json) {
     return ReportPosyanduModel(
       statusCode: json['status_code'] ?? 0,
 
       message: json['message'] ?? '',
 
-      data: PosyanduEntry.fromJson(
-        json['data'] ?? {},
-      ),
+      data: PosyanduEntry.fromJson(json['data'] ?? {}),
 
       error: json['error'],
     );
@@ -157,146 +152,80 @@ class PosyanduEntry {
     this.organization,
   });
 
-  factory PosyanduEntry.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory PosyanduEntry.fromJson(Map<String, dynamic> json) {
     return PosyanduEntry(
-      idPosyandu:
-          json['id_posyandu']?.toString(),
+      idPosyandu: json['id_posyandu']?.toString(),
 
       uuid: json['uuid']?.toString(),
 
-      idUser:
-          json['id_user']?.toString(),
+      idUser: json['id_user']?.toString(),
 
-      kategori:
-          json['kategori']?.toString(),
+      kategori: json['kategori']?.toString(),
 
-      bulan:
-          json['bulan']?.toString(),
+      bulan: json['bulan']?.toString(),
 
-      jmlIbuHamil:
-          json['jml_ibu_hamil']
-              ?.toString(),
+      jmlIbuHamil: json['jml_ibu_hamil']?.toString(),
 
-      diperiksa:
-          json['diperiksa']
-              ?.toString(),
+      diperiksa: json['diperiksa']?.toString(),
 
-      feTabletDarah:
-          json['fe_tablet_darah']
-              ?.toString(),
+      feTabletDarah: json['fe_tablet_darah']?.toString(),
 
-      jmlIbuMenyusui:
-          json['jml_ibu_menyusui']
-              ?.toString(),
+      jmlIbuMenyusui: json['jml_ibu_menyusui']?.toString(),
 
-      kondom:
-          json['kondom']
-              ?.toString(),
+      kondom: json['kondom']?.toString(),
 
-      pil:
-          json['pil']
-              ?.toString(),
+      pil: json['pil']?.toString(),
 
-      implant:
-          json['implant']
-              ?.toString(),
+      implant: json['implant']?.toString(),
 
-      mop:
-          json['mop']
-              ?.toString(),
+      mop: json['mop']?.toString(),
 
-      mow:
-          json['mow']
-              ?.toString(),
+      mow: json['mow']?.toString(),
 
-      iud:
-          json['iud']
-              ?.toString(),
+      iud: json['iud']?.toString(),
 
-      suntikan:
-          json['suntikan']
-              ?.toString(),
+      suntikan: json['suntikan']?.toString(),
 
       /// ================= TAMBAHAN =================
+      lainLainKb: json['lain_lain_kb']?.toString(),
 
-      lainLainKb:
-          json['lain_lain_kb']
-              ?.toString(),
+      jmlBalitaL: json['jml_balita_l']?.toString(),
 
-      jmlBalitaL:
-          json['jml_balita_l']
-              ?.toString(),
+      jmlBalitaP: json['jml_balita_p']?.toString(),
 
-      jmlBalitaP:
-          json['jml_balita_p']
-              ?.toString(),
+      bukuKiaL: json['buku_kia_l']?.toString(),
 
-      bukuKiaL:
-          json['buku_kia_l']
-              ?.toString(),
+      bukuKiaP: json['buku_kia_p']?.toString(),
 
-      bukuKiaP:
-          json['buku_kia_p']
-              ?.toString(),
+      datangL: json['datang_l']?.toString(),
 
-      datangL:
-          json['datang_l']
-              ?.toString(),
+      datangP: json['datang_p']?.toString(),
 
-      datangP:
-          json['datang_p']
-              ?.toString(),
+      naikL: json['naik_l']?.toString(),
 
-      naikL:
-          json['naik_l']
-              ?.toString(),
+      naikP: json['naik_p']?.toString(),
 
-      naikP:
-          json['naik_p']
-              ?.toString(),
+      vitAL: json['vit_a_l']?.toString(),
 
-      vitAL:
-          json['vit_a_l']
-              ?.toString(),
+      vitAP: json['vit_a_p']?.toString(),
 
-      vitAP:
-          json['vit_a_p']
-              ?.toString(),
+      pmtL: json['pmt_l']?.toString(),
 
-      pmtL:
-          json['pmt_l']
-              ?.toString(),
+      pmtP: json['pmt_p']?.toString(),
 
-      pmtP:
-          json['pmt_p']
-              ?.toString(),
+      imunisasiTt1: json['imunisasi_tt_1']?.toString(),
 
-      imunisasiTt1:
-          json['imunisasi_tt_1']
-              ?.toString(),
+      imunisasiTt2: json['imunisasi_tt_2']?.toString(),
 
-      imunisasiTt2:
-          json['imunisasi_tt_2']
-              ?.toString(),
+      status: json['status']?.toString(),
 
-      status:
-          json['status']
-              ?.toString(),
+      createdAt: json['created_at']?.toString(),
 
-      createdAt:
-          json['created_at']
-              ?.toString(),
-
-      updatedAt:
-          json['updated_at']
-              ?.toString(),
+      updatedAt: json['updated_at']?.toString(),
 
       role: json['role'],
 
-      organization:
-          json['organization'],
+      organization: json['organization'],
     );
   }
 
@@ -314,23 +243,19 @@ class PosyanduEntry {
 
       'id_role': idRole,
 
-      'id_organization':
-          idOrganization,
+      'id_organization': idOrganization,
 
       'kategori': kategori,
 
       'bulan': bulan,
 
-      'jml_ibu_hamil':
-          jmlIbuHamil,
+      'jml_ibu_hamil': jmlIbuHamil,
 
       'diperiksa': diperiksa,
 
-      'fe_tablet_darah':
-          feTabletDarah,
+      'fe_tablet_darah': feTabletDarah,
 
-      'jml_ibu_menyusui':
-          jmlIbuMenyusui,
+      'jml_ibu_menyusui': jmlIbuMenyusui,
 
       'kondom': kondom,
 
@@ -347,51 +272,35 @@ class PosyanduEntry {
       'suntikan': suntikan,
 
       /// ================= TAMBAHAN =================
+      'lain_lain_kb': lainLainKb,
 
-      'lain_lain_kb':
-          lainLainKb,
+      'jml_balita_l': jmlBalitaL,
 
-      'jml_balita_l':
-          jmlBalitaL,
+      'jml_balita_p': jmlBalitaP,
 
-      'jml_balita_p':
-          jmlBalitaP,
+      'buku_kia_l': bukuKiaL,
 
-      'buku_kia_l':
-          bukuKiaL,
+      'buku_kia_p': bukuKiaP,
 
-      'buku_kia_p':
-          bukuKiaP,
+      'datang_l': datangL,
 
-      'datang_l':
-          datangL,
+      'datang_p': datangP,
 
-      'datang_p':
-          datangP,
+      'naik_l': naikL,
 
-      'naik_l':
-          naikL,
+      'naik_p': naikP,
 
-      'naik_p':
-          naikP,
+      'vit_a_l': vitAL,
 
-      'vit_a_l':
-          vitAL,
+      'vit_a_p': vitAP,
 
-      'vit_a_p':
-          vitAP,
+      'pmt_l': pmtL,
 
-      'pmt_l':
-          pmtL,
+      'pmt_p': pmtP,
 
-      'pmt_p':
-          pmtP,
+      'imunisasi_tt_1': imunisasiTt1,
 
-      'imunisasi_tt_1':
-          imunisasiTt1,
-
-      'imunisasi_tt_2':
-          imunisasiTt2,
+      'imunisasi_tt_2': imunisasiTt2,
     };
   }
 }
@@ -400,8 +309,7 @@ class PosyanduEntry {
 /// EMPTY EXTENSION
 /// =======================================================
 
-extension PosyanduEntryExtension
-    on PosyanduEntry {
+extension PosyanduEntryExtension on PosyanduEntry {
   static PosyanduEntry empty() {
     return PosyanduEntry(
       idPosyandu: '',
@@ -437,7 +345,6 @@ extension PosyanduEntryExtension
       suntikan: '',
 
       /// ================= TAMBAHAN =================
-
       lainLainKb: '',
 
       jmlBalitaL: '',

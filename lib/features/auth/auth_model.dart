@@ -26,9 +26,7 @@ class LoginResponse {
       /// AMBIL TOKEN
       token: json['token'],
 
-      data: json['data'] != null
-          ? UserData.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? UserData.fromJson(json['data']) : null,
 
       error: json['error'] != null
           ? ErrorResponse.fromJson(json['error'])
@@ -51,7 +49,6 @@ class LoginResponse {
   }
 }
 
-
 // coba register
 class RegisterResponse {
   final int? statusCode;
@@ -71,7 +68,9 @@ class RegisterResponse {
       statusCode: json['statusCode'] ?? 0,
       message: json['message'],
       data: json['data'] != null ? UserData.fromJson(json['data']) : null,
-      error: json['error'] != null ? ErrorResponse.fromJson(json['error']) : null,
+      error: json['error'] != null
+          ? ErrorResponse.fromJson(json['error'])
+          : null,
     );
   }
 
@@ -105,8 +104,6 @@ class ForgotPasswordResponse {
     );
   }
 }
-
-
 
 class UserData {
   final String id;
@@ -144,10 +141,16 @@ class UserData {
       status: json['status'] ?? '',
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      subdistrict: json['subdistrict'] != null ? Subdistrict.fromJson(json['subdistrict']) : null,
-      village: json['village'] != null ? Village.fromJson(json['village']) : null,
+      subdistrict: json['subdistrict'] != null
+          ? Subdistrict.fromJson(json['subdistrict'])
+          : null,
+      village: json['village'] != null
+          ? Village.fromJson(json['village'])
+          : null,
       role: json['role'] != null ? Role.fromJson(json['role']) : null,
-      organization: json['organization'] != null ? Organization.fromJson(json['organization']) : null,
+      organization: json['organization'] != null
+          ? Organization.fromJson(json['organization'])
+          : null,
     );
   }
 
@@ -173,11 +176,7 @@ class Subdistrict {
   final String uuid; // Tambahkan
   final String name;
 
-  Subdistrict({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Subdistrict({required this.id, required this.uuid, required this.name});
 
   factory Subdistrict.fromJson(Map<String, dynamic> json) {
     return Subdistrict(
@@ -188,11 +187,7 @@ class Subdistrict {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -201,11 +196,7 @@ class Village {
   final String uuid; // Tambahkan
   final String name;
 
-  Village({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Village({required this.id, required this.uuid, required this.name});
 
   factory Village.fromJson(Map<String, dynamic> json) {
     return Village(
@@ -216,11 +207,7 @@ class Village {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -229,11 +216,7 @@ class Role {
   final String uuid; // Tambahkan
   final String name;
 
-  Role({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Role({required this.id, required this.uuid, required this.name});
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
@@ -244,11 +227,7 @@ class Role {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -257,11 +236,7 @@ class Organization {
   final String uuid; // Tambahkan
   final String name;
 
-  Organization({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Organization({required this.id, required this.uuid, required this.name});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -272,11 +247,7 @@ class Organization {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -287,8 +258,6 @@ class ErrorResponse {
   ErrorResponse({required this.message});
 
   factory ErrorResponse.fromJson(Map<String, dynamic> json) {
-    return ErrorResponse(
-      message: json['message'] ?? 'Unknown error',
-    );
+    return ErrorResponse(message: json['message'] ?? 'Unknown error');
   }
 }

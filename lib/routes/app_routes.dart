@@ -2,6 +2,7 @@
 /// FILE : app_routes.dart
 /// =======================================================
 
+import 'package:epkk_nganjuk/features/draft/draft_list_screen.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/inovasi_screen.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/kegiatanpokja4/kegiatan1_pokja4_screen.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/kegiatanpokja4/kegiatan2_pokja4_screen.dart';
@@ -46,7 +47,7 @@ import 'package:epkk_nganjuk/features/peringkat/peringkat_screen.dart';
 import 'package:epkk_nganjuk/features/akun/informasi_akun.dart';
 import 'package:epkk_nganjuk/features/akun/edit_password.dart';
 // [PERUBAHAN 08-10-2026] Import halaman Bantuan
-import 'package:epkk_nganjuk/features/akun/bantuan_screen.dart';
+import 'package:epkk_nganjuk/features/akun/panduan/panduan_screen.dart';
 // [PERUBAHAN 08-10-2026] Import halaman Riwayat Pengumuman
 import 'package:epkk_nganjuk/features/pengumuman/riwayat_pengumuman_screen.dart';
 
@@ -113,6 +114,10 @@ class Routes {
   static const EDIT_PASSWORD = '/edit_password';
   // [PERUBAHAN 08-10-2026] Menambahkan route BANTUAN
   static const BANTUAN = '/bantuan';
+
+  // Route Layar Panduan E-PKK (Figma)
+  static const PANDUAN = '/panduan';
+
   // [PERUBAHAN 08-10-2026] Menambahkan route RIWAYAT_PENGUMUMAN
   static const RIWAYAT_PENGUMUMAN = '/riwayat_pengumuman';
 
@@ -175,6 +180,9 @@ class Routes {
   static const KEGIATAN_POKJA4_5 = '/kegiatan-pokja4-5';
 
   // ===== LAPORAN =====
+
+  static const DRAFT_LIST = '/draft_list';
+
   static const UPLOAD_LAPORAN = '/upload_laporan';
   static const UPLOAD_GALERI = '/upload_galeri';
   static const LAPORAN_UMUM1 = '/laporan_umum1';
@@ -187,6 +195,7 @@ class AppPages {
   static final List<GetPage> pages = [
     // ===== AUTH =====
     GetPage(name: Routes.INTRO_SPLASH, page: () => const IntroSplashScreen()),
+
     GetPage(name: Routes.SPLASH, page: () => const SplashScreen()),
     GetPage(name: Routes.WELCOME, page: () => WelcomeScreen()),
     GetPage(name: Routes.AUTH_LOGIN, page: () => AuthScreen()),
@@ -213,7 +222,11 @@ class AppPages {
     GetPage(name: Routes.INFO_AKUN, page: () => InfoAkunScreen()),
     GetPage(name: Routes.EDIT_PASSWORD, page: () => EditPasswordScreen()),
     // [PERUBAHAN 08-10-2026] Menambahkan GetPage BANTUAN
-    GetPage(name: Routes.BANTUAN, page: () => const BantuanScreen()),
+    GetPage(name: Routes.BANTUAN, page: () => const PanduanScreen()),
+
+    // GetPage PANDUAN
+    GetPage(name: Routes.PANDUAN, page: () => const PanduanScreen()),
+
     // [PERUBAHAN 08-10-2026] Menambahkan GetPage RIWAYAT_PENGUMUMAN
     // [CATATAN REVISI 08-10-2026] Rute halaman penuh ini tetap dipertahankan untuk kompatibilitas,
     // sedangkan ikon kalender pada halaman Pengumuman kini menggunakan popup zoom (RiwayatPengumumanPopup).
@@ -310,7 +323,17 @@ class AppPages {
     /// ===============================
     GetPage(
       name: Routes.POSYANDU_1,
-      page: () => Posyandu1Screen(kategori: Get.arguments['kategori']),
+      page: () {
+        final args = Get.arguments;
+        String kategori = '';
+        if (args is Map) {
+          kategori =
+              args['kategori']?.toString() ??
+              args['draft']?.dataForm?['kategori']?.toString() ??
+              '';
+        }
+        return Posyandu1Screen(kategori: kategori);
+      },
     ),
     GetPage(name: Routes.POSYANDU_2, page: () => const Posyandu2Screen()),
     GetPage(name: Routes.POSYANDU_3, page: () => const Posyandu3Screen()),
@@ -342,6 +365,8 @@ class AppPages {
     ),
 
     // ===== LAPORAN =====
+    GetPage(name: Routes.DRAFT_LIST, page: () => const DraftListScreen()),
+
     GetPage(name: Routes.UPLOAD_LAPORAN, page: () => UploadLaporanScreen()),
     GetPage(name: Routes.UPLOAD_GALERI, page: () => UploadGaleriPage()),
     GetPage(name: Routes.LAPORAN_UMUM1, page: () => LaporanUmum1Screen()),

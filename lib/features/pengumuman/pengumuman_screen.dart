@@ -422,7 +422,7 @@ class _PengumumanScreenState extends State<PengumumanScreen> {
 
                       child: SingleChildScrollView(
                         child: Text(
-                          pengumuman.deskripsi ?? 'Tidak ada deskripsi',
+                          pengumuman.deskripsi,
 
                           style: TextStyle(
                             fontSize: 13.sp,

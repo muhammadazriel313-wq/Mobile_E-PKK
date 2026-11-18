@@ -2,6 +2,7 @@ import 'package:epkk_nganjuk/common/colors.dart';
 import 'package:epkk_nganjuk/features/akun/profile_controller.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:epkk_nganjuk/welcome/welcome_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class InfoAkunScreen extends StatefulWidget {
   @override
   State<InfoAkunScreen> createState() => _InfoAkunScreenState();
 }
+
 class _InfoAkunScreenState extends State<InfoAkunScreen> {
   final _formKey = GlobalKey<FormState>();
 
@@ -37,7 +39,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
 
   // [PERUBAHAN 08-10-2026] Dialog pemilihan sumber foto profil
   void _pilihSumberFoto() {
-    final hasPhoto = _selectedImageBytes != null ||
+    final hasPhoto =
+        _selectedImageBytes != null ||
         (controller.profilData.value.foto != null &&
             controller.profilData.value.foto!.isNotEmpty);
 
@@ -126,10 +129,7 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
         ),
         content: Text(
           'Apakah Anda yakin ingin menghapus foto profil?',
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: Colors.grey.shade700,
-          ),
+          style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade700),
         ),
         actions: [
           TextButton(
@@ -210,15 +210,27 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
 
     /// SET DATA AWAL
     _nameController.text = controller.profilData.value.fullName;
-
     _phoneController.text = controller.profilData.value.phoneNumber;
+
+    // Jika data profil di controller masih kosong, muat langsung dari penyimpanan sesi lokal
+    if (_nameController.text.isEmpty || _phoneController.text.isEmpty) {
+      PreferencesService.getUser().then((user) {
+        if (!mounted || user == null) return;
+        if (_nameController.text.isEmpty) {
+          _nameController.text = user.fullName;
+        }
+        if (_phoneController.text.isEmpty) {
+          _phoneController.text = user.phoneNumber;
+        }
+        setState(() {});
+      });
+    }
 
     /// LISTENER PROFILE
     _profileWorker = ever(controller.profilData, (data) {
       if (!mounted) return;
 
       _nameController.text = data.fullName;
-
       _phoneController.text = data.phoneNumber;
     });
   }
@@ -305,7 +317,7 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
 
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
+                          color: Colors.black.withValues(alpha: 0.02),
 
                           blurRadius: 8,
 
@@ -337,44 +349,48 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                                 ),
                                 child: ClipOval(
                                   child: _selectedImageBytes != null
-                                    ? Image.memory(
-                                        _selectedImageBytes!,
-                                        fit: BoxFit.cover,
-                                        width: 76.r,
-                                        height: 76.r,
-                                      )
-                                    : (fotoUrl != null && fotoUrl.isNotEmpty)
-                                        ? Image.network(
-                                            fotoUrl,
-                                            fit: BoxFit.cover,
-                                            width: 76.r,
-                                            height: 76.r,
-                                            loadingBuilder: (context, child, progress) {
-                                              if (progress == null) return child;
-                                              return Center(
-                                                child: SizedBox(
-                                                  width: 22.w,
-                                                  height: 22.w,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: primaryColor,
+                                      ? Image.memory(
+                                          _selectedImageBytes!,
+                                          fit: BoxFit.cover,
+                                          width: 76.r,
+                                          height: 76.r,
+                                        )
+                                      : (fotoUrl != null && fotoUrl.isNotEmpty)
+                                      ? Image.network(
+                                          fotoUrl,
+                                          fit: BoxFit.cover,
+                                          width: 76.r,
+                                          height: 76.r,
+                                          loadingBuilder:
+                                              (context, child, progress) {
+                                                if (progress == null)
+                                                  return child;
+                                                return Center(
+                                                  child: SizedBox(
+                                                    width: 22.w,
+                                                    height: 22.w,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                          color: primaryColor,
+                                                        ),
                                                   ),
-                                                ),
-                                              );
-                                            },
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Icon(
-                                                Icons.person,
-                                                size: 38.sp,
-                                                color: primaryColor,
-                                              );
-                                            },
-                                          )
-                                        : Icon(
-                                            Icons.person,
-                                            size: 38.sp,
-                                            color: primaryColor,
-                                          ),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Icon(
+                                                  Icons.person,
+                                                  size: 38.sp,
+                                                  color: primaryColor,
+                                                );
+                                              },
+                                        )
+                                      : Icon(
+                                          Icons.person,
+                                          size: 38.sp,
+                                          color: primaryColor,
+                                        ),
                                 ),
                               ),
                               if (isUploading)
@@ -406,10 +422,15 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                                     decoration: BoxDecoration(
                                       color: primaryColor,
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.15),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.15,
+                                          ),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
@@ -514,7 +535,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                         /// BUTTON
                         // [PERUBAHAN 08-10-2026] Simpan perubahan menyimpan foto baru dan informasi akun
                         Obx(() {
-                          final isSaving = controller.isUpdating.value ||
+                          final isSaving =
+                              controller.isUpdating.value ||
                               controller.isUploadingPhoto.value;
 
                           return ButtonFill(
@@ -527,23 +549,25 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       // Jika pengguna telah memilih foto baru, unggah foto terlebih dahulu
                                       if (_selectedImageFile != null) {
-                                        final photoSuccess =
-                                            await controller.uploadProfilePhoto(
-                                          filePath: _selectedImageFile!.path,
-                                          fileBytes: _selectedImageBytes,
-                                          fileName: _selectedImageFile!.name,
-                                          showSuccessSnackbar: false,
-                                        );
+                                        final photoSuccess = await controller
+                                            .uploadProfilePhoto(
+                                              filePath:
+                                                  _selectedImageFile!.path,
+                                              fileBytes: _selectedImageBytes,
+                                              fileName:
+                                                  _selectedImageFile!.name,
+                                              showSuccessSnackbar: false,
+                                            );
                                         if (!photoSuccess) {
                                           return;
                                         }
                                       }
 
-                                      final success =
-                                          await controller.updateProfileInfo(
-                                        fullName: _nameController.text,
-                                        phoneNumber: _phoneController.text,
-                                      );
+                                      final success = await controller
+                                          .updateProfileInfo(
+                                            fullName: _nameController.text,
+                                            phoneNumber: _phoneController.text,
+                                          );
 
                                       if (success) {
                                         if (mounted) {
@@ -572,16 +596,46 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                   ),
 
                   /// ERROR MESSAGE
-                  if (controller.errorMessage.value.isNotEmpty)
-                    Padding(
-                      padding: EdgeInsets.only(top: 16.h),
+                  Obx(() {
+                    if (controller.errorMessage.value.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
 
-                      child: Text(
-                        controller.errorMessage.value,
-
-                        style: TextStyle(color: Colors.red, fontSize: 13.sp),
+                    return Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(top: 16.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14.w,
+                        vertical: 10.h,
                       ),
-                    ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF2F2),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: const Color(0xFFFCA5A5)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: const Color(0xFFDC2626),
+                            size: 18.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: Text(
+                              controller.errorMessage.value,
+                              style: TextStyle(
+                                color: const Color(0xFFB91C1C),
+                                fontSize: 12.sp,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
 
                   SizedBox(height: 24.h),
 
@@ -810,8 +864,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
                         onPressed: isDeleting
                             ? null
                             : () async {
-                                final success =
-                                    await controller.deleteAccount();
+                                final success = await controller
+                                    .deleteAccount();
                                 if (success) {
                                   Get.back(); // Tutup dialog konfirmasi
                                   Get.snackbar(
@@ -856,4 +910,3 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
     );
   }
 }
-

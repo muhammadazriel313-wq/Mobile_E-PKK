@@ -5,10 +5,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 class PinCodeFields extends StatelessWidget {
   final TextEditingController controller;
 
-  const PinCodeFields({
-    super.key,
-    required this.controller,
-  });
+  const PinCodeFields({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

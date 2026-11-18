@@ -89,40 +89,30 @@ class PengembanganKehidupanEntry {
       uuid: json['uuid'] ?? '',
       idUser: json['id_user']?.toString() ?? '',
 
-      jumlahKelompokPemula:
-          json['jumlah_kelompok_pemula']?.toString() ?? '',
-      jumlahPesertaPemula:
-          json['jumlah_peserta_pemula']?.toString() ?? '',
+      jumlahKelompokPemula: json['jumlah_kelompok_pemula']?.toString() ?? '',
+      jumlahPesertaPemula: json['jumlah_peserta_pemula']?.toString() ?? '',
 
-      jumlahKelompokMadya:
-          json['jumlah_kelompok_madya']?.toString() ?? '',
-      jumlahPesertaMadya:
-          json['jumlah_peserta_madya']?.toString() ?? '',
+      jumlahKelompokMadya: json['jumlah_kelompok_madya']?.toString() ?? '',
+      jumlahPesertaMadya: json['jumlah_peserta_madya']?.toString() ?? '',
 
-      jumlahKelompokUtama:
-          json['jumlah_kelompok_utama']?.toString() ?? '',
-      jumlahPesertaUtama:
-          json['jumlah_peserta_utama']?.toString() ?? '',
+      jumlahKelompokUtama: json['jumlah_kelompok_utama']?.toString() ?? '',
+      jumlahPesertaUtama: json['jumlah_peserta_utama']?.toString() ?? '',
 
-      jumlahKelompokMandiri:
-          json['jumlah_kelompok_mandiri']?.toString() ?? '',
-      jumlahPesertaMandiri:
-          json['jumlah_peserta_mandiri']?.toString() ?? '',
+      jumlahKelompokMandiri: json['jumlah_kelompok_mandiri']?.toString() ?? '',
+      jumlahPesertaMandiri: json['jumlah_peserta_mandiri']?.toString() ?? '',
 
-      jumlahKelompokHukum:
-          json['jumlah_kelompok_hukum']?.toString() ?? '',
-      jumlahPesertaHukum:
-          json['jumlah_peserta_hukum']?.toString() ?? '',
+      jumlahKelompokHukum: json['jumlah_kelompok_hukum']?.toString() ?? '',
+      jumlahPesertaHukum: json['jumlah_peserta_hukum']?.toString() ?? '',
 
       catatan: json['catatan']?.toString(),
       status: json['status']?.toString() ?? 'Proses',
 
       createdAt:
           DateTime.tryParse(json['created_at']?.toString() ?? '') ??
-              DateTime.now(),
+          DateTime.now(),
       updatedAt:
           DateTime.tryParse(json['updated_at']?.toString() ?? '') ??
-              DateTime.now(),
+          DateTime.now(),
 
       role: Role.fromJson(json['role']),
       organization: Organization.fromJson(json['organization']),
@@ -211,8 +201,7 @@ class Organization {
   }
 }
 
-extension PengembanganKehidupanEntryExtension
-    on PengembanganKehidupanEntry {
+extension PengembanganKehidupanEntryExtension on PengembanganKehidupanEntry {
   static PengembanganKehidupanEntry empty() {
     return PengembanganKehidupanEntry(
       idPokja2Bidang2: '',
@@ -245,30 +234,20 @@ extension PengembanganKehidupanEntryExtension
     return {
       'id_user': idUser,
 
-      'jumlah_kelompok_pemula':
-          int.tryParse(jumlahKelompokPemula) ?? 0,
-      'jumlah_peserta_pemula':
-          int.tryParse(jumlahPesertaPemula) ?? 0,
+      'jumlah_kelompok_pemula': int.tryParse(jumlahKelompokPemula) ?? 0,
+      'jumlah_peserta_pemula': int.tryParse(jumlahPesertaPemula) ?? 0,
 
-      'jumlah_kelompok_madya':
-          int.tryParse(jumlahKelompokMadya) ?? 0,
-      'jumlah_peserta_madya':
-          int.tryParse(jumlahPesertaMadya) ?? 0,
+      'jumlah_kelompok_madya': int.tryParse(jumlahKelompokMadya) ?? 0,
+      'jumlah_peserta_madya': int.tryParse(jumlahPesertaMadya) ?? 0,
 
-      'jumlah_kelompok_utama':
-          int.tryParse(jumlahKelompokUtama) ?? 0,
-      'jumlah_peserta_utama':
-          int.tryParse(jumlahPesertaUtama) ?? 0,
+      'jumlah_kelompok_utama': int.tryParse(jumlahKelompokUtama) ?? 0,
+      'jumlah_peserta_utama': int.tryParse(jumlahPesertaUtama) ?? 0,
 
-      'jumlah_kelompok_mandiri':
-          int.tryParse(jumlahKelompokMandiri) ?? 0,
-      'jumlah_peserta_mandiri':
-          int.tryParse(jumlahPesertaMandiri) ?? 0,
+      'jumlah_kelompok_mandiri': int.tryParse(jumlahKelompokMandiri) ?? 0,
+      'jumlah_peserta_mandiri': int.tryParse(jumlahPesertaMandiri) ?? 0,
 
-      'jumlah_kelompok_hukum':
-          int.tryParse(jumlahKelompokHukum) ?? 0,
-      'jumlah_peserta_hukum':
-          int.tryParse(jumlahPesertaHukum) ?? 0,
+      'jumlah_kelompok_hukum': int.tryParse(jumlahKelompokHukum) ?? 0,
+      'jumlah_peserta_hukum': int.tryParse(jumlahPesertaHukum) ?? 0,
 
       'id_role': idRole,
       'id_organization': idOrganization,

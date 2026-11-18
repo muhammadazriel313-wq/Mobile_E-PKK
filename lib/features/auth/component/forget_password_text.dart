@@ -3,7 +3,6 @@ import 'package:epkk_nganjuk/common/typography.dart';
 import 'package:flutter/material.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-
 class ForgetPasswordText extends StatelessWidget {
   final VoidCallback onTab;
 

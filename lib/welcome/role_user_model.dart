@@ -34,22 +34,13 @@ class RoleUser {
   final String id;
   final String name;
 
-  RoleUser({
-    required this.id,
-    required this.name,
-  });
+  RoleUser({required this.id, required this.name});
 
   factory RoleUser.fromJson(Map<String, dynamic> json) {
-    return RoleUser(
-      id: json['id'],
-      name: json['name'],
-    );
+    return RoleUser(id: json['id'], name: json['name']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }

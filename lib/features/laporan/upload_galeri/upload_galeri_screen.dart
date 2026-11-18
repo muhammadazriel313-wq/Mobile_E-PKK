@@ -1,13 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/common/colors.dart';
+import 'package:epkk_nganjuk/common/typography.dart';
 import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/drop_down.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_badge_icon.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
+import 'package:epkk_nganjuk/features/draft/draft_exit_dialog.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
 import 'package:epkk_nganjuk/features/laporan/upload_galeri/upload_galerii_controller.dart';
+import 'package:epkk_nganjuk/routes/app_routes.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -60,17 +71,369 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
   String? name_role;
   String? name_organization;
 
+  DraftModel? _editingDraft;
+  bool _isSavingDraft = false;
+  bool _isCompressingPhoto = false;
+  bool _allowPop = false;
+
+  void clearForm() {
+    _resetForm();
+  }
+
+  bool isFormEmpty() {
+    return _namaKegiatanController.text.trim().isEmpty &&
+        _lokasiController.text.trim().isEmpty &&
+        _pesertaList.isEmpty &&
+        _selectedBidang == null &&
+        _image == null &&
+        _imageBytes == null;
+  }
+
+  Map<String, dynamic> _collectFormData() {
+    String? namaPesertaJson =
+        _pesertaList.isNotEmpty ? jsonEncode(_pesertaList) : null;
+
+    return {
+      'id_user': id_user ?? _editingDraft?.idAkun ?? '',
+      'id_role': id_role ?? '',
+      'id_organization': id_organization ?? '',
+      'full_name': full_name ?? '',
+      'name_role': name_role ?? '',
+      'name_organization': name_organization ?? '',
+      'deskripsi': _namaKegiatanController.text.trim(),
+      'lokasi': _lokasiController.text.trim(),
+      'nama_peserta': namaPesertaJson,
+      'bidang': _selectedBidang ?? '',
+      'pokja': name_organization ?? '',
+      'latitude': latitude,
+      'longitude': longitude,
+      'status': _editingDraft?.dataForm['status'],
+      'foto_nama': _imageName ?? _editingDraft?.dataForm['foto_nama'],
+      if (_editingDraft?.dataForm['foto_base64'] != null)
+        'foto_base64': _editingDraft!.dataForm['foto_base64'],
+    };
+  }
+
+  void _populateFromDraft(DraftModel draft) {
+    final data = draft.dataForm;
+    _namaKegiatanController.text = data['deskripsi']?.toString() ?? '';
+    _lokasiController.text = data['lokasi']?.toString() ?? '';
+
+    if (data['latitude'] != null) {
+      latitude = double.tryParse(data['latitude'].toString());
+    }
+    if (data['longitude'] != null) {
+      longitude = double.tryParse(data['longitude'].toString());
+    }
+
+    final pesertaRaw = data['nama_peserta'];
+    _pesertaList.clear();
+    if (pesertaRaw != null) {
+      try {
+        final decoded = jsonDecode(pesertaRaw.toString());
+        if (decoded is List) {
+          _pesertaList.addAll(decoded.map((e) => e.toString()));
+        }
+      } catch (_) {}
+    }
+
+    _selectedBidang = data['bidang']?.toString();
+
+    id_user = draft.idAkun;
+    id_role ??= data['id_role']?.toString();
+    id_organization ??= data['id_organization']?.toString();
+    full_name ??= data['full_name']?.toString();
+    name_role ??= data['name_role']?.toString();
+    name_organization ??= data['name_organization']?.toString() ?? data['pokja']?.toString();
+
+    _imageName = data['foto_nama']?.toString();
+
+    if (kIsWeb) {
+      final base64Str = data['foto_base64']?.toString();
+      if (base64Str != null && base64Str.isNotEmpty) {
+        try {
+          _imageBytes = base64Decode(base64Str);
+        } catch (_) {}
+      }
+    } else {
+      if (draft.daftarFoto.isNotEmpty) {
+        final path = draft.daftarFoto.first;
+        final file = File(path);
+        if (file.existsSync()) {
+          _image = file;
+        }
+      }
+    }
+  }
+
+  Future<bool> _simpanDraf({bool showFeedback = false}) async {
+    if (_isSavingDraft || _isCompressingPhoto || _controller.isLoading.value) {
+      return false;
+    }
+    if (isFormEmpty()) {
+      Get.snackbar(
+        'Form Kosong',
+        'Isi minimal satu kolom sebelum menyimpan draf.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return false;
+    }
+
+    setState(() => _isSavingDraft = true);
+    try {
+      if ((id_user ?? '').isEmpty) {
+        final user = await PreferencesService.getUser();
+        id_user = user?.id;
+      }
+      if ((id_user ?? '').isEmpty) {
+        Get.snackbar(
+          'Sesi Tidak Ditemukan',
+          'Masuk kembali untuk menyimpan draf.',
+          snackPosition: SnackPosition.TOP,
+        );
+        return false;
+      }
+
+      final data = _collectFormData();
+      final service = DraftService();
+
+      if (kIsWeb) {
+        // Logika simpan foto untuk Web
+        if (_imageBytes != null && (data['foto_base64'] == null || _image != null)) {
+          setState(() => _isCompressingPhoto = true);
+          try {
+            Uint8List compressed = _imageBytes!;
+            try {
+              final result = await FlutterImageCompress.compressWithList(
+                _imageBytes!,
+                minWidth: 1024,
+                minHeight: 1024,
+                quality: 70,
+              );
+              if (result.isNotEmpty) {
+                compressed = result;
+              }
+            } catch (e) {
+              debugPrint('Kompresi web gagal, fallback ke original bytes: $e');
+            }
+
+            try {
+              data['foto_base64'] = base64Encode(compressed);
+            } catch (e) {
+              debugPrint('Gagal base64 encode foto web: $e');
+              data.remove('foto_base64');
+              Get.snackbar(
+                'Catatan Foto',
+                'Foto perlu dipilih ulang saat mengirim',
+                snackPosition: SnackPosition.TOP,
+                backgroundColor: Colors.orange.shade700,
+                colorText: Colors.white,
+                duration: const Duration(seconds: 3),
+              );
+            }
+          } finally {
+            if (mounted) setState(() => _isCompressingPhoto = false);
+          }
+        }
+
+        try {
+          if (_editingDraft != null) {
+            await service.updateDraft(
+              _editingDraft!.copyWith(
+                dataForm: data,
+                status: 'draf',
+                pesanError: null,
+              ),
+            );
+          } else {
+            await service.simpanDraft(
+              idAkun: id_user ?? '',
+              jenis: 'galeri',
+              dataForm: data,
+              originalPhotoPaths: [],
+            );
+          }
+        } catch (e) {
+          final errStr = e.toString().toLowerCase();
+          if (errStr.contains('quota') || errStr.contains('full')) {
+            Get.snackbar(
+              'Penyimpanan Penuh',
+              'Penyimpanan penuh, hapus draf lama',
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: const Color(0xFFEF5350),
+              colorText: Colors.white,
+              duration: const Duration(seconds: 3),
+            );
+            return false;
+          }
+          rethrow;
+        }
+      } else {
+        // Logika simpan foto untuk Android/iOS
+        List<String> originalPaths = [];
+        if (_image != null && _image!.existsSync()) {
+          originalPaths.add(_image!.path);
+        } else if (_editingDraft != null && _editingDraft!.daftarFoto.isNotEmpty) {
+          originalPaths.addAll(_editingDraft!.daftarFoto);
+        }
+
+        if (_editingDraft != null) {
+          List<String> savedPhotoPaths = [];
+          for (final pth in originalPaths) {
+            if (pth.contains('draft_photos')) {
+              savedPhotoPaths.add(pth);
+            } else {
+              final processed = await service.processAndSavePhoto(pth);
+              if (processed != null) {
+                savedPhotoPaths.add(processed);
+              }
+            }
+          }
+          await service.updateDraft(
+            _editingDraft!.copyWith(
+              dataForm: data,
+              daftarFoto: savedPhotoPaths,
+              status: 'draf',
+              pesanError: null,
+            ),
+          );
+        } else {
+          await service.simpanDraft(
+            idAkun: id_user ?? '',
+            jenis: 'galeri',
+            dataForm: data,
+            originalPhotoPaths: originalPaths,
+          );
+        }
+      }
+
+      final draftController = Get.isRegistered<DraftController>()
+          ? Get.find<DraftController>()
+          : Get.put(DraftController());
+      await draftController.refreshAllCount();
+
+      if (showFeedback) {
+        _showSnackbarDrafDisimpan();
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Error simpan draf galeri: $e');
+      final errStr = e.toString().toLowerCase();
+      if (errStr.contains('quota') || errStr.contains('full')) {
+        Get.snackbar(
+          'Penyimpanan Penuh',
+          'Penyimpanan penuh, hapus draf lama',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFFEF5350),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+      } else {
+        Get.snackbar(
+          'Gagal',
+          'Draf tidak dapat disimpan.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFFEF5350),
+          colorText: Colors.white,
+        );
+      }
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
+
+  void _showSnackbarDrafDisimpan() {
+    double horizontalMargin = 20.w;
+    final ctx = Get.context;
+    if (ctx != null) {
+      final screenWidth = MediaQuery.of(ctx).size.width;
+      if (screenWidth > 220) {
+        horizontalMargin = (screenWidth - 220) / 2;
+      }
+    }
+
+    Get.snackbar(
+      '',
+      '',
+      titleText: Center(
+        child: Text(
+          'Draf disimpan',
+          style: TextStyle(
+            fontFamily: TypographyStyles.fontFamily,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      messageText: const SizedBox.shrink(),
+      maxWidth: 220,
+      margin: EdgeInsets.only(
+        top: 12.h,
+        left: horizontalMargin,
+        right: horizontalMargin,
+      ),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      borderRadius: 24.r,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 2),
+      backgroundColor: const Color(0xFF3F8FC1),
+      colorText: Colors.white,
+    );
+  }
+
+  Future<bool> _simpanDrafLaluKembali() async {
+    if (!await _simpanDraf()) return false;
+    _allowPop = true;
+    Get.closeAllSnackbars();
+    if (mounted) {
+      Navigator.of(context).pop();
+    } else {
+      Get.back();
+    }
+    Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
+    return true;
+  }
+
+  Future<bool> _onWillPop() async {
+    if (_allowPop || isFormEmpty()) return true;
+    bool savedViaDialog = false;
+    final shouldExit = await DraftExitDialog.show(
+      context: context,
+      onSaveDraft: () async {
+        final saved = await _simpanDrafLaluKembali();
+        if (saved) savedViaDialog = true;
+        return saved;
+      },
+    );
+    if (savedViaDialog) return false;
+    if (shouldExit) {
+      clearForm();
+      _allowPop = true;
+      return true;
+    }
+    return false;
+  }
+
   @override
   void initState() {
     super.initState();
-    final args = Get.arguments;
-    id_user = args['id_user'];
-    full_name = args['full_name'];
-    id_role = args['id_role'];
-    name_role = args['name_role'];
-    id_organization = args['id_organization'];
-    name_organization = args['name_organization'];
+
+    final args = (Get.arguments ?? {}) as Map;
+
+    id_user = args['id_user']?.toString();
+    full_name = args['full_name']?.toString();
+    id_role = args['id_role']?.toString();
+    name_role = args['name_role']?.toString();
+    id_organization = args['id_organization']?.toString();
+    name_organization = args['name_organization']?.toString();
     _initializeBidangList();
+
+    if (args['draft'] is DraftModel) {
+      _editingDraft = args['draft'] as DraftModel;
+      _populateFromDraft(_editingDraft!);
+    }
   }
 
   void _initializeBidangList() {
@@ -260,17 +623,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    // Nama yang sudah diketik tapi belum ditekan tombol Tambah ikut disimpan
-    final namaBelumDitambah = _namaPesertaInputController.text.trim();
-    if (namaBelumDitambah.isNotEmpty) {
-      if (!_pesertaList.any(
-        (e) => e.toLowerCase() == namaBelumDitambah.toLowerCase(),
-      )) {
-        _pesertaList.add(namaBelumDitambah);
-      }
-      _namaPesertaInputController.clear();
-    }
-    if (!_hasImage) {
+
+    if (_image == null && _imageBytes == null) {
       Get.snackbar(
         'Error',
         'Pilih gambar terlebih dahulu',
@@ -294,13 +648,15 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       );
       return;
     }
+
     await _controller.submitDataGaleri(
       idUser: id_user!,
       deskripsi: _namaKegiatanController.text,
       lokasi: _lokasiController.text,
       latitude: latitude,
       longitude: longitude,
-      gambar: kIsWeb ? (_imageName ?? 'upload.jpg') : _image!.path,
+
+      gambar: _image != null ? _image!.path : (_imageName ?? 'upload.jpg'),
       gambarBytes: _imageBytes,
       namaFile: _imageName,
       namaPeserta: List<String>.from(_pesertaList),
@@ -311,7 +667,32 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
       idOrganization: id_organization!,
     );
     if (_controller.galeriData.value != null) {
+      if (_editingDraft != null) {
+        await DraftService().hapusDraft(_editingDraft!.id);
+      }
       _resetForm();
+      Get.offAllNamed(Routes.MAIN);
+    } else if (_controller.lastFailureWasNetwork.value && mounted) {
+      final saveAsDraft = await Get.dialog<bool>(
+        AlertDialog(
+          title: const Text('Gagal terkirim'),
+          content: const Text('Simpan sebagai draf agar isian tidak hilang?'),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: const Text('Tutup'),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.back(result: true),
+              child: const Text('Simpan Draf'),
+            ),
+          ],
+        ),
+        barrierDismissible: false,
+      );
+      if (saveAsDraft == true) {
+        await _simpanDrafLaluKembali();
+      }
     }
   }
 
@@ -333,33 +714,31 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: AppBarPrimary(
-        title: 'Upload Kegiatan',
-        onBack: () {
-          if (_namaKegiatanController.text.isEmpty &&
-              !_hasImage &&
-              _pesertaList.isEmpty &&
-              _selectedJabatan == null &&
-              _selectedBidang == null) {
-            Get.back();
-          } else {
-            Get.defaultDialog(
-              title: "Batal Upload?",
-              middleText: "Data yang sudah diisi akan hilang",
-              textConfirm: "Ya",
-              textCancel: "Tidak",
-              confirmTextColor: Colors.white,
-              onConfirm: () {
-                _resetForm();
-                Get.back();
-              },
-            );
-          }
-        },
-      ),
+    final args = Get.arguments;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && mounted) Get.back();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: AppBarPrimary(
+          title: 'Upload Kegiatan',
+          actionWidget: DraftBadgeIcon(
+            scope: DraftScope.galeri,
+            arguments: args is Map<String, dynamic>
+                ? args
+                : (args is Map ? Map<String, dynamic>.from(args) : null),
+          ),
+          onBack: () async {
+            final shouldPop = await _onWillPop();
+            if (shouldPop && mounted) Get.back();
+          },
+        ),
+
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -385,15 +764,24 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                             borderRadius: BorderRadius.circular(12.r),
                             border: Border.all(color: Colors.grey.shade300),
                           ),
-                          child: _hasImage
+
+                          child: (_imageBytes != null || _image != null)
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(12.r),
-                                  child: kIsWeb
+                                  child: _imageBytes != null
                                       ? Image.memory(
                                           _imageBytes!,
                                           fit: BoxFit.cover,
                                         )
-                                      : Image.file(_image!, fit: BoxFit.cover),
+                                      : (kIsWeb
+                                          ? Image.network(
+                                              _image!.path,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.file(
+                                              _image!,
+                                              fit: BoxFit.cover,
+                                            )),
                                 )
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -581,18 +969,45 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                       SizedBox(height: 30.h),
 
                       /// BUTTON
-                      ZoomTapAnimation(
-                        child: Obx(
-                          () => ButtonFill(
-                            text: _controller.isLoading.value
-                                ? 'Mengunggah...'
-                                : 'Kirim',
-                            textColor: Colors.white,
-                            onPressed: _controller.isLoading.value
-                                ? null
-                                : _submitData,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ZoomTapAnimation(
+                              child: ButtonSecondaryOutline(
+                                text: _isCompressingPhoto
+                                    ? 'Memproses Foto...'
+                                    : (_isSavingDraft
+                                        ? 'Menyimpan...'
+                                        : (_editingDraft != null
+                                            ? 'Simpan Perubahan'
+                                            : 'Simpan Draf')),
+                                onPressed: _isSavingDraft ||
+                                        _isCompressingPhoto ||
+                                        _controller.isLoading.value
+                                    ? null
+                                    : () async => _simpanDrafLaluKembali(),
+                              ),
+                            ),
                           ),
-                        ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: ZoomTapAnimation(
+                              child: Obx(
+                                () => ButtonFill(
+                                  text: _controller.isLoading.value
+                                      ? 'Mengunggah...'
+                                      : 'Kirim',
+                                  textColor: Colors.white,
+                                  onPressed: _controller.isLoading.value ||
+                                          _isSavingDraft ||
+                                          _isCompressingPhoto
+                                      ? null
+                                      : _submitData,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20.h),
                     ],
@@ -603,6 +1018,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
           },
         ),
       ),
+    ),
     );
   }
 

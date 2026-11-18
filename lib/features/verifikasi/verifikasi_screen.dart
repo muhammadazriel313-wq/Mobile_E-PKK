@@ -28,8 +28,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
   Widget build(BuildContext context) {
     final role_id = Get.arguments['role_id'] ?? '';
 
-    final role_name = Get.arguments['role_name'] ?? '';
-
     final full_name = Get.arguments['full_name'] ?? '';
 
     final phone_number = Get.arguments['phone_number'] ?? '';

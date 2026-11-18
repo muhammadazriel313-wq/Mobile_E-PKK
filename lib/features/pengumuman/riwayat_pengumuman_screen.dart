@@ -15,7 +15,8 @@ class RiwayatPengumumanScreen extends StatefulWidget {
   const RiwayatPengumumanScreen({super.key});
 
   @override
-  State<RiwayatPengumumanScreen> createState() => _RiwayatPengumumanScreenState();
+  State<RiwayatPengumumanScreen> createState() =>
+      _RiwayatPengumumanScreenState();
 }
 
 class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
@@ -153,7 +154,10 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                                 });
                               },
                               child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 6.w,
+                                  vertical: 4.h,
+                                ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -302,7 +306,10 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                       color: primaryColor,
                     ),
                   ),
-                  icon: Icon(Icons.arrow_drop_down_rounded, color: primaryColor),
+                  icon: Icon(
+                    Icons.arrow_drop_down_rounded,
+                    color: primaryColor,
+                  ),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
@@ -362,9 +369,11 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
           ),
           itemBuilder: (context, index) {
             final monthIndex = index + 1;
-            final isSelected = (_selectedMonth.year == _pickerYear &&
+            final isSelected =
+                (_selectedMonth.year == _pickerYear &&
                 _selectedMonth.month == monthIndex);
-            final isCurrentMonth = (DateTime.now().year == _pickerYear &&
+            final isCurrentMonth =
+                (DateTime.now().year == _pickerYear &&
                 DateTime.now().month == monthIndex);
 
             return InkWell(
@@ -383,15 +392,15 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                   color: isSelected
                       ? primaryColor
                       : (isCurrentMonth
-                          ? primaryColor.withOpacity(0.08)
-                          : const Color(0xFFF8FAFC)),
+                            ? primaryColor.withOpacity(0.08)
+                            : const Color(0xFFF8FAFC)),
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: isSelected
                         ? primaryColor
                         : (isCurrentMonth
-                            ? primaryColor
-                            : const Color(0xFFE7EDF3)),
+                              ? primaryColor
+                              : const Color(0xFFE7EDF3)),
                     width: isCurrentMonth && !isSelected ? 1.5 : 1,
                   ),
                 ),
@@ -450,12 +459,15 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                 dayNumber,
               );
               final dateKey = DateFormat('yyyy-MM-dd').format(cellDate);
-              final hasAnnouncement = groupedMap.containsKey(dateKey) &&
+              final hasAnnouncement =
+                  groupedMap.containsKey(dateKey) &&
                   groupedMap[dateKey]!.isNotEmpty;
-              final isToday = (today.year == cellDate.year &&
+              final isToday =
+                  (today.year == cellDate.year &&
                   today.month == cellDate.month &&
                   today.day == cellDate.day);
-              final isSelected = (_selectedDate != null &&
+              final isSelected =
+                  (_selectedDate != null &&
                   _selectedDate!.year == cellDate.year &&
                   _selectedDate!.month == cellDate.month &&
                   _selectedDate!.day == cellDate.day);
@@ -478,8 +490,8 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                       color: isSelected
                           ? primaryColor
                           : (isToday
-                              ? primaryColor.withOpacity(0.08)
-                              : Colors.transparent),
+                                ? primaryColor.withOpacity(0.08)
+                                : Colors.transparent),
                       shape: BoxShape.circle,
                       border: isToday && !isSelected
                           ? Border.all(color: primaryColor, width: 1.5)
@@ -506,9 +518,7 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                                 : FontWeight.w500,
                             color: isSelected
                                 ? Colors.white
-                                : (isToday
-                                    ? primaryColor
-                                    : Colors.black87),
+                                : (isToday ? primaryColor : Colors.black87),
                           ),
                         ),
                       ],
@@ -523,9 +533,7 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
     );
   }
 
-  Widget _buildPengumumanListSection(
-    Map<String, List<Pengumuman>> groupedMap,
-  ) {
+  Widget _buildPengumumanListSection(Map<String, List<Pengumuman>> groupedMap) {
     if (_selectedDate != null) {
       final key = DateFormat('yyyy-MM-dd').format(_selectedDate!);
       final items = groupedMap[key] ?? [];
@@ -612,10 +620,7 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
       child: Center(
         child: Text(
           message,
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade600),
         ),
       ),
     );
@@ -716,7 +721,10 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                   SizedBox(height: 14.h),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.w,
+                      vertical: 12.h,
+                    ),
                     decoration: BoxDecoration(
                       color: primaryColor.withOpacity(0.06),
                       borderRadius: BorderRadius.circular(14.r),
@@ -745,7 +753,10 @@ class _RiwayatPengumumanScreenState extends State<RiwayatPengumumanScreen> {
                   ),
                   SizedBox(height: 12.h),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(100.r),

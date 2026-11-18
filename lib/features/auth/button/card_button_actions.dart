@@ -45,10 +45,7 @@ class _CardButtonActionsState extends State<CardButtonActions> {
             : Matrix4.identity(),
         decoration: BoxDecoration(
           color: widget.backroundColor,
-          border: Border.all(
-            color: widget.strokeColor,
-            width: 1.w,
-          ),
+          border: Border.all(color: widget.strokeColor, width: 1.w),
           borderRadius: BorderRadius.circular(10.r),
 
           //  INI INTINYA (shadow ikut warna card)
@@ -66,11 +63,7 @@ class _CardButtonActionsState extends State<CardButtonActions> {
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Image.asset(
-              widget.imageAssets,
-              width: 43.w,
-              height: 43.w,
-            ),
+            leading: Image.asset(widget.imageAssets, width: 43.w, height: 43.w),
             title: TypographyStyles.bodyCaptionSemiBold(
               widget.titleText,
               color: TextColors.grey700,

@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
   final authController = Get.put(AuthController());
 
   late AnimationController _controller;
@@ -25,9 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.edgeToEdge,
-    );
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -44,31 +41,18 @@ class _SplashScreenState extends State<SplashScreen>
     fadeAnimation = Tween<double>(
       begin: 0,
       end: 1,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.4),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward();
 
-    Future.delayed(
-      const Duration(seconds: 3),
-      () {
-        authController.checkLoginStatus();
-      },
-    );
+    Future.delayed(const Duration(seconds: 3), () {
+      authController.checkLoginStatus();
+    });
   }
 
   @override
@@ -79,7 +63,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFF4D8FC3),
 
@@ -95,7 +78,6 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-
                     Image.asset(
                       'assets/images/logo_pkk.png',
                       width: 200.w,
@@ -103,40 +85,40 @@ class _SplashScreenState extends State<SplashScreen>
                       fit: BoxFit.contain,
                     ),
 
-                  SizedBox(height: 14.h),
+                    SizedBox(height: 14.h),
 
-                  Text(
-                    'PKK',
-                    style: TextStyle(
-                      fontSize: 34.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontFamily: 'DMSans',
+                    Text(
+                      'PKK',
+                      style: TextStyle(
+                        fontSize: 34.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'DMSans',
+                      ),
                     ),
-                  ),
 
-                  SizedBox(height: 12.h),
+                    SizedBox(height: 12.h),
 
-                  Text(
-                    'Pemberdayaan Kesejahteraan\nMasyarakat',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      height: 1.5,
-                      color: Colors.white.withOpacity(0.95),
-                      fontFamily: 'DMSans',
+                    Text(
+                      'Pemberdayaan Kesejahteraan\nMasyarakat',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        height: 1.5,
+                        color: Colors.white.withOpacity(0.95),
+                        fontFamily: 'DMSans',
+                      ),
                     ),
-                  ),
 
-                  SizedBox(height: 50.h),
+                    SizedBox(height: 50.h),
 
-                  SizedBox(
-                    width: 26.w,
-                    height: 26.w,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: Colors.white,
-                    ),
+                    SizedBox(
+                      width: 26.w,
+                      height: 26.w,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),

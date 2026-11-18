@@ -41,11 +41,11 @@ class RekapDesaTahunanController extends GetxController {
   Future<void> loadUser() async {
     final user = await PreferencesService.getUser();
 
-    idUser = user?.id?.toString() ?? '';
+    idUser = user?.id.toString() ?? '';
 
-    idRole = user?.role?.id?.toString() ?? '';
+    idRole = user?.role?.id.toString() ?? '';
 
-    idOrganization = user?.organization?.id?.toString() ?? '';
+    idOrganization = user?.organization?.id.toString() ?? '';
   }
 
   /// ================= SUBMIT =================

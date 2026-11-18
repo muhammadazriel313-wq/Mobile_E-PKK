@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 /// Kalau memakai HP fisik, ganti [_lokalHp] dengan IP laptop di WiFi yang
 /// sama, contoh: 'http://192.168.1.10/Website_PKK/public/api'
 /// =====================================================================
-const bool kPakaiServerLokal = false;
+const bool kPakaiServerLokal = true;
 
 class ApiHelper {
   static const String _produksi = 'https://epkknganjuk.pbltifnganjuk.com/api';
@@ -32,7 +32,6 @@ class ApiHelper {
     BaseOptions(
       baseUrl: _baseUrl,
       connectTimeout: const Duration(seconds: 10),
-
       // Upload foto bisa lebih lama dari request biasa
       sendTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
@@ -49,10 +48,7 @@ class ApiHelper {
     String endpoint, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    return await _dio.get(
-      endpoint,
-      queryParameters: queryParameters,
-    );
+    return await _dio.get(endpoint, queryParameters: queryParameters);
   }
 
   /// ================= POST =================
@@ -104,11 +100,7 @@ class ApiHelper {
     return await _dio.post(
       endpoint,
       data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      ),
+      options: Options(headers: {'Content-Type': 'multipart/form-data'}),
     );
   }
 }

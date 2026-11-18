@@ -15,9 +15,7 @@ class ReportPerumahanModel {
     return ReportPerumahanModel(
       statusCode: json['statusCode'] ?? 500,
       message: json['message']?.toString() ?? 'Unknown error',
-      data: json['data'] != null
-          ? PerumahanEntry.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? PerumahanEntry.fromJson(json['data']) : null,
       error: json['error'] != null
           ? ErrorMessage.fromJson(json['error'])
           : null,
@@ -67,8 +65,7 @@ class PerumahanEntry {
     }
 
     return PerumahanEntry(
-      idPokja3Bidang3:
-          json['id_pokja3_bidang3']?.toString() ?? '',
+      idPokja3Bidang3: json['id_pokja3_bidang3']?.toString() ?? '',
       uuid: json['uuid']?.toString() ?? '',
       idUser: json['id_user']?.toString() ?? '',
 
@@ -79,12 +76,12 @@ class PerumahanEntry {
       catatan: json['catatan']?.toString(),
       status: json['status']?.toString() ?? 'Proses',
 
-      createdAt: DateTime.tryParse(
-              json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
 
-      updatedAt: DateTime.tryParse(
-              json['updated_at']?.toString() ?? '') ??
+      updatedAt:
+          DateTime.tryParse(json['updated_at']?.toString() ?? '') ??
           DateTime.now(),
 
       role: Role.fromJson(json['role']),
@@ -130,11 +127,7 @@ class Role {
   final String uuid;
   final String name;
 
-  Role({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Role({required this.id, required this.uuid, required this.name});
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
@@ -145,11 +138,7 @@ class Role {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -158,11 +147,7 @@ class Organization {
   final String uuid;
   final String name;
 
-  Organization({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Organization({required this.id, required this.uuid, required this.name});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -173,10 +158,6 @@ class Organization {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
