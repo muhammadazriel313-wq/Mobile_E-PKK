@@ -10,16 +10,17 @@ import 'package:epkk_nganjuk/common/component/card_pengumuman.dart';
 
 import 'package:epkk_nganjuk/features/auth/button/card_button_actions.dart';
 import 'package:epkk_nganjuk/features/auth/component/header_home.dart';
-import 'package:epkk_nganjuk/features/auth/component/widget_carousel_banner.dart';
 import 'package:epkk_nganjuk/features/auth/component/widget_text_pengumuman.dart';
 
+import 'package:epkk_nganjuk/features/home/kebun/kebun_laporan_controller.dart';
+import 'package:epkk_nganjuk/features/home/kebun/widget_kebun_laporan.dart';
 import 'package:epkk_nganjuk/features/home/nav_controller.dart';
+import 'package:epkk_nganjuk/features/notifikasi/notifikasi_controller.dart';
 
 import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 
 // [PERUBAHAN BARU] Import section Peringkat
 import 'package:epkk_nganjuk/features/peringkat/peringkat_home_section.dart';
-import 'package:epkk_nganjuk/features/peringkat/peringkat_model.dart';
 
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
@@ -49,6 +50,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     PengumumanController(),
   );
 
+  // [PERUBAHAN 13-11-2026] Kebun Laporan (menggantikan slider banner) dan lonceng
+  final KebunLaporanController kebunController = Get.put(
+    KebunLaporanController(),
+  );
+  // [PERUBAHAN 18-11-2026] Pusat notifikasi (lonceng + pop up), berjalan selama aplikasi dibuka
+  final NotifikasiController notifController = Get.put(
+    NotifikasiController(),
+    permanent: true,
+  );
+  Worker? _pengumumanWorker;
+
   // [PERUBAHAN 08-10-2026] Timer untuk penyegaran otomatis saat pergantian tengah malam WIB
   Timer? _midnightTimer;
 
@@ -61,10 +73,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // [PERUBAHAN 08-10-2026] Memuat hanya pengumuman minggu ini
     pengumumanController.loadWeeklyPengumuman(isRefresh: true);
     _scheduleMidnightTimer();
+
+    // [PERUBAHAN 13-11-2026] Muat jumlah laporan disetujui untuk Kebun Laporan
+    _muatKebun();
+
+    // [PERUBAHAN 18-11-2026] Pengumuman baru minggu ini -> notifikasi
+    _pengumumanWorker = ever(
+      pengumumanController.weeklyPengumumanList,
+      (_) => notifController.periksaPengumuman(
+        pengumumanController.weeklyPengumumanList.toList(),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _pengumumanWorker?.dispose();
     _midnightTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -75,6 +99,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // [PERUBAHAN 08-10-2026] Segarkan data saat aplikasi kembali aktif (resume)
     if (state == AppLifecycleState.resumed) {
       pengumumanController.loadWeeklyPengumuman(isRefresh: true);
+      // [PERUBAHAN 13-11-2026] Hitung ulang (bisa jadi sudah ganti bulan) dan muat ulang
+      kebunController.hitung();
+      _muatKebun();
     }
   }
 
@@ -87,8 +114,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     _midnightTimer = Timer(duration, () {
       pengumumanController.loadWeeklyPengumuman(isRefresh: true);
+      // [PERUBAHAN 13-11-2026] Tengah malam tanggal 1 -> hitungan bulan baru = 0 (pohon reset)
+      kebunController.hitung();
       _scheduleMidnightTimer();
     });
+  }
+
+  // [PERUBAHAN 18-11-2026] Mengaktifkan Kebun Laporan dan pusat notifikasi.
+  // Data laporan diambil satu kali oleh NotifikasiController lalu dibagikan
+  // ke Kebun Laporan, dan diperbarui otomatis tiap 1 menit selama aplikasi dibuka.
+  Future<void> _muatKebun() async {
+    final user = await PreferencesService.getUser();
+    if (user == null) return;
+
+    final idUser = user.id ?? '';
+    final idRole = user.role?.id ?? '';
+    final idOrg = user.organization?.id ?? '';
+
+    kebunController.aturPengguna(idUser: idUser, idRole: idRole);
+
+    await notifController.mulai(
+      idUser: idUser,
+      idRole: idRole,
+      idOrganization: idOrg,
+    );
+    await notifController.periksaPengumuman(
+      pengumumanController.weeklyPengumumanList.toList(),
+    );
   }
 
   // ================= LOAD USER =================
@@ -97,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (user != null) {
       setState(() {
-        idUser = user.id;
+        idUser = user.id ?? 'id user tidak diketahui';
 
         fullName = user.fullName;
 
@@ -125,127 +177,68 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
           children: [
             // ================= HEADER =================
-            HeaderHome(textUser: fullName ?? 'User'),
+            Obx(
+              () => HeaderHome(
+                textUser: fullName ?? 'User',
+                jumlahNotifikasi: notifController.jumlahBelumDibaca.value,
+                onNotifTap: notifController.bukaLayar,
+              ),
+            ),
 
             // ================= BODY =================
             Expanded(
               child: RefreshIndicator(
                 color: const Color(0xFF3F8FC1),
-                onRefresh: () =>
-                    pengumumanController.loadWeeklyPengumuman(isRefresh: true),
+                onRefresh: () => Future.wait([
+                  pengumumanController.loadWeeklyPengumuman(isRefresh: true),
+                  _muatKebun(),
+                ]),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
 
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
-                      children: [
-                        SizedBox(height: 20.h),
+                    children: [
+                      SizedBox(height: 20.h),
 
-                        // ================= BANNER =================
-                        WidgetCarouselBanner(),
+                      // ================= BANNER (KEBUN LAPORAN) =================
+                      // [PERUBAHAN 13-11-2026] Menggantikan WidgetCarouselBanner (slider)
+                      const WidgetKebunLaporan(),
 
-                        SizedBox(height: 20.h),
+                      SizedBox(height: 20.h),
 
-                        // ================= TITLE =================
-                        Text(
-                          'Layanan PKK',
+                      // ================= TITLE =================
+                      Text(
+                        'Layanan PKK',
 
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: TextColors.grey700,
-                          ),
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: TextColors.grey700,
                         ),
+                      ),
 
-                        SizedBox(height: 18.h),
+                      SizedBox(height: 18.h),
 
-                        // ================= BUTTON LAPORAN =================
-                        if (roleBidang == 'Bidang Umum') ...[
-                          CardButtonActions(
-                            backroundColor: ButtonActionsColors.fillLaporan,
-
-                            strokeColor: ButtonActionsColors.strokeLaporan,
-
-                            titleText: 'Upload Laporan Umum',
-
-                            subTitle: 'upload laporan umum PKK disini',
-
-                            imageAssets: 'assets/images/ic_report.png',
-
-                            onTab: () {
-                              Get.toNamed(
-                                Routes.LAPORAN_UMUM1,
-
-                                arguments: {
-                                  'id_user': idUser,
-
-                                  'full_name': fullName,
-
-                                  'id_role': idRole,
-
-                                  'name_role': role,
-
-                                  'id_organization': idOrganization,
-
-                                  'name_organization': roleBidang,
-                                },
-                              );
-                            },
-                          ),
-                        ] else ...[
-                          CardButtonActions(
-                            backroundColor: ButtonActionsColors.fillLaporan,
-
-                            strokeColor: ButtonActionsColors.strokeLaporan,
-
-                            titleText: 'Upload Laporan',
-
-                            subTitle: 'upload laporan PKK disini',
-
-                            imageAssets: 'assets/images/ic_report.png',
-
-                            onTab: () {
-                              Get.toNamed(
-                                Routes.UPLOAD_LAPORAN,
-
-                                arguments: {
-                                  'id_user': idUser,
-
-                                  'full_name': fullName,
-
-                                  'id_role': idRole,
-
-                                  'name_role': role,
-
-                                  'id_organization': idOrganization,
-
-                                  'name_organization': roleBidang,
-                                },
-                              );
-                            },
-                          ),
-                        ],
-
-                        SizedBox(height: 14.h),
-
-                        // ================= BUTTON GALERI =================
+                      // ================= BUTTON LAPORAN =================
+                      if (roleBidang == 'Bidang Umum') ...[
                         CardButtonActions(
-                          backroundColor: ButtonActionsColors.fillGalery,
+                          backroundColor: ButtonActionsColors.fillLaporan,
 
-                          strokeColor: ButtonActionsColors.strokeGalery,
+                          strokeColor: ButtonActionsColors.strokeLaporan,
 
-                          titleText: 'Tambah Foto kegiatan',
+                          titleText: 'Upload Laporan Umum',
 
-                          subTitle: 'upload kegiatan PKK disini',
+                          subTitle: 'upload laporan umum PKK disini',
 
-                          imageAssets: 'assets/images/ic_gallery.png',
+                          imageAssets: 'assets/images/ic_report.png',
 
                           onTab: () {
                             Get.toNamed(
-                              Routes.UPLOAD_GALERI,
+                              Routes.LAPORAN_UMUM1,
 
                               arguments: {
                                 'id_user': idUser,
@@ -263,157 +256,213 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             );
                           },
                         ),
+                      ] else ...[
+                        CardButtonActions(
+                          backroundColor: ButtonActionsColors.fillLaporan,
 
-                        SizedBox(height: 32.h),
+                          strokeColor: ButtonActionsColors.strokeLaporan,
 
-                        // ================= PERINGKAT (BARU) =================
-                        // [PERUBAHAN BARU] Peringkat Desa & Kecamatan di beranda
-                        // Podium mengikuti jenis akun: kecamatan -> peringkat
-                        // kecamatan, selain itu -> peringkat desa.
-                        if (role.isNotEmpty)
-                          PeringkatHomeSection(
-                            jenis: role.toLowerCase().contains('kecamatan')
-                                ? PeringkatJenis.kecamatan
-                                : PeringkatJenis.desa,
-                          ),
+                          titleText: 'Upload Laporan',
 
-                        SizedBox(height: 24.h),
+                          subTitle: 'upload laporan PKK disini',
 
-                        // ================= PENGUMUMAN =================
-                        Obx(() {
-                          // ================= LOADING =================
-                          if (pengumumanController.isWeeklyLoading.value &&
-                              pengumumanController
-                                  .weeklyPengumumanList
-                                  .isEmpty) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF3F8FC1),
-                              ),
+                          imageAssets: 'assets/images/ic_report.png',
+
+                          onTab: () {
+                            Get.toNamed(
+                              Routes.UPLOAD_LAPORAN,
+
+                              arguments: {
+                                'id_user': idUser,
+
+                                'full_name': fullName,
+
+                                'id_role': idRole,
+
+                                'name_role': role,
+
+                                'id_organization': idOrganization,
+
+                                'name_organization': roleBidang,
+                              },
                             );
-                          }
+                          },
+                        ),
+                      ],
 
-                          final list =
-                              pengumumanController.weeklyPengumumanList;
+                      SizedBox(height: 14.h),
 
-                          return Column(
-                            children: [
-                              // ================= TITLE =================
-                              WidgetTextPengumuman(
-                                firstText: 'Pengumuman',
-                                secondText: 'Pengumuman minggu ini',
-                                threeText: 'Lihat Semua',
-                                svgIcon: 'assets/icons/ic_arrow_right.svg',
-                                onTapThreeText: () {
-                                  final NavController navController =
-                                      Get.find<NavController>();
-                                  navController.changeTabIndex(2);
-                                },
-                              ),
+                      // ================= BUTTON GALERI =================
+                      CardButtonActions(
+                        backroundColor: ButtonActionsColors.fillGalery,
 
-                              SizedBox(height: 16.h),
+                        strokeColor: ButtonActionsColors.strokeGalery,
 
-                              // [PERUBAHAN 08-10-2026] Tampilan lembut jika belum ada pengumuman minggu ini
-                              if (list.isEmpty)
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 24.h,
-                                    horizontal: 16.w,
+                        titleText: 'Tambah Foto kegiatan',
+
+                        subTitle: 'upload kegiatan PKK disini',
+
+                        imageAssets: 'assets/images/ic_gallery.png',
+
+                        onTab: () {
+                          Get.toNamed(
+                            Routes.UPLOAD_GALERI,
+
+                            arguments: {
+                              'id_user': idUser,
+
+                              'full_name': fullName,
+
+                              'id_role': idRole,
+
+                              'name_role': role,
+
+                              'id_organization': idOrganization,
+
+                              'name_organization': roleBidang,
+                            },
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 32.h),
+
+                      // ================= PERINGKAT (BARU) =================
+                      // [PERUBAHAN BARU] Peringkat Desa & Kecamatan di beranda
+                      const PeringkatHomeSection(),
+
+                      SizedBox(height: 24.h),
+
+                      // ================= PENGUMUMAN =================
+                      Obx(() {
+                        // ================= LOADING =================
+                        if (pengumumanController.isWeeklyLoading.value &&
+                            pengumumanController.weeklyPengumumanList.isEmpty) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF3F8FC1),
+                            ),
+                          );
+                        }
+
+                        final list = pengumumanController.weeklyPengumumanList;
+
+                        return Column(
+                          children: [
+                            // ================= TITLE =================
+                            WidgetTextPengumuman(
+                              firstText: 'Pengumuman',
+                              secondText: 'Pengumuman minggu ini',
+                              threeText: 'Lihat Semua',
+                              svgIcon: 'assets/icons/ic_arrow_right.svg',
+                              onTapThreeText: () {
+                                final NavController navController =
+                                    Get.find<NavController>();
+                                navController.changeTabIndex(2);
+                              },
+                            ),
+
+                            SizedBox(height: 16.h),
+
+                            // [PERUBAHAN 08-10-2026] Tampilan lembut jika belum ada pengumuman minggu ini
+                            if (list.isEmpty)
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 24.h,
+                                  horizontal: 16.w,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8FAFC),
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  border: Border.all(
+                                    color: const Color(0xFFE7EDF3),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFF8FAFC),
-                                    borderRadius: BorderRadius.circular(16.r),
-                                    border: Border.all(
-                                      color: const Color(0xFFE7EDF3),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.campaign_outlined,
+                                      size: 40.sp,
+                                      color: Colors.grey.shade400,
                                     ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.campaign_outlined,
-                                        size: 40.sp,
-                                        color: Colors.grey.shade400,
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      'Belum ada pengumuman minggu ini',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey.shade700,
                                       ),
-                                      SizedBox(height: 10.h),
-                                      Text(
-                                        'Belum ada pengumuman minggu ini',
-                                        textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 6.h),
+                                    Text(
+                                      'Lihat arsip pengumuman di Riwayat Pengumuman',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 12.h),
+                                    TextButton.icon(
+                                      icon: Icon(
+                                        Icons.calendar_month_outlined,
+                                        size: 16.sp,
+                                        color: const Color(0xFF3F8FC1),
+                                      ),
+                                      label: Text(
+                                        'Buka Riwayat',
                                         style: TextStyle(
-                                          fontSize: 14.sp,
+                                          fontSize: 13.sp,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                      SizedBox(height: 6.h),
-                                      Text(
-                                        'Lihat arsip pengumuman di Riwayat Pengumuman',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: Colors.grey.shade500,
-                                        ),
-                                      ),
-                                      SizedBox(height: 12.h),
-                                      TextButton.icon(
-                                        icon: Icon(
-                                          Icons.calendar_month_outlined,
-                                          size: 16.sp,
                                           color: const Color(0xFF3F8FC1),
                                         ),
-                                        label: Text(
-                                          'Buka Riwayat',
-                                          style: TextStyle(
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w600,
-                                            color: const Color(0xFF3F8FC1),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Get.toNamed(
-                                            Routes.RIWAYAT_PENGUMUMAN,
-                                          );
-                                        },
                                       ),
-                                    ],
-                                  ),
-                                )
-                              else
-                                // ================= LIST =================
-                                ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: list.length,
-                                  itemBuilder: (context, index) {
-                                    final pengumuman = list[index];
-
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: 16.h),
-                                      child: CardPengumuman(
-                                        title: pengumuman.judul,
-                                        subTitle: pengumuman.tempat,
-                                        dateText: DateFormat(
-                                          'dd-MM-yyyy',
-                                        ).format(pengumuman.tanggal),
-                                        onTab: () {
-                                          _showDetailPengumuman(
-                                            pengumuman.judul,
-                                            pengumuman.deskripsi,
-                                            pengumuman.tempat,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
+                                      onPressed: () {
+                                        Get.toNamed(Routes.RIWAYAT_PENGUMUMAN);
+                                      },
+                                    ),
+                                  ],
                                 ),
-                            ],
-                          );
-                        }),
-                      ],
-                    ),
+                              )
+                            else
+                              // ================= LIST =================
+                              ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: list.length,
+                                itemBuilder: (context, index) {
+                                  final pengumuman = list[index];
+
+                                  return Padding(
+                                    padding: EdgeInsets.only(bottom: 16.h),
+                                    child: CardPengumuman(
+                                      title: pengumuman.judul,
+                                      subTitle: pengumuman.tempat,
+                                      dateText: DateFormat(
+                                        'dd-MM-yyyy',
+                                      ).format(pengumuman.tanggal),
+                                      onTab: () {
+                                        _showDetailPengumuman(
+                                          pengumuman.judul,
+                                          pengumuman.deskripsi,
+                                          pengumuman.tempat,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                          ],
+                        );
+                      }),
+                    ],
                   ),
                 ),
               ),
+            ),
             ),
           ],
         ),

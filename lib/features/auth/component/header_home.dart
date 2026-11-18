@@ -5,7 +5,18 @@ import 'package:intl/intl.dart';
 class HeaderHome extends StatelessWidget {
   final String textUser;
 
-  HeaderHome({super.key, required this.textUser});
+  /// Ketuk ikon lonceng (pojok kanan atas). Jika null, lonceng disembunyikan.
+  final VoidCallback? onNotifTap;
+
+  /// Jumlah notifikasi yang belum dibaca (angka merah di lonceng, 0 = tidak tampil).
+  final int jumlahNotifikasi;
+
+  HeaderHome({
+    super.key,
+    required this.textUser,
+    this.onNotifTap,
+    this.jumlahNotifikasi = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +42,9 @@ class HeaderHome extends StatelessWidget {
         top: 28.h,
         bottom: 14.h,
       ),
-      decoration: const BoxDecoration(color: Colors.white),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -99,7 +112,85 @@ class HeaderHome extends StatelessWidget {
               ],
             ),
           ),
+
+          /// LONCENG (menuju pengumuman terkini)
+          if (onNotifTap != null) ...[
+            SizedBox(width: 8.w),
+            _NotifBell(onTap: onNotifTap!, jumlah: jumlahNotifikasi),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _NotifBell extends StatelessWidget {
+  final VoidCallback onTap;
+  final int jumlah;
+
+  const _NotifBell({required this.onTap, required this.jumlah});
+
+  @override
+  Widget build(BuildContext context) {
+    final teks = jumlah > 9 ? '9+' : '$jumlah';
+
+    return Semantics(
+      button: true,
+      label: jumlah > 0
+          ? 'Notifikasi, $jumlah belum dibaca'
+          : 'Notifikasi',
+      child: Tooltip(
+        message: 'Notifikasi',
+        child: Material(
+          color: const Color(0xFFDEF3FF),
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: SizedBox(
+              width: 52.w,
+              height: 52.w,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    Icons.notifications_none_rounded,
+                    size: 30.sp,
+                    color: const Color(0xFF3F8FC1),
+                  ),
+                  if (jumlah > 0)
+                    Positioned(
+                      top: -2.w,
+                      right: -2.w,
+                      child: Container(
+                        constraints: BoxConstraints(
+                          minWidth: 24.w,
+                          minHeight: 24.w,
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 5.w),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE5484D),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: Text(
+                          teks,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w800,
+                            height: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
