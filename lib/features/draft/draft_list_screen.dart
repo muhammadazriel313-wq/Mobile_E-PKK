@@ -161,6 +161,18 @@ class _DraftListScreenState extends State<DraftListScreen> {
         if (step == 4) targetRoute = Routes.POSYANDU_4;
         if (step == 5) targetRoute = Routes.POSYANDU_5;
       }
+      if (draft.jenis == 'inovasi_rekap_bulanan') {
+        final step = draft.dataForm['langkah'];
+        if (step == 2) targetRoute = Routes.REKAP_DESA_2;
+        if (step == 3) targetRoute = Routes.REKAP_DESA_3;
+      }
+      if (draft.jenis == 'inovasi_rekap_tahunan') {
+        final step = draft.dataForm['langkah'];
+        if (step == 2) targetRoute = Routes.REKAP_DESA_TAHUNAN_2;
+        if (step == 3) targetRoute = Routes.REKAP_DESA_TAHUNAN_3;
+        if (step == 4) targetRoute = Routes.REKAP_DESA_TAHUNAN_4;
+        if (step == 5) targetRoute = Routes.REKAP_DESA_TAHUNAN_5;
+      }
       await Get.toNamed(targetRoute, arguments: formArgs);
       await _draftController.loadDrafts(filterJenis: _filterJenis);
     } else if (draft.jenis == 'pancasila') {

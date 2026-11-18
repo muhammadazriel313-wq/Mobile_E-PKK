@@ -10,7 +10,6 @@ import 'package:epkk_nganjuk/features/draft/draft_exit_dialog.dart';
 import 'package:epkk_nganjuk/features/draft/draft_model.dart';
 import 'package:epkk_nganjuk/features/draft/draft_service.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/kader_pokja4/kader_pokja4_controller.dart';
-import 'package:epkk_nganjuk/routes/app_routes.dart';
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 
 import 'package:flutter/material.dart';
@@ -49,6 +48,7 @@ class _KaderPokja4ScreenState extends State<KaderPokja4Screen> {
   DraftModel? _editingDraft;
   bool _isSavingDraft = false;
   bool _allowPop = false;
+  bool _closedBySave = false;
 
   void clearForm() {
     posyanduController.clear();
@@ -208,14 +208,16 @@ class _KaderPokja4ScreenState extends State<KaderPokja4Screen> {
 
   Future<bool> _simpanDrafLaluKembali() async {
     if (!await _simpanDraf(showFeedback: false)) return false;
+    _closedBySave = true;
     _allowPop = true;
     Get.closeAllSnackbars();
-    Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+    if (mounted) Navigator.of(context).pop();
     Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
     return true;
   }
 
   Future<bool> _onWillPop() async {
+    if (_closedBySave) return false;
     if (_allowPop || isFormEmpty()) return true;
     bool savedViaDialog = false;
     final shouldExit = await DraftExitDialog.show(
@@ -274,7 +276,7 @@ class _KaderPokja4ScreenState extends State<KaderPokja4Screen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
+        if (didPop || _closedBySave) return;
         final shouldPop = await _onWillPop();
         if (shouldPop && mounted) {
           _allowPop = true;
@@ -298,6 +300,7 @@ class _KaderPokja4ScreenState extends State<KaderPokja4Screen> {
             },
           ),
           onBack: () async {
+            if (_closedBySave) return;
             final shouldPop = await _onWillPop();
             if (shouldPop && mounted) {
               _allowPop = true;

@@ -216,6 +216,20 @@ class DraftModel {
           return 'Bulan: ${bulan.isEmpty ? "-" : bulan}, Ibu Hamil: ${bumil.isEmpty ? "0" : bumil}';
         }
         return 'Inovasi - Posyandu';
+      case 'inovasi_rekap_bulanan':
+        final kategori = dataForm['kategori']?.toString().trim() ?? '';
+        final rw = dataForm['rw']?.toString().trim() ?? '';
+        if (kategori.isNotEmpty || rw.isNotEmpty) {
+          return 'Kategori: ${kategori.isEmpty ? "-" : kategori}, RW: ${rw.isEmpty ? "-" : rw}';
+        }
+        return 'Inovasi - Rekap Desa Bulanan';
+      case 'inovasi_rekap_tahunan':
+        final kategori = dataForm['kategori']?.toString().trim() ?? '';
+        final rw = dataForm['rw']?.toString().trim() ?? '';
+        if (kategori.isNotEmpty || rw.isNotEmpty) {
+          return 'Kategori: ${kategori.isEmpty ? "-" : kategori}, RW: ${rw.isEmpty ? "-" : rw}';
+        }
+        return 'Inovasi - Rekap Desa Tahunan';
       default:
         return 'Laporan Draf';
     }
@@ -257,6 +271,10 @@ class DraftModel {
         return 'Inovasi - Kegiatan Pokja 4';
       case 'inovasi_posyandu':
         return 'Inovasi - Posyandu';
+      case 'inovasi_rekap_bulanan':
+        return 'Inovasi - Rekap Desa Bulanan';
+      case 'inovasi_rekap_tahunan':
+        return 'Inovasi - Rekap Desa Tahunan';
       default:
         return 'Laporan';
     }

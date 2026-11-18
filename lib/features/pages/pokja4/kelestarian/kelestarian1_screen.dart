@@ -49,6 +49,7 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
   DraftModel? _editingDraft;
   bool _isSavingDraft = false;
   bool _allowPop = false;
+  bool _closedBySave = false;
 
   void clearForm() {
     jambanController.clear();
@@ -201,14 +202,22 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
 
   Future<bool> _simpanDrafLaluKembali() async {
     if (!await _simpanDraf(showFeedback: false)) return false;
+    _closedBySave = true;
     _allowPop = true;
     Get.closeAllSnackbars();
-    Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+    Get.until(
+      (route) =>
+          route.settings.name == Routes.UPLOAD_LAPORAN ||
+          route.settings.name == Routes.DRAFT_LIST ||
+          route.settings.name == Routes.HOME ||
+          route.isFirst,
+    );
     Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
     return true;
   }
 
   Future<bool> _onWillPop() async {
+    if (_closedBySave) return false;
     if (_allowPop || isFormEmpty()) return true;
     bool savedViaDialog = false;
     final shouldExit = await DraftExitDialog.show(
@@ -265,7 +274,7 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
+        if (didPop || _closedBySave) return;
         final shouldPop = await _onWillPop();
         if (shouldPop && mounted) {
           _allowPop = true;
@@ -291,6 +300,7 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
             },
           ),
           onBack: () async {
+            if (_closedBySave) return;
             final shouldPop = await _onWillPop();
             if (shouldPop && mounted) {
               _allowPop = true;

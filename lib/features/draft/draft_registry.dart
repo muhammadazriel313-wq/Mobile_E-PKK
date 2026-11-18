@@ -17,6 +17,8 @@ import 'package:epkk_nganjuk/features/pages/pokja4/kelestarian/kelestarian_contr
 import 'package:epkk_nganjuk/features/pages/pokja4/kesehatan/kesehatan_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/kegiatanpokja4/kegiatan_pokja4_controller.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/posyandu/posyandu_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/rekap_bulan/rekap_bulan_controller.dart';
+import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/rekap_tahun/rekap_tahun_controller.dart';
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 import 'package:get/get.dart';
 
@@ -151,6 +153,18 @@ class DraftRegistry {
       title: 'Inovasi - Posyandu',
       route: Routes.POSYANDU_1,
       sender: _sendInovasiPosyandu,
+    ),
+    'inovasi_rekap_bulanan': DraftRegistration(
+      key: 'inovasi_rekap_bulanan',
+      title: 'Inovasi - Rekap Desa Bulanan',
+      route: Routes.REKAP_DESA_1,
+      sender: _sendInovasiRekapBulanan,
+    ),
+    'inovasi_rekap_tahunan': DraftRegistration(
+      key: 'inovasi_rekap_tahunan',
+      title: 'Inovasi - Rekap Desa Tahunan',
+      route: Routes.REKAP_DESA_TAHUNAN_1,
+      sender: _sendInovasiRekapTahunan,
     ),
   };
 
@@ -1022,6 +1036,157 @@ class DraftRegistry {
       pmtP: data['pmt_p']?.toString() ?? '0',
       imunisasiTt1: data['imunisasi_tt_1']?.toString() ?? '0',
       imunisasiTt2: data['imunisasi_tt_2']?.toString() ?? '0',
+    );
+
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendInovasiRekapBulanan(
+    DraftModel draft,
+  ) async {
+    final controller = Get.isRegistered<RekapDesaBulananController>()
+        ? Get.find<RekapDesaBulananController>()
+        : Get.put(RekapDesaBulananController());
+    final data = draft.dataForm;
+
+    final requiredKeys = [
+      'kategori',
+      'rw',
+      'rt',
+      'dasa_wisma',
+      'hamil',
+      'melahirkan',
+      'nifas',
+      'meninggal',
+      'bayi_lahir_l',
+      'bayi_lahir_p',
+      'akte_kelahiran_ada',
+      'akte_kelahiran_tidak',
+      'bayi_meninggal_l',
+      'bayi_meninggal_p',
+      'balita_meninggal_l',
+      'balita_meninggal_p',
+    ];
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    final success = await controller.submitDataRekapDesa(
+      kategori: data['kategori']?.toString() ?? '',
+      rw: data['rw']?.toString() ?? '',
+      rt: data['rt']?.toString() ?? '',
+      dasaWisma: data['dasa_wisma']?.toString() ?? '',
+      hamil: data['hamil']?.toString() ?? '',
+      melahirkan: data['melahirkan']?.toString() ?? '',
+      nifas: data['nifas']?.toString() ?? '',
+      meninggal: data['meninggal']?.toString() ?? '',
+      bayiLahirL: data['bayi_lahir_l']?.toString() ?? '',
+      bayiLahirP: data['bayi_lahir_p']?.toString() ?? '',
+      akteKelahiranAda: data['akte_kelahiran_ada']?.toString() ?? '',
+      akteKelahiranTidak: data['akte_kelahiran_tidak']?.toString() ?? '',
+      bayiMeninggalL: data['bayi_meninggal_l']?.toString() ?? '',
+      bayiMeninggalP: data['bayi_meninggal_p']?.toString() ?? '',
+      balitaMeninggalL: data['balita_meninggal_l']?.toString() ?? '',
+      balitaMeninggalP: data['balita_meninggal_p']?.toString() ?? '',
+    );
+
+    return DraftSendResult(
+      success: success,
+      message: success ? null : controller.errorMessage.value,
+      networkFailure: controller.lastFailureWasNetwork.value,
+    );
+  }
+
+  static Future<DraftSendResult> _sendInovasiRekapTahunan(
+    DraftModel draft,
+  ) async {
+    final controller = Get.isRegistered<RekapDesaTahunanController>()
+        ? Get.find<RekapDesaTahunanController>()
+        : Get.put(RekapDesaTahunanController());
+    final data = draft.dataForm;
+
+    final requiredKeys = [
+      'kategori',
+      'kader_kesehatan',
+      'gizi',
+      'kesling',
+      'phbs',
+      'kb',
+      'posyandu',
+      'imunisasi_vaksinasi_bayi_balita',
+      'pkg',
+      'tbc',
+      'jamban_wc',
+      'spal',
+      'tps',
+      'jumlah_mck',
+      'pdam',
+      'sumur',
+      'lain_lain',
+      'jml_pus',
+      'jml_wus',
+      'akseptor_kb_l',
+      'akseptor_kb_p',
+      'jml_kk_tabungan',
+      'jml_kk_asuransi',
+      'kesehatan_program',
+      'kelestarian_lingkungan_hidup',
+      'perencanaan_sehat_program',
+    ];
+    final isComplete = requiredKeys.every((k) {
+      final val = data[k]?.toString().trim() ?? '';
+      return val.isNotEmpty;
+    });
+
+    if (!isComplete) {
+      return const DraftSendResult(
+        success: false,
+        message: 'Draf belum lengkap. Buka Edit dan lengkapi isian.',
+      );
+    }
+
+    final success = await controller.submitDataRekapDesaTahunan(
+      kategori: data['kategori']?.toString() ?? '',
+      kaderKesehatan: data['kader_kesehatan']?.toString() ?? '',
+      gizi: data['gizi']?.toString() ?? '',
+      kesling: data['kesling']?.toString() ?? '',
+      phbs: data['phbs']?.toString() ?? '',
+      kb: data['kb']?.toString() ?? '',
+      posyandu: data['posyandu']?.toString() ?? '',
+      imunisasiVaksinasiBayiBalita:
+          data['imunisasi_vaksinasi_bayi_balita']?.toString() ?? '',
+      pkg: data['pkg']?.toString() ?? '',
+      tbc: data['tbc']?.toString() ?? '',
+      jambanWc: data['jamban_wc']?.toString() ?? '',
+      spal: data['spal']?.toString() ?? '',
+      tps: data['tps']?.toString() ?? '',
+      jumlahMck: data['jumlah_mck']?.toString() ?? '',
+      pdam: data['pdam']?.toString() ?? '',
+      sumur: data['sumur']?.toString() ?? '',
+      lainLain: data['lain_lain']?.toString() ?? '',
+      jmlPus: data['jml_pus']?.toString() ?? '',
+      jmlWus: data['jml_wus']?.toString() ?? '',
+      akseptorKbL: data['akseptor_kb_l']?.toString() ?? '',
+      akseptorKbP: data['akseptor_kb_p']?.toString() ?? '',
+      jmlKkTabungan: data['jml_kk_tabungan']?.toString() ?? '',
+      jmlKkAsuransi: data['jml_kk_asuransi']?.toString() ?? '',
+      kesehatanProgram: data['kesehatan_program']?.toString() ?? '',
+      kelestarianLingkunganHidup:
+          data['kelestarian_lingkungan_hidup']?.toString() ?? '',
+      perencanaanSehatProgram:
+          data['perencanaan_sehat_program']?.toString() ?? '',
     );
 
     return DraftSendResult(

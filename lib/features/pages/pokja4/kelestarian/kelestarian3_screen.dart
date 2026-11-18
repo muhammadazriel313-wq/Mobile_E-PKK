@@ -157,7 +157,13 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
   Future<bool> _simpanDrafLaluKembali() async {
     if (!await _simpanDraf(showFeedback: false)) return false;
     Get.closeAllSnackbars();
-    Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+    Get.until(
+      (route) =>
+          route.settings.name == Routes.UPLOAD_LAPORAN ||
+          route.settings.name == Routes.DRAFT_LIST ||
+          route.settings.name == Routes.HOME ||
+          route.isFirst,
+    );
     Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
     return true;
   }

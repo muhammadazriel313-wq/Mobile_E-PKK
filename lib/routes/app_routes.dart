@@ -291,7 +291,11 @@ class AppPages {
     /// ================= REKAP DESA =================
     GetPage(
       name: Routes.REKAP_DESA_1,
-      page: () => RekapDesa1Screen(kategori: Get.arguments['kategori']),
+      page: () => RekapDesa1Screen(
+        kategori: (Get.arguments is Map)
+            ? Get.arguments['kategori']?.toString()
+            : null,
+      ),
     ),
     GetPage(name: Routes.REKAP_DESA_2, page: () => RekapDesa2Screen()),
     GetPage(name: Routes.REKAP_DESA_3, page: () => RekapDesa3Screen()),
@@ -299,7 +303,11 @@ class AppPages {
     /// ======== REKAP DESA TAHUNAN ========
     GetPage(
       name: Routes.REKAP_DESA_TAHUNAN_1,
-      page: () => RekapDesaTahunan1Screen(kategori: Get.arguments['kategori']),
+      page: () => RekapDesaTahunan1Screen(
+        kategori: (Get.arguments is Map)
+            ? Get.arguments['kategori']?.toString()
+            : null,
+      ),
     ),
     GetPage(
       name: Routes.REKAP_DESA_TAHUNAN_2,
