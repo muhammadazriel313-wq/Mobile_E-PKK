@@ -10,10 +10,12 @@ import 'package:epkk_nganjuk/common/component/card_pengumuman.dart';
 
 import 'package:epkk_nganjuk/features/auth/button/card_button_actions.dart';
 import 'package:epkk_nganjuk/features/auth/component/header_home.dart';
-import 'package:epkk_nganjuk/features/auth/component/widget_carousel_banner.dart';
 import 'package:epkk_nganjuk/features/auth/component/widget_text_pengumuman.dart';
 
+import 'package:epkk_nganjuk/features/home/kebun/kebun_laporan_controller.dart';
+import 'package:epkk_nganjuk/features/home/kebun/widget_kebun_laporan.dart';
 import 'package:epkk_nganjuk/features/home/nav_controller.dart';
+import 'package:epkk_nganjuk/features/notifikasi/notifikasi_controller.dart';
 
 import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 
@@ -48,6 +50,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     PengumumanController(),
   );
 
+  // [PERUBAHAN 13-11-2026] Kebun Laporan (menggantikan slider banner) dan lonceng
+  final KebunLaporanController kebunController = Get.put(
+    KebunLaporanController(),
+  );
+  // [PERUBAHAN 18-11-2026] Pusat notifikasi (lonceng + pop up), berjalan selama aplikasi dibuka
+  final NotifikasiController notifController = Get.put(
+    NotifikasiController(),
+    permanent: true,
+  );
+  Worker? _pengumumanWorker;
+
   // [PERUBAHAN 08-10-2026] Timer untuk penyegaran otomatis saat pergantian tengah malam WIB
   Timer? _midnightTimer;
 
@@ -60,10 +73,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // [PERUBAHAN 08-10-2026] Memuat hanya pengumuman minggu ini
     pengumumanController.loadWeeklyPengumuman(isRefresh: true);
     _scheduleMidnightTimer();
+
+    // [PERUBAHAN 13-11-2026] Muat jumlah laporan disetujui untuk Kebun Laporan
+    _muatKebun();
+
+    // [PERUBAHAN 18-11-2026] Pengumuman baru minggu ini -> notifikasi
+    _pengumumanWorker = ever(
+      pengumumanController.weeklyPengumumanList,
+      (_) => notifController.periksaPengumuman(
+        pengumumanController.weeklyPengumumanList.toList(),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _pengumumanWorker?.dispose();
     _midnightTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -74,6 +99,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // [PERUBAHAN 08-10-2026] Segarkan data saat aplikasi kembali aktif (resume)
     if (state == AppLifecycleState.resumed) {
       pengumumanController.loadWeeklyPengumuman(isRefresh: true);
+      // [PERUBAHAN 13-11-2026] Hitung ulang (bisa jadi sudah ganti bulan) dan muat ulang
+      kebunController.hitung();
+      _muatKebun();
     }
   }
 
@@ -86,8 +114,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     _midnightTimer = Timer(duration, () {
       pengumumanController.loadWeeklyPengumuman(isRefresh: true);
+      // [PERUBAHAN 13-11-2026] Tengah malam tanggal 1 -> hitungan bulan baru = 0 (pohon reset)
+      kebunController.hitung();
       _scheduleMidnightTimer();
     });
+  }
+
+  // [PERUBAHAN 18-11-2026] Mengaktifkan Kebun Laporan dan pusat notifikasi.
+  // Data laporan diambil satu kali oleh NotifikasiController lalu dibagikan
+  // ke Kebun Laporan, dan diperbarui otomatis tiap 1 menit selama aplikasi dibuka.
+  Future<void> _muatKebun() async {
+    final user = await PreferencesService.getUser();
+    if (user == null) return;
+
+    final idUser = user.id ?? '';
+    final idRole = user.role?.id ?? '';
+    final idOrg = user.organization?.id ?? '';
+
+    kebunController.aturPengguna(idUser: idUser, idRole: idRole);
+
+    await notifController.mulai(
+      idUser: idUser,
+      idRole: idRole,
+      idOrganization: idOrg,
+    );
+    await notifController.periksaPengumuman(
+      pengumumanController.weeklyPengumumanList.toList(),
+    );
   }
 
   // ================= LOAD USER =================
@@ -124,14 +177,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
           children: [
             // ================= HEADER =================
-            HeaderHome(textUser: fullName ?? 'User'),
+            Obx(
+              () => HeaderHome(
+                textUser: fullName ?? 'User',
+                jumlahNotifikasi: notifController.jumlahBelumDibaca.value,
+                onNotifTap: notifController.bukaLayar,
+              ),
+            ),
 
             // ================= BODY =================
             Expanded(
               child: RefreshIndicator(
                 color: const Color(0xFF3F8FC1),
-                onRefresh: () =>
-                    pengumumanController.loadWeeklyPengumuman(isRefresh: true),
+                onRefresh: () => Future.wait([
+                  pengumumanController.loadWeeklyPengumuman(isRefresh: true),
+                  _muatKebun(),
+                ]),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
@@ -143,8 +204,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     children: [
                       SizedBox(height: 20.h),
 
-                      // ================= BANNER =================
-                      WidgetCarouselBanner(),
+                      // ================= BANNER (KEBUN LAPORAN) =================
+                      // [PERUBAHAN 13-11-2026] Menggantikan WidgetCarouselBanner (slider)
+                      const WidgetKebunLaporan(),
 
                       SizedBox(height: 20.h),
 
