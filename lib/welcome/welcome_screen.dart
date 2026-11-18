@@ -8,8 +8,7 @@ import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
 
-  final WelcomeController welcomeController =
-      Get.put(WelcomeController());
+  final WelcomeController welcomeController = Get.put(WelcomeController());
 
   final String id1 = '1';
   final String id2 = '2';
@@ -60,9 +59,7 @@ class WelcomeScreen extends StatelessWidget {
 
                 return SingleChildScrollView(
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: maxH,
-                    ),
+                    constraints: BoxConstraints(minHeight: maxH),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: isWide ? maxW * 0.2 : maxW * 0.05,
@@ -74,7 +71,10 @@ class WelcomeScreen extends StatelessWidget {
                           /// LOGO
                           Image.asset(
                             'assets/images/logo_pkk.png',
-                            width: (isWide ? 150.0 : maxW * 0.30).clamp(72.0, 150.0),
+                            width: (isWide ? 150.0 : maxW * 0.30).clamp(
+                              72.0,
+                              150.0,
+                            ),
                           ),
 
                           SizedBox(height: 12),
@@ -114,8 +114,10 @@ class WelcomeScreen extends StatelessWidget {
                             'Pilih akses pengguna untuk\nmelanjutkan ke aplikasi',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: (isWide ? 18.0 : maxW * 0.045)
-                                  .clamp(13.0, 18.0),
+                              fontSize: (isWide ? 18.0 : maxW * 0.045).clamp(
+                                13.0,
+                                18.0,
+                              ),
                               color: Colors.grey.shade600,
                               height: 1.5,
                             ),
@@ -141,8 +143,10 @@ class WelcomeScreen extends StatelessWidget {
                           Text(
                             "Pilih Role Anda",
                             style: TextStyle(
-                              fontSize: (isWide ? 24.0 : maxW * 0.055)
-                                  .clamp(16.0, 24.0),
+                              fontSize: (isWide ? 24.0 : maxW * 0.055).clamp(
+                                16.0,
+                                24.0,
+                              ),
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF1B2A4A),
                             ),
@@ -161,10 +165,13 @@ class WelcomeScreen extends StatelessWidget {
                                     context: context,
                                     title: "Desa",
                                     icon: Icons.home_rounded,
-                                    selected: welcomeController.selectedRole.value == id1,
+                                    selected:
+                                        welcomeController.selectedRole.value ==
+                                        id1,
                                     activeColor: const Color(0xFF3F8FC1),
                                     onTap: () {
-                                      welcomeController.selectedRole.value = id1;
+                                      welcomeController.selectedRole.value =
+                                          id1;
                                     },
                                   ),
                                 ),
@@ -174,10 +181,13 @@ class WelcomeScreen extends StatelessWidget {
                                     context: context,
                                     title: "Kecamatan",
                                     icon: Icons.apartment_rounded,
-                                    selected: welcomeController.selectedRole.value == id2,
+                                    selected:
+                                        welcomeController.selectedRole.value ==
+                                        id2,
                                     activeColor: const Color(0xFF3F8FC1),
                                     onTap: () {
-                                      welcomeController.selectedRole.value = id2;
+                                      welcomeController.selectedRole.value =
+                                          id2;
                                     },
                                   ),
                                 ),
@@ -193,7 +203,8 @@ class WelcomeScreen extends StatelessWidget {
                               text: "Lanjutkan",
                               textColor: Colors.white,
                               onPressed: () async {
-                                final selectedRole = welcomeController.selectedRole.value;
+                                final selectedRole =
+                                    welcomeController.selectedRole.value;
 
                                 if (selectedRole.isEmpty) {
                                   Get.snackbar(
@@ -209,7 +220,9 @@ class WelcomeScreen extends StatelessWidget {
                                   Routes.AUTH_LOGIN,
                                   arguments: {
                                     'roleID': selectedRole,
-                                    'roleName': selectedRole == '1' ? 'Desa' : 'Kecamatan',
+                                    'roleName': selectedRole == '1'
+                                        ? 'Desa'
+                                        : 'Kecamatan',
                                   },
                                 );
                               },
@@ -249,8 +262,7 @@ class WelcomeScreen extends StatelessWidget {
       child: Column(
         children: [
           AnimatedContainer(
-            duration:
-                const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 250),
 
             width: circle,
             height: circle,
@@ -259,9 +271,7 @@ class WelcomeScreen extends StatelessWidget {
               shape: BoxShape.circle,
 
               border: Border.all(
-                color: selected
-                    ? activeColor
-                    : Colors.grey.shade300,
+                color: selected ? activeColor : Colors.grey.shade300,
                 width: 2,
               ),
 
@@ -273,9 +283,7 @@ class WelcomeScreen extends StatelessWidget {
             child: Icon(
               icon,
               size: iconSize,
-              color: selected
-                  ? activeColor
-                  : Colors.grey.shade400,
+              color: selected ? activeColor : Colors.grey.shade400,
             ),
           ),
 
@@ -286,9 +294,7 @@ class WelcomeScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.w700,
-              color: selected
-                  ? activeColor
-                  : Colors.grey.shade500,
+              color: selected ? activeColor : Colors.grey.shade500,
             ),
           ),
         ],

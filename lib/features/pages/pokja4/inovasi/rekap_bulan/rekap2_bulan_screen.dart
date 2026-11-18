@@ -11,6 +11,12 @@ import 'package:epkk_nganjuk/core/validators/validator_form.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/input_form_field.dart';
 
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
+
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
 import 'package:flutter/material.dart';
@@ -52,11 +58,220 @@ class _RekapDesa2ScreenState extends State<RekapDesa2Screen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  String effectiveKategori = '';
+
+  DraftModel? _editingDraft;
+
+  bool _isSavingDraft = false;
+
   @override
   void initState() {
     super.initState();
 
-    args = Get.arguments;
+    args = {};
+
+    final rawArgs = Get.arguments;
+
+    if (rawArgs is Map) {
+      args = Map<String, dynamic>.from(rawArgs);
+    }
+
+    if (args['kategori']?.toString().isNotEmpty ?? false) {
+      effectiveKategori = args['kategori'].toString();
+    }
+
+    if (args['draft'] is DraftModel) {
+      _editingDraft = args['draft'] as DraftModel;
+
+      _populateFromDraft(_editingDraft!);
+    }
+  }
+
+  void _populateFromDraft(DraftModel draft) {
+    final d = draft.dataForm;
+
+    if (d['kategori']?.toString().isNotEmpty ?? false) {
+      effectiveKategori = d['kategori'].toString();
+    }
+
+    bayiLahirLController.text = d['bayi_lahir_l']?.toString() ?? '';
+
+    bayiLahirPController.text = d['bayi_lahir_p']?.toString() ?? '';
+
+    akteAdaController.text = d['akte_kelahiran_ada']?.toString() ?? '';
+
+    akteTidakController.text = d['akte_kelahiran_tidak']?.toString() ?? '';
+
+    bayiMeninggalLController.text = d['bayi_meninggal_l']?.toString() ?? '';
+
+    bayiMeninggalPController.text = d['bayi_meninggal_p']?.toString() ?? '';
+
+    balitaMeninggalLController.text =
+        d['balita_meninggal_l']?.toString() ?? '';
+
+    balitaMeninggalPController.text =
+        d['balita_meninggal_p']?.toString() ?? '';
+  }
+
+  Map<String, dynamic> _collectFormData() {
+    final existingData = _editingDraft?.dataForm ?? <String, dynamic>{};
+
+    return {
+      ...existingData,
+      'kategori': effectiveKategori,
+      'rw': args['rw']?.toString() ?? existingData['rw']?.toString() ?? '',
+      'rt': args['rt']?.toString() ?? existingData['rt']?.toString() ?? '',
+      'dasa_wisma':
+          args['dasa_wisma']?.toString() ??
+          existingData['dasa_wisma']?.toString() ??
+          '',
+      'hamil': args['hamil']?.toString() ?? existingData['hamil']?.toString() ?? '',
+      'melahirkan':
+          args['melahirkan']?.toString() ??
+          existingData['melahirkan']?.toString() ??
+          '',
+      'nifas': args['nifas']?.toString() ?? existingData['nifas']?.toString() ?? '',
+      'meninggal':
+          args['meninggal']?.toString() ??
+          existingData['meninggal']?.toString() ??
+          '',
+      'bayi_lahir_l': bayiLahirLController.text.trim(),
+      'bayi_lahir_p': bayiLahirPController.text.trim(),
+      'akte_kelahiran_ada': akteAdaController.text.trim(),
+      'akte_kelahiran_tidak': akteTidakController.text.trim(),
+      'bayi_meninggal_l': bayiMeninggalLController.text.trim(),
+      'bayi_meninggal_p': bayiMeninggalPController.text.trim(),
+      'balita_meninggal_l': balitaMeninggalLController.text.trim(),
+      'balita_meninggal_p': balitaMeninggalPController.text.trim(),
+      'langkah': 2,
+    };
+  }
+
+  Future<bool> _simpanDraf({bool showFeedback = true}) async {
+    if (_isSavingDraft) return false;
+
+    setState(() => _isSavingDraft = true);
+
+    try {
+      final user = await PreferencesService.getUser();
+
+      final idAkun = user?.id.toString() ?? '';
+
+      if (idAkun.isEmpty) {
+        Get.snackbar(
+          'Gagal',
+          'Sesi pengguna tidak valid.',
+          snackPosition: SnackPosition.TOP,
+        );
+
+        return false;
+      }
+
+      final dataForm = _collectFormData();
+
+      final service = DraftService();
+
+      if (_editingDraft != null) {
+        final updated = _editingDraft!.copyWith(
+          dataForm: dataForm,
+          status: 'draf',
+          pesanError: null,
+        );
+
+        await service.updateDraft(updated);
+
+        _editingDraft = updated;
+      } else {
+        final newDraft = await service.simpanDraft(
+          idAkun: idAkun,
+          jenis: 'inovasi_rekap_bulanan',
+          dataForm: dataForm,
+          originalPhotoPaths: [],
+        );
+
+        _editingDraft = newDraft;
+      }
+
+      final draftController = Get.isRegistered<DraftController>()
+          ? Get.find<DraftController>()
+          : Get.put(DraftController());
+
+      await draftController.refreshAllCount();
+
+      return true;
+    } catch (_) {
+      Get.snackbar(
+        'Gagal',
+        'Draf tidak dapat disimpan.',
+        snackPosition: SnackPosition.TOP,
+      );
+
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
+
+  void _showSnackbarDrafDisimpan() {
+    double horizontalMargin = 20.w;
+
+    final ctx = Get.context;
+
+    if (ctx != null) {
+      final screenWidth = MediaQuery.of(ctx).size.width;
+
+      if (screenWidth > 220) {
+        horizontalMargin = (screenWidth - 220) / 2;
+      }
+    }
+
+    Get.snackbar(
+      '',
+      '',
+      titleText: Center(
+        child: Text(
+          'Draf disimpan',
+          style: TextStyle(
+            fontFamily: TypographyStyles.fontFamily,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      messageText: const SizedBox.shrink(),
+      maxWidth: 220,
+      margin: EdgeInsets.only(
+        top: 12.h,
+        left: horizontalMargin,
+        right: horizontalMargin,
+      ),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      borderRadius: 24.r,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 2),
+      backgroundColor: const Color(0xFF3F8FC1),
+      colorText: Colors.white,
+    );
+  }
+
+  Future<bool> _simpanDrafLaluKembali() async {
+    if (!await _simpanDraf(showFeedback: false)) return false;
+
+    Get.closeAllSnackbars();
+
+    Get.until(
+      (route) =>
+          route.settings.name == Routes.UPLOAD_LAPORAN ||
+          route.settings.name == Routes.DRAFT_LIST ||
+          route.settings.name == Routes.INOVASI ||
+          route.settings.name == Routes.HOME ||
+          route.isFirst,
+    );
+
+    Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
+
+    return true;
   }
 
   @override
@@ -257,58 +472,63 @@ class _RekapDesa2ScreenState extends State<RekapDesa2Screen> {
                           /// ======================
                           /// BUTTON
                           /// ======================
-                          ZoomTapAnimation(
-                            child: ButtonFill(
-                              text: 'Lanjut',
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ZoomTapAnimation(
+                                  child: ButtonSecondaryOutline(
+                                    text: _isSavingDraft
+                                        ? 'Menyimpan...'
+                                        : (_editingDraft != null
+                                            ? 'Simpan Perubahan'
+                                            : 'Simpan Draf'),
 
-                              textColor: Colors.white,
+                                    onPressed: _isSavingDraft
+                                        ? null
+                                        : () async => _simpanDrafLaluKembali(),
+                                  ),
+                                ),
+                              ),
 
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  Get.toNamed(
-                                    Routes.REKAP_DESA_3,
+                              SizedBox(width: 12.w),
 
-                                    arguments: {
-                                      ...args,
+                              Expanded(
+                                child: ZoomTapAnimation(
+                                  child: ButtonFill(
+                                    text: 'Lanjut',
 
-                                      'bayi_lahir_l': bayiLahirLController.text,
+                                    textColor: Colors.white,
 
-                                      'bayi_lahir_p': bayiLahirPController.text,
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        Get.toNamed(
+                                          Routes.REKAP_DESA_3,
 
-                                      'akte_kelahiran_ada':
-                                          akteAdaController.text,
+                                          arguments: {
+                                            ..._collectFormData(),
 
-                                      'akte_kelahiran_tidak':
-                                          akteTidakController.text,
+                                            if (_editingDraft != null)
+                                              'draft': _editingDraft,
+                                          },
+                                        );
+                                      } else {
+                                        Get.snackbar(
+                                          'Error',
 
-                                      'bayi_meninggal_l':
-                                          bayiMeninggalLController.text,
+                                          'Lengkapi Form',
 
-                                      'bayi_meninggal_p':
-                                          bayiMeninggalPController.text,
+                                          snackPosition: SnackPosition.TOP,
 
-                                      'balita_meninggal_l':
-                                          balitaMeninggalLController.text,
+                                          backgroundColor: Colors.red,
 
-                                      'balita_meninggal_p':
-                                          balitaMeninggalPController.text,
+                                          colorText: Colors.white,
+                                        );
+                                      }
                                     },
-                                  );
-                                } else {
-                                  Get.snackbar(
-                                    'Error',
-
-                                    'Lengkapi Form',
-
-                                    snackPosition: SnackPosition.TOP,
-
-                                    backgroundColor: Colors.red,
-
-                                    colorText: Colors.white,
-                                  );
-                                }
-                              },
-                            ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
 
                           SizedBox(height: 20.h),

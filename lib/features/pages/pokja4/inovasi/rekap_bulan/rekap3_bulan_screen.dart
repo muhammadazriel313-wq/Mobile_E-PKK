@@ -8,12 +8,22 @@ import 'package:epkk_nganjuk/common/typography.dart';
 
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
+
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/rekap_bulan/rekap_bulan_controller.dart';
+
+import 'package:epkk_nganjuk/routes/app_routes.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class RekapDesa3Screen extends StatefulWidget {
   const RekapDesa3Screen({super.key});
@@ -29,11 +39,168 @@ class _RekapDesa3ScreenState extends State<RekapDesa3Screen> {
 
   late Map<String, dynamic> data;
 
+  DraftModel? _editingDraft;
+
+  bool _isSavingDraft = false;
+
   @override
   void initState() {
     super.initState();
 
-    data = Get.arguments;
+    data = {};
+
+    final args = Get.arguments;
+
+    if (args is Map) {
+      data = Map<String, dynamic>.from(args);
+
+      if (args['draft'] is DraftModel) {
+        _editingDraft = args['draft'] as DraftModel;
+
+        data = {..._editingDraft!.dataForm, ...data};
+      }
+    }
+
+    data.remove('draft');
+  }
+
+  Map<String, dynamic> _collectFormData() {
+    final existingData = _editingDraft?.dataForm ?? <String, dynamic>{};
+
+    final argsData = Map<String, dynamic>.from(data)..remove('draft');
+
+    return {
+      ...existingData,
+      ...argsData,
+      'langkah': 3,
+    };
+  }
+
+  Future<bool> _simpanDraf({bool showFeedback = true}) async {
+    if (_isSavingDraft) return false;
+
+    setState(() => _isSavingDraft = true);
+
+    try {
+      final user = await PreferencesService.getUser();
+
+      final idAkun = user?.id.toString() ?? '';
+
+      if (idAkun.isEmpty) {
+        Get.snackbar(
+          'Gagal',
+          'Sesi pengguna tidak valid.',
+          snackPosition: SnackPosition.TOP,
+        );
+
+        return false;
+      }
+
+      final dataForm = _collectFormData();
+
+      final service = DraftService();
+
+      if (_editingDraft != null) {
+        final updated = _editingDraft!.copyWith(
+          dataForm: dataForm,
+          status: 'draf',
+          pesanError: null,
+        );
+
+        await service.updateDraft(updated);
+
+        _editingDraft = updated;
+      } else {
+        final newDraft = await service.simpanDraft(
+          idAkun: idAkun,
+          jenis: 'inovasi_rekap_bulanan',
+          dataForm: dataForm,
+          originalPhotoPaths: [],
+        );
+
+        _editingDraft = newDraft;
+      }
+
+      final draftController = Get.isRegistered<DraftController>()
+          ? Get.find<DraftController>()
+          : Get.put(DraftController());
+
+      await draftController.refreshAllCount();
+
+      return true;
+    } catch (_) {
+      Get.snackbar(
+        'Gagal',
+        'Draf tidak dapat disimpan.',
+        snackPosition: SnackPosition.TOP,
+      );
+
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
+
+  void _showSnackbarDrafDisimpan() {
+    double horizontalMargin = 20.w;
+
+    final ctx = Get.context;
+
+    if (ctx != null) {
+      final screenWidth = MediaQuery.of(ctx).size.width;
+
+      if (screenWidth > 220) {
+        horizontalMargin = (screenWidth - 220) / 2;
+      }
+    }
+
+    Get.snackbar(
+      '',
+      '',
+      titleText: Center(
+        child: Text(
+          'Draf disimpan',
+          style: TextStyle(
+            fontFamily: TypographyStyles.fontFamily,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      messageText: const SizedBox.shrink(),
+      maxWidth: 220,
+      margin: EdgeInsets.only(
+        top: 12.h,
+        left: horizontalMargin,
+        right: horizontalMargin,
+      ),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      borderRadius: 24.r,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 2),
+      backgroundColor: const Color(0xFF3F8FC1),
+      colorText: Colors.white,
+    );
+  }
+
+  Future<bool> _simpanDrafLaluKembali() async {
+    if (!await _simpanDraf(showFeedback: false)) return false;
+
+    Get.closeAllSnackbars();
+
+    Get.until(
+      (route) =>
+          route.settings.name == Routes.UPLOAD_LAPORAN ||
+          route.settings.name == Routes.DRAFT_LIST ||
+          route.settings.name == Routes.INOVASI ||
+          route.settings.name == Routes.HOME ||
+          route.isFirst,
+    );
+
+    Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
+
+    return true;
   }
 
   @override
@@ -293,67 +460,160 @@ class _RekapDesa3ScreenState extends State<RekapDesa3Screen> {
                       SizedBox(height: 24.h),
 
                       /// ================= BUTTON =================
-                      Obx(
-                        () => ButtonFill(
-                          text: controller.isLoading.value
-                              ? 'Loading...'
-                              : 'Kirim',
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ZoomTapAnimation(
+                              child: ButtonSecondaryOutline(
+                                text: _isSavingDraft
+                                    ? 'Menyimpan...'
+                                    : (_editingDraft != null
+                                        ? 'Simpan Perubahan'
+                                        : 'Simpan Draf'),
 
-                          textColor: Colors.white,
+                                onPressed: _isSavingDraft
+                                    ? null
+                                    : () async => _simpanDrafLaluKembali(),
+                              ),
+                            ),
+                          ),
 
-                          isLoading: controller.isLoading.value,
+                          SizedBox(width: 12.w),
 
-                          onPressed: controller.isLoading.value
-                              ? null
-                              : () async {
-                                  final success = await controller
-                                      .submitDataRekapDesa(
-                                        kategori: data['kategori'],
+                          Expanded(
+                            child: Obx(
+                              () => ZoomTapAnimation(
+                                child: ButtonFill(
+                                  text: controller.isLoading.value
+                                      ? 'Loading...'
+                                      : 'Kirim',
 
-                                        rw: data['rw'],
+                                  textColor: Colors.white,
 
-                                        rt: data['rt'],
+                                  isLoading: controller.isLoading.value,
 
-                                        dasaWisma: data['dasa_wisma'],
+                                  onPressed: controller.isLoading.value
+                                      ? null
+                                      : () async {
+                                          final success = await controller
+                                              .submitDataRekapDesa(
+                                                kategori: data['kategori'],
 
-                                        hamil: data['hamil'],
+                                                rw: data['rw'],
 
-                                        melahirkan: data['melahirkan'],
+                                                rt: data['rt'],
 
-                                        nifas: data['nifas'],
+                                                dasaWisma: data['dasa_wisma'],
 
-                                        meninggal: data['meninggal'],
+                                                hamil: data['hamil'],
 
-                                        bayiLahirL: data['bayi_lahir_l'],
+                                                melahirkan:
+                                                    data['melahirkan'],
 
-                                        bayiLahirP: data['bayi_lahir_p'],
+                                                nifas: data['nifas'],
 
-                                        akteKelahiranAda:
-                                            data['akte_kelahiran_ada'],
+                                                meninggal: data['meninggal'],
 
-                                        akteKelahiranTidak:
-                                            data['akte_kelahiran_tidak'],
+                                                bayiLahirL:
+                                                    data['bayi_lahir_l'],
 
-                                        bayiMeninggalL:
-                                            data['bayi_meninggal_l'],
+                                                bayiLahirP:
+                                                    data['bayi_lahir_p'],
 
-                                        bayiMeninggalP:
-                                            data['bayi_meninggal_p'],
+                                                akteKelahiranAda:
+                                                    data['akte_kelahiran_ada'],
 
-                                        balitaMeninggalL:
-                                            data['balita_meninggal_l'],
+                                                akteKelahiranTidak:
+                                                    data['akte_kelahiran_tidak'],
 
-                                        balitaMeninggalP:
-                                            data['balita_meninggal_p'],
-                                      );
+                                                bayiMeninggalL:
+                                                    data['bayi_meninggal_l'],
 
-                                  if (success) {
-                                    data.clear();
+                                                bayiMeninggalP:
+                                                    data['bayi_meninggal_p'],
 
-                                    Get.offAllNamed('/main');
-                                  }
-                                },
-                        ),
+                                                balitaMeninggalL:
+                                                    data['balita_meninggal_l'],
+
+                                                balitaMeninggalP:
+                                                    data['balita_meninggal_p'],
+                                              );
+
+                                          if (success) {
+                                            if (_editingDraft != null) {
+                                              await DraftService().hapusDraft(
+                                                _editingDraft!.id,
+                                              );
+
+                                              final draftController =
+                                                  Get.isRegistered<
+                                                          DraftController>()
+                                                      ? Get.find<
+                                                          DraftController>()
+                                                      : Get.put(
+                                                          DraftController(),
+                                                        );
+
+                                              await draftController
+                                                  .refreshAllCount();
+                                            }
+
+                                            data.clear();
+
+                                            Get.offAllNamed('/main');
+                                          } else if (controller
+                                                  .lastFailureWasNetwork
+                                                  .value &&
+                                              mounted) {
+                                            final saveAsDraft =
+                                                await Get.dialog<bool>(
+                                                  AlertDialog(
+                                                    title: const Text(
+                                                      'Gagal terkirim',
+                                                    ),
+
+                                                    content: const Text(
+                                                      'Simpan sebagai draf agar isian tidak hilang?',
+                                                    ),
+
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Get.back(
+                                                              result: false,
+                                                            ),
+
+                                                        child: const Text(
+                                                          'Tutup',
+                                                        ),
+                                                      ),
+
+                                                      ElevatedButton(
+                                                        onPressed: () =>
+                                                            Get.back(
+                                                              result: true,
+                                                            ),
+
+                                                        child: const Text(
+                                                          'Simpan Draf',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                  barrierDismissible: false,
+                                                );
+
+                                            if (saveAsDraft == true) {
+                                              await _simpanDrafLaluKembali();
+                                            }
+                                          }
+                                        },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       SizedBox(height: 20.h),

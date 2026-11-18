@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-
-
 class VerificationForgotPasswordScreen extends StatefulWidget {
   const VerificationForgotPasswordScreen({super.key});
 
@@ -77,9 +75,7 @@ class _VerificationForgotPasswordScreenState
                           ),
                         ),
                         SizedBox(height: 32.h),
-                        PinCodeFields(
-                          controller: _codeController,
-                        ),
+                        PinCodeFields(controller: _codeController),
                         SizedBox(height: 20.h),
                         FooterText(
                           firstText: 'Tidak menerima kode?',
@@ -87,12 +83,12 @@ class _VerificationForgotPasswordScreenState
                           onTab: () {
                             authController.resendOTP(phoneNumber);
                           },
-                        )
+                        ),
                       ],
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -118,11 +114,14 @@ class _VerificationForgotPasswordScreenState
                           colorText: Colors.white,
                         );
 
-                        Get.toNamed(Routes.RESET_PASSWORD_BARU, arguments: {
-                          'phone': phoneNumber,
-                          'otp': _codeController.text,
-                          'role': role
-                        });
+                        Get.toNamed(
+                          Routes.RESET_PASSWORD_BARU,
+                          arguments: {
+                            'phone': phoneNumber,
+                            'otp': _codeController.text,
+                            'role': role,
+                          },
+                        );
                       } else {
                         Get.snackbar(
                           'Error',

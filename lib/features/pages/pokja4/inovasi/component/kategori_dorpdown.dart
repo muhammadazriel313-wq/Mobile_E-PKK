@@ -55,10 +55,10 @@ class KategoriDropdown extends StatelessWidget {
           ),
         ),
         hint: Text(
-        'Pilih Kategori',
+          'Pilih Kategori',
 
-        style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-      ),
+          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+        ),
 
         icon: const Icon(Icons.keyboard_arrow_down_rounded),
 

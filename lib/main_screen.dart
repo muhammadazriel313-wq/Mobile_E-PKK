@@ -7,7 +7,6 @@ import 'package:epkk_nganjuk/features/pengumuman/pengumuman_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class MainScreen extends StatelessWidget {
   final NavController controller = Get.find<NavController>();
   final ProfilController profilController = Get.find<ProfilController>();
@@ -26,46 +25,45 @@ class MainScreen extends StatelessWidget {
       AkunPage(),
     ];
 
-    return Obx(() => Scaffold(
-          body: pages[controller.selectedIndex.value],
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: controller.selectedIndex.value,
-            onTap: controller.changeTabIndex,
-            elevation: 8,
-            backgroundColor: Colors.white,
-            selectedItemColor: const Color(0xFF3F8FC1),
-            unselectedItemColor: Colors.grey,
-            type: BottomNavigationBarType.fixed,
-            selectedFontSize: 12,
-            unselectedFontSize: 11,
-            selectedIconTheme: IconThemeData(
-              size: 24,
-              color: const Color(0xFF3F8FC1),
-            ),
-            unselectedIconTheme: IconThemeData(
-              size: 22,
-              color: Colors.grey,
-            ),
-            
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
-                label: 'Beranda',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.list_alt_rounded),
-                label: 'Riwayat',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.campaign_rounded),
-                label: 'Pengumuman',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person_rounded),
-                label: 'Akun',
-              ),
-            ],
+    return Obx(
+      () => Scaffold(
+        body: pages[controller.selectedIndex.value],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: controller.selectedIndex.value,
+          onTap: controller.changeTabIndex,
+          elevation: 8,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF3F8FC1),
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: 12,
+          unselectedFontSize: 11,
+          selectedIconTheme: IconThemeData(
+            size: 24,
+            color: const Color(0xFF3F8FC1),
           ),
-        ));
+          unselectedIconTheme: IconThemeData(size: 22, color: Colors.grey),
+
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded),
+              label: 'Beranda',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt_rounded),
+              label: 'Riwayat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.campaign_rounded),
+              label: 'Pengumuman',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded),
+              label: 'Akun',
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

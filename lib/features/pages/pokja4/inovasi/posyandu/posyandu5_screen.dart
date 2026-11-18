@@ -4,8 +4,15 @@
 
 import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/common/colors.dart';
+import 'package:epkk_nganjuk/common/typography.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
+import 'package:epkk_nganjuk/features/draft/button_secondary_outline.dart';
+import 'package:epkk_nganjuk/features/draft/draft_controller.dart';
+import 'package:epkk_nganjuk/features/draft/draft_model.dart';
+import 'package:epkk_nganjuk/features/draft/draft_service.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/inovasi/posyandu/posyandu_controller.dart';
+import 'package:epkk_nganjuk/routes/app_routes.dart';
+import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -26,6 +33,8 @@ class _Posyandu5ScreenState extends State<Posyandu5Screen> {
   /// ================= ARGUMENT =================
 
   Map<String, dynamic> data = {};
+  DraftModel? _editingDraft;
+  bool _isSavingDraft = false;
 
   /// ================= SAFE =================
 
@@ -41,9 +50,118 @@ class _Posyandu5ScreenState extends State<Posyandu5Screen> {
 
     final args = Get.arguments;
 
-    if (args != null && args is Map<String, dynamic>) {
-      data = args;
+    if (args != null && args is Map) {
+      data = Map<String, dynamic>.from(args);
+      if (args['draft'] is DraftModel) {
+        _editingDraft = args['draft'] as DraftModel;
+      }
     }
+  }
+
+  Map<String, dynamic> _collectFormData() {
+    final existingData = _editingDraft?.dataForm ?? <String, dynamic>{};
+    return {
+      ...existingData,
+      ...data,
+      'langkah': 5,
+    };
+  }
+
+  Future<bool> _simpanDraf({bool showFeedback = true}) async {
+    if (_isSavingDraft) return false;
+    setState(() => _isSavingDraft = true);
+    try {
+      final user = await PreferencesService.getUser();
+      final idAkun = user?.id.toString() ?? data['id_user']?.toString() ?? '';
+      if (idAkun.isEmpty) {
+        Get.snackbar(
+          'Gagal',
+          'Sesi pengguna tidak valid.',
+          snackPosition: SnackPosition.TOP,
+        );
+        return false;
+      }
+      final dataForm = _collectFormData();
+      final service = DraftService();
+      if (_editingDraft != null) {
+        final updated = _editingDraft!.copyWith(
+          dataForm: dataForm,
+          status: 'draf',
+          pesanError: null,
+        );
+        await service.updateDraft(updated);
+        _editingDraft = updated;
+      } else {
+        final newDraft = await service.simpanDraft(
+          idAkun: idAkun,
+          jenis: 'inovasi_posyandu',
+          dataForm: dataForm,
+          originalPhotoPaths: [],
+        );
+        _editingDraft = newDraft;
+      }
+      final draftController = Get.isRegistered<DraftController>()
+          ? Get.find<DraftController>()
+          : Get.put(DraftController());
+      await draftController.refreshAllCount();
+      return true;
+    } catch (_) {
+      Get.snackbar(
+        'Gagal',
+        'Draf tidak dapat disimpan.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSavingDraft = false);
+    }
+  }
+
+  void _showSnackbarDrafDisimpan() {
+    double horizontalMargin = 20.w;
+    final ctx = Get.context;
+    if (ctx != null) {
+      final screenWidth = MediaQuery.of(ctx).size.width;
+      if (screenWidth > 220) {
+        horizontalMargin = (screenWidth - 220) / 2;
+      }
+    }
+    Get.snackbar(
+      '',
+      '',
+      titleText: Center(
+        child: Text(
+          'Draf disimpan',
+          style: TextStyle(
+            fontFamily: TypographyStyles.fontFamily,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      messageText: const SizedBox.shrink(),
+      maxWidth: 220,
+      margin: EdgeInsets.only(
+        top: 12.h,
+        left: horizontalMargin,
+        right: horizontalMargin,
+      ),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      borderRadius: 24.r,
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 2),
+      backgroundColor: const Color(0xFF3F8FC1),
+      colorText: Colors.white,
+    );
+  }
+
+  Future<bool> _simpanDrafLaluKembali() async {
+    if (!await _simpanDraf(showFeedback: false)) return false;
+    Get.closeAllSnackbars();
+    Get.until((route) => route.settings.name == Routes.HOME || route.isFirst);
+    Future.delayed(const Duration(milliseconds: 150), _showSnackbarDrafDisimpan);
+    return true;
   }
 
   @override
@@ -263,165 +381,207 @@ class _Posyandu5ScreenState extends State<Posyandu5Screen> {
                         SizedBox(height: 30.h),
 
                         /// ================= BUTTON =================
-                        ZoomTapAnimation(
-                          child: Obx(
-                            () => ButtonFill(
-                              text: controller.isLoading.value
-                                  ? 'Loading...'
-                                  : 'Kirim',
-
-                              textColor: Colors.white,
-
-                              isLoading: controller.isLoading.value,
-
-                              onPressed: controller.isLoading.value
-                                  ? null
-                                  : () async {
-                                      final success = await controller
-                                          .submitDataPosyandu(
-                                            kategori: safe(data['kategori']),
-
-                                            bulan: safe(data['bulan']),
-
-                                            jmlIbuHamil: safe(
-                                              data['jml_ibu_hamil'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            diperiksa: safe(
-                                              data['diperiksa'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            feTabletDarah: safe(
-                                              data['fe_tablet_darah'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            jmlIbuMenyusui: safe(
-                                              data['jml_ibu_menyusui'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            kondom: safe(
-                                              data['kondom'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            pil: safe(
-                                              data['pil'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            implant: safe(
-                                              data['implant'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            mop: safe(
-                                              data['mop'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            mow: safe(
-                                              data['mow'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            iud: safe(
-                                              data['iud'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            suntikan: safe(
-                                              data['suntikan'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            lainLainKb: safe(
-                                              data['lain_lain_kb'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            jmlBalitaL: safe(
-                                              data['jml_balita_l'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            jmlBalitaP: safe(
-                                              data['jml_balita_p'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            bukuKiaL: safe(
-                                              data['buku_kia_l'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            bukuKiaP: safe(
-                                              data['buku_kia_p'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            datangL: safe(
-                                              data['datang_l'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            datangP: safe(
-                                              data['datang_p'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            naikL: safe(
-                                              data['naik_l'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            naikP: safe(
-                                              data['naik_p'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            vitAL: safe(
-                                              data['vit_a_l'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            vitAP: safe(
-                                              data['vit_a_p'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            pmtL: safe(
-                                              data['pmt_l'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            pmtP: safe(
-                                              data['pmt_p'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            imunisasiTt1: safe(
-                                              data['imunisasi_tt_1'],
-                                              defaultValue: '0',
-                                            ),
-
-                                            imunisasiTt2: safe(
-                                              data['imunisasi_tt_2'],
-                                              defaultValue: '0',
-                                            ),
-                                          );
-
-                                      if (success) {
-                                        data.clear();
-
-                                        Get.offAllNamed('/main');
-                                      }
-                                    },
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ZoomTapAnimation(
+                                child: ButtonSecondaryOutline(
+                                  text: _isSavingDraft
+                                      ? 'Menyimpan...'
+                                      : (_editingDraft != null
+                                          ? 'Simpan Perubahan'
+                                          : 'Simpan Draf'),
+                                  onPressed: _isSavingDraft
+                                      ? null
+                                      : () async =>
+                                          _simpanDrafLaluKembali(),
+                                ),
+                              ),
                             ),
-                          ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Obx(
+                                () => ZoomTapAnimation(
+                                  child: ButtonFill(
+                                    text: controller.isLoading.value
+                                        ? 'Loading...'
+                                        : 'Kirim',
+                                    textColor: Colors.white,
+                                    isLoading: controller.isLoading.value,
+                                    onPressed: controller.isLoading.value
+                                        ? null
+                                        : () async {
+                                            final success = await controller
+                                                .submitDataPosyandu(
+                                                  kategori: safe(
+                                                    data['kategori'],
+                                                  ),
+                                                  bulan: safe(data['bulan']),
+                                                  jmlIbuHamil: safe(
+                                                    data['jml_ibu_hamil'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  diperiksa: safe(
+                                                    data['diperiksa'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  feTabletDarah: safe(
+                                                    data['fe_tablet_darah'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  jmlIbuMenyusui: safe(
+                                                    data['jml_ibu_menyusui'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  kondom: safe(
+                                                    data['kondom'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  pil: safe(
+                                                    data['pil'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  implant: safe(
+                                                    data['implant'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  mop: safe(
+                                                    data['mop'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  mow: safe(
+                                                    data['mow'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  iud: safe(
+                                                    data['iud'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  suntikan: safe(
+                                                    data['suntikan'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  lainLainKb: safe(
+                                                    data['lain_lain_kb'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  jmlBalitaL: safe(
+                                                    data['jml_balita_l'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  jmlBalitaP: safe(
+                                                    data['jml_balita_p'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  bukuKiaL: safe(
+                                                    data['buku_kia_l'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  bukuKiaP: safe(
+                                                    data['buku_kia_p'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  datangL: safe(
+                                                    data['datang_l'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  datangP: safe(
+                                                    data['datang_p'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  naikL: safe(
+                                                    data['naik_l'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  naikP: safe(
+                                                    data['naik_p'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  vitAL: safe(
+                                                    data['vit_a_l'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  vitAP: safe(
+                                                    data['vit_a_p'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  pmtL: safe(
+                                                    data['pmt_l'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  pmtP: safe(
+                                                    data['pmt_p'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  imunisasiTt1: safe(
+                                                    data['imunisasi_tt_1'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                  imunisasiTt2: safe(
+                                                    data['imunisasi_tt_2'],
+                                                    defaultValue: '0',
+                                                  ),
+                                                );
+
+                                            if (success) {
+                                              if (_editingDraft != null) {
+                                                await DraftService().hapusDraft(
+                                                  _editingDraft!.id,
+                                                );
+                                                final draftController =
+                                                    Get.isRegistered<
+                                                            DraftController>()
+                                                        ? Get.find<
+                                                            DraftController>()
+                                                        : Get.put(
+                                                            DraftController());
+                                                await draftController
+                                                    .refreshAllCount();
+                                              }
+                                              data.clear();
+                                              Get.offAllNamed('/main');
+                                            } else if (controller
+                                                    .lastFailureWasNetwork
+                                                    .value &&
+                                                mounted) {
+                                              final saveAsDraft =
+                                                  await Get.dialog<bool>(
+                                                AlertDialog(
+                                                  title: const Text(
+                                                      'Gagal terkirim'),
+                                                  content: const Text(
+                                                    'Simpan sebagai draf agar isian tidak hilang?',
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Get.back(
+                                                        result: false,
+                                                      ),
+                                                      child:
+                                                          const Text('Tutup'),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: () => Get.back(
+                                                        result: true,
+                                                      ),
+                                                      child: const Text(
+                                                        'Simpan Draf',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                barrierDismissible: false,
+                                              );
+                                              if (saveAsDraft == true) {
+                                                await _simpanDrafLaluKembali();
+                                              }
+                                            }
+                                          },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
 
                         SizedBox(height: 20.h),

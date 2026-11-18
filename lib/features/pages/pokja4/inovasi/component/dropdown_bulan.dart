@@ -43,31 +43,24 @@ class DropdownBulan extends StatelessWidget {
 
         hintText: 'Pilih Bulan',
 
-        border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
 
-        contentPadding:
-            const EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 18,
         ),
       ),
 
       items: daftarBulan.map((bulan) {
-        return DropdownMenuItem<String>(
-          value: bulan,
-          child: Text(bulan),
-        );
+        return DropdownMenuItem<String>(value: bulan, child: Text(bulan));
       }).toList(),
 
       onChanged: onChanged,
 
-      validator: validator ??
+      validator:
+          validator ??
           (value) {
-            if (value == null ||
-                value.isEmpty) {
+            if (value == null || value.isEmpty) {
               return 'Bulan wajib dipilih';
             }
 

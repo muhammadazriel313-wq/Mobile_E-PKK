@@ -73,10 +73,8 @@ class KaderPokja1Entry {
       polaAsuh: json['pola_asuh']?.toString() ?? '',
       catatan: json['catatan'],
       status: json['status'] ?? 'Proses',
-      createdAt:
-          DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
-      updatedAt:
-          DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
       role: json['role'] != null ? Role.fromJson(json['role']) : null,
       organization: json['organization'] != null
           ? Organization.fromJson(json['organization'])
@@ -107,11 +105,7 @@ class Role {
   final String uuid;
   final String name;
 
-  Role({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Role({required this.id, required this.uuid, required this.name});
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
@@ -122,11 +116,7 @@ class Role {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -135,11 +125,7 @@ class Organization {
   final String uuid;
   final String name;
 
-  Organization({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Organization({required this.id, required this.uuid, required this.name});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -150,11 +136,7 @@ class Organization {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -164,14 +146,10 @@ class ErrorMessage {
   ErrorMessage({required this.message});
 
   factory ErrorMessage.fromJson(Map<String, dynamic> json) {
-    return ErrorMessage(
-      message: json['message'] ?? 'Unknown error',
-    );
+    return ErrorMessage(message: json['message'] ?? 'Unknown error');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-    };
+    return {'message': message};
   }
 }

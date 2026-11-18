@@ -11,7 +11,9 @@ class ReportPendidikanKeterampilanModel {
     this.error,
   });
 
-  factory ReportPendidikanKeterampilanModel.fromJson(Map<String, dynamic> json) {
+  factory ReportPendidikanKeterampilanModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return ReportPendidikanKeterampilanModel(
       statusCode: json['statusCode'] ?? 500,
       message: json['message'] ?? 'Unknown error',
@@ -190,11 +192,7 @@ class Role {
   final String uuid;
   final String name;
 
-  Role({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Role({required this.id, required this.uuid, required this.name});
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
@@ -205,11 +203,7 @@ class Role {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -218,11 +212,7 @@ class Organization {
   final String uuid;
   final String name;
 
-  Organization({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Organization({required this.id, required this.uuid, required this.name});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -233,11 +223,7 @@ class Organization {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 

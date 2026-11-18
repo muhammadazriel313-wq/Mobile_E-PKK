@@ -42,9 +42,7 @@ class HeaderHome extends StatelessWidget {
         top: 28.h,
         bottom: 14.h,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      decoration: const BoxDecoration(color: Colors.white),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

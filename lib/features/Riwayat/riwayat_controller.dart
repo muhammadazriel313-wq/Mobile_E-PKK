@@ -4,7 +4,6 @@ import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/Riwayat/riwayat_model.dart';
 import 'package:get/get.dart';
 
-
 class RiwayatController extends GetxController {
   final ApiHelper apiHelper = ApiHelper();
 

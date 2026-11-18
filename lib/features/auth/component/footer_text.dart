@@ -24,9 +24,7 @@ class FooterText extends StatelessWidget {
           firstText,
           color: TextColors.grey500,
         ),
-        SizedBox(
-          width: 6,
-        ),
+        SizedBox(width: 6),
         InkWell(
           onTap: onTab,
           child: ZoomTapAnimation(
@@ -35,7 +33,7 @@ class FooterText extends StatelessWidget {
               color: BrandColors.brandPrimary500,
             ),
           ),
-        )
+        ),
       ],
     );
   }

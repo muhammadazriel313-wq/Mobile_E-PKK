@@ -43,11 +43,7 @@ class _InovasiScreenState extends State<InovasiScreen> {
       backgroundColor: Colors.white,
 
       /// ================= APPBAR =================
-      appBar: AppBarSecondary(
-        title: 'Inovasi',
-
-        onBack: () => Get.back(),
-      ),
+      appBar: AppBarSecondary(title: 'Inovasi', onBack: () => Get.back()),
 
       body: SafeArea(
         child: GestureDetector(
@@ -152,8 +148,7 @@ class _InovasiScreenState extends State<InovasiScreen> {
                             ),
 
                             child: Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
 
                               children: [
                                 Container(
@@ -162,8 +157,7 @@ class _InovasiScreenState extends State<InovasiScreen> {
                                   decoration: BoxDecoration(
                                     color: Colors.white,
 
-                                    borderRadius:
-                                        BorderRadius.circular(10.r),
+                                    borderRadius: BorderRadius.circular(10.r),
                                   ),
 
                                   child: Icon(
@@ -231,8 +225,7 @@ class _InovasiScreenState extends State<InovasiScreen> {
 
                                   'Pilih kategori terlebih dahulu',
 
-                                  snackPosition:
-                                      SnackPosition.TOP,
+                                  snackPosition: SnackPosition.TOP,
 
                                   backgroundColor: Colors.red,
 
@@ -249,8 +242,7 @@ class _InovasiScreenState extends State<InovasiScreen> {
 
                                   'Pilih jenis laporan terlebih dahulu',
 
-                                  snackPosition:
-                                      SnackPosition.TOP,
+                                  snackPosition: SnackPosition.TOP,
 
                                   backgroundColor: Colors.red,
 
@@ -267,10 +259,7 @@ class _InovasiScreenState extends State<InovasiScreen> {
                                 Get.toNamed(
                                   Routes.REKAP_DESA_1,
 
-                                  arguments: {
-                                    'kategori':
-                                        selectedKategori!,
-                                  },
+                                  arguments: {'kategori': selectedKategori!},
                                 );
                               }
 
@@ -279,34 +268,23 @@ class _InovasiScreenState extends State<InovasiScreen> {
                                 Get.toNamed(
                                   Routes.REKAP_DESA_TAHUNAN_1,
 
-                                  arguments: {
-                                    'kategori':
-                                        selectedKategori!,
-                                  },
+                                  arguments: {'kategori': selectedKategori!},
                                 );
                               }
 
-                              if (selectedJenisLaporan ==
-                                  'Rekap Posyandu') {
+                              if (selectedJenisLaporan == 'Rekap Posyandu') {
                                 Get.toNamed(
                                   Routes.POSYANDU_1,
 
-                                  arguments: {
-                                    'kategori':
-                                        selectedKategori!,
-                                  },
+                                  arguments: {'kategori': selectedKategori!},
                                 );
                               }
 
-                              if (selectedJenisLaporan ==
-                                  'Kegiatan Pokja 4') {
+                              if (selectedJenisLaporan == 'Kegiatan Pokja 4') {
                                 Get.toNamed(
                                   Routes.KEGIATAN_POKJA4_1,
 
-                                  arguments: {
-                                    'kategori':
-                                        selectedKategori!,
-                                  },
+                                  arguments: {'kategori': selectedKategori!},
                                 );
                               }
                             },

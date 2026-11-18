@@ -6,17 +6,40 @@ import 'peringkat_model.dart';
 import 'peringkat_widgets.dart';
 
 /// Taruh di home_screen.dart (sudah terpasang di bawah tombol layanan).
-class PeringkatHomeSection extends StatelessWidget {
-  const PeringkatHomeSection({super.key});
+class PeringkatHomeSection extends StatefulWidget {
+  /// desa -> podium desa, kecamatan -> podium kecamatan
+  final PeringkatJenis jenis;
+  const PeringkatHomeSection({super.key, this.jenis = PeringkatJenis.desa});
 
   @override
-  Widget build(BuildContext context) {
-    final c = Get.put(
+  State<PeringkatHomeSection> createState() => _PeringkatHomeSectionState();
+}
+
+class _PeringkatHomeSectionState extends State<PeringkatHomeSection> {
+  late final PeringkatController c;
+
+  @override
+  void initState() {
+    super.initState();
+    c = Get.put(
       PeringkatController()
         ..limit = 3
+        ..jenis.value = widget.jenis
         ..periode.value = PeringkatPeriode.bulanIni,
       tag: 'beranda',
     );
+    // controller bisa sudah ada dari sebelumnya -> pastikan jenisnya cocok
+    if (c.jenis.value != widget.jenis) c.ganti(j: widget.jenis);
+  }
+
+  @override
+  void didUpdateWidget(covariant PeringkatHomeSection old) {
+    super.didUpdateWidget(old);
+    if (old.jenis != widget.jenis) c.ganti(j: widget.jenis);
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // ================= JUDUL =================
@@ -34,7 +57,8 @@ class PeringkatHomeSection extends StatelessWidget {
                   color: PeringkatColors.navy))),
         ),
         InkWell(
-          onTap: () => Get.toNamed('/peringkat'),
+          onTap: () => Get.toNamed('/peringkat',
+              arguments: {'jenis': widget.jenis.name}),
           child: Row(children: [
             Text('Lihat Semua',
                 style: TextStyle(
@@ -62,7 +86,8 @@ class PeringkatHomeSection extends StatelessWidget {
             onTap: c.muat,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 16.h),
-              child: const Text('Gagal memuat peringkat. Ketuk untuk coba lagi.'),
+              child: Text('${c.error.value}\n\nKetuk untuk coba lagi.',
+                  style: TextStyle(fontSize: 12.sp)),
             ),
           );
         }

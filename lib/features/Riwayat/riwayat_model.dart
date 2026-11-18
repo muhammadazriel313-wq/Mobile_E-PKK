@@ -56,7 +56,9 @@ class Laporan {
       uuid: json['uuid'] ?? '',
       idUser: json['id_user'] ?? 0,
       status: json['status'] ?? '',
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
       idRole: json['id_role'] ?? 0,
       idOrganization: json['id_organization'] ?? 0,
     );
@@ -80,14 +82,10 @@ class ErrorMessage {
   ErrorMessage({required this.message});
 
   factory ErrorMessage.fromJson(Map<String, dynamic> json) {
-    return ErrorMessage(
-      message: json['message'] ?? 'Unknown error',
-    );
+    return ErrorMessage(message: json['message'] ?? 'Unknown error');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-    };
+    return {'message': message};
   }
 }

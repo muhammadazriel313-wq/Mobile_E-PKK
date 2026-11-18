@@ -38,10 +38,7 @@ class ButtonFill extends StatelessWidget {
         ),
         child: isLoading
             ? _rowLoading()
-            : TypographyStyles.button(
-                text,
-                color: textColor,
-              ),
+            : TypographyStyles.button(text, color: textColor),
       ),
     );
   }
@@ -50,18 +47,12 @@ class ButtonFill extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        TypographyStyles.button(
-          'Loading...',
-          color: Colors.white,
-        ),
+        TypographyStyles.button('Loading...', color: Colors.white),
         SizedBox(width: 10.w),
         SizedBox(
           width: 18.w,
           height: 18.h,
-          child: CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 2,
-          ),
+          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
         ),
       ],
     );

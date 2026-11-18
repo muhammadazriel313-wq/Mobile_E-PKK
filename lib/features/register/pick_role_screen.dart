@@ -16,11 +16,9 @@ import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 class PickRoleScreen extends StatelessWidget {
   PickRoleScreen({super.key});
 
-  final PickRoleController pickRoleController =
-      Get.put(PickRoleController());
+  final PickRoleController pickRoleController = Get.put(PickRoleController());
 
-  final AuthController authController =
-      Get.find<AuthController>();
+  final AuthController authController = Get.find<AuthController>();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -34,8 +32,7 @@ class PickRoleScreen extends StatelessWidget {
     final phone_number = args['phone_number'] ?? '';
     final password = args['password'] ?? '';
 
-    final screenHeight =
-        MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -43,17 +40,13 @@ class PickRoleScreen extends StatelessWidget {
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 10.h,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
 
           child: Form(
             key: _formKey,
 
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
                 /// BACK
@@ -62,10 +55,7 @@ class PickRoleScreen extends StatelessWidget {
                     Get.toNamed(
                       Routes.REGISTER,
 
-                      arguments: {
-                        'roleID': role_id,
-                        'roleName': role_name,
-                      },
+                      arguments: {'roleID': role_id, 'roleName': role_name},
                     );
                   },
                 ),
@@ -74,8 +64,7 @@ class PickRoleScreen extends StatelessWidget {
 
                 /// HEADER
                 HeaderText(
-                  firstText:
-                      'Pilih Wilayah & Posisi',
+                  firstText: 'Pilih Wilayah & Posisi',
 
                   bodyText:
                       'Anda dapat memasukkan nama kecamatan, nama desa dan role bidang sesuai dengan posisi Anda sekarang.',
@@ -94,23 +83,16 @@ class PickRoleScreen extends StatelessWidget {
                 DropdownComponent(
                   randomlabel: 'Pilih Kecamatan',
 
-                  errorKosong:
-                      'Harap pilih kecamatan anda',
+                  errorKosong: 'Harap pilih kecamatan anda',
 
-                  listItem: kecamatanList
-                      .map((k) => k.name)
-                      .toList(),
+                  listItem: kecamatanList.map((k) => k.name).toList(),
 
                   hintText: 'Pilih kecamatan',
 
-                  svgIconPath:
-                      'assets/icons/ic_location.svg',
+                  svgIconPath: 'assets/icons/ic_location.svg',
 
                   onChanged: (selectedKecamatan) {
-                    pickRoleController
-                        .updateKecamatan(
-                          selectedKecamatan,
-                        );
+                    pickRoleController.updateKecamatan(selectedKecamatan);
                   },
                 ),
 
@@ -128,34 +110,23 @@ class PickRoleScreen extends StatelessWidget {
                   () => DropdownComponent(
                     randomlabel: 'Pilih Desa',
 
-                    errorKosong:
-                        'Harap pilih desa anda',
+                    errorKosong: 'Harap pilih desa anda',
 
-                    listItem:
-                        pickRoleController.desaList,
+                    listItem: pickRoleController.desaList,
 
                     hintText: 'Pilih desa',
 
-                    svgIconPath:
-                        'assets/icons/ic_location.svg',
+                    svgIconPath: 'assets/icons/ic_location.svg',
 
                     selectedValue:
-                        pickRoleController.desaList
-                                .contains(
-                                  pickRoleController
-                                      .selectedDesa
-                                      .value,
-                                )
-                            ? pickRoleController
-                                  .selectedDesa
-                                  .value
-                            : null,
+                        pickRoleController.desaList.contains(
+                          pickRoleController.selectedDesa.value,
+                        )
+                        ? pickRoleController.selectedDesa.value
+                        : null,
 
                     onChanged: (selectedDesa) {
-                      pickRoleController
-                          .updateDesa(
-                            selectedDesa,
-                          );
+                      pickRoleController.updateDesa(selectedDesa);
                     },
                   ),
                 ),
@@ -175,22 +146,16 @@ class PickRoleScreen extends StatelessWidget {
 
                   randomlabel: 'Pilih Role',
 
-                  errorKosong:
-                      'Harap pilih role anda',
+                  errorKosong: 'Harap pilih role anda',
 
-                  listItem:
-                      pickRoleController.roleBidang,
+                  listItem: pickRoleController.roleBidang,
 
                   hintText: 'Pilih role bidang',
 
-                  svgIconPath:
-                      'assets/icons/ic_user_tag.svg',
+                  svgIconPath: 'assets/icons/ic_user_tag.svg',
 
                   onChanged: (selectedRole) {
-                    pickRoleController
-                        .updateSelectedRole(
-                          selectedRole,
-                        );
+                    pickRoleController.updateSelectedRole(selectedRole);
                   },
                 ),
 
@@ -203,23 +168,21 @@ class PickRoleScreen extends StatelessWidget {
                     textColor: Colors.white,
 
                     onPressed: () async {
-                      if (_formKey.currentState!
-                          .validate()) {
+                      if (_formKey.currentState!.validate()) {
                         try {
                           authController
-                        // Bypass OTP: generate kode dulu
+                              // Bypass OTP: generate kode dulu
                               .generateRandomNumber();
-                        // Coba kirim OTP, tapi tidak blokir flow jika gagal (mode bypass)
-                        try {
-                          await authController
-                              .sendOtpViaWhatsApp(
-                                phone_number,
-                                authController.generatedOtp,
-                              );
-                        } catch (_) {
-                          // Abaikan error pengiriman OTP (mode bypass aktif)
-                          // Kode OTP bypass = 1234, masukkan di halaman verifikasi
-                        }
+                          // Coba kirim OTP, tapi tidak blokir flow jika gagal (mode bypass)
+                          try {
+                            await authController.sendOtpViaWhatsApp(
+                              phone_number,
+                              authController.generatedOtp,
+                            );
+                          } catch (_) {
+                            // Abaikan error pengiriman OTP (mode bypass aktif)
+                            // Kode OTP bypass = 1234, masukkan di halaman verifikasi
+                          }
 
                           Get.toNamed(
                             Routes.VERIFICATION,
@@ -227,41 +190,27 @@ class PickRoleScreen extends StatelessWidget {
                             arguments: {
                               'role_id': role_id,
 
-                              'role_name':
-                                  role_name,
+                              'role_name': role_name,
 
-                              'full_name':
-                                  full_name,
+                              'full_name': full_name,
 
-                              'phone_number':
-                                  phone_number,
+                              'phone_number': phone_number,
 
-                              'password':
-                                  password,
+                              'password': password,
 
                               'id_subdistrict':
-                                  pickRoleController
-                                      .kecamatanSelected
-                                      .value,
+                                  pickRoleController.kecamatanSelected.value,
 
                               'id_village':
-                                  pickRoleController
-                                      .selectedDesa
-                                      .value,
+                                  pickRoleController.selectedDesa.value,
 
                               'organization_name':
-                                  pickRoleController
-                                      .selectedRoleBidang
-                                      .value,
+                                  pickRoleController.selectedRoleBidang.value,
 
                               'id_organization':
-                                  pickRoleController
-                                      .selectedRoleBidangID
-                                      .value,
+                                  pickRoleController.selectedRoleBidangID.value,
 
-                              'kode_otp':
-                                  authController
-                                      .generatedOtp,
+                              'kode_otp': authController.generatedOtp,
                             },
                           );
                         } catch (e) {
@@ -270,14 +219,11 @@ class PickRoleScreen extends StatelessWidget {
 
                             'Kode OTP bypass = 1234',
 
-                            snackPosition:
-                                SnackPosition.TOP,
+                            snackPosition: SnackPosition.TOP,
 
-                            backgroundColor:
-                                Colors.red.shade50,
+                            backgroundColor: Colors.red.shade50,
 
-                            colorText:
-                                Colors.red.shade800,
+                            colorText: Colors.red.shade800,
                           );
                         }
                       }

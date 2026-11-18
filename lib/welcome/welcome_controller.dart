@@ -19,8 +19,7 @@ class WelcomeController extends GetxController {
 
   Future<void> getRoleUserController(String id) async {
     // kalau sudah ada data, jangan hit API lagi
-    if (roleName.value.isNotEmpty &&
-        roleID.value == id) {
+    if (roleName.value.isNotEmpty && roleID.value == id) {
       return;
     }
 
@@ -33,23 +32,19 @@ class WelcomeController extends GetxController {
         queryParameters: {"id": id},
       );
 
-      if (response.data != null &&
-          response.data['data'] != null) {
+      if (response.data != null && response.data['data'] != null) {
         final list = response.data['data'];
 
         if (list.isNotEmpty) {
-          roleID.value =
-              list[0]['id'].toString();
+          roleID.value = list[0]['id'].toString();
 
-          roleName.value =
-              list[0]['name'];
+          roleName.value = list[0]['name'];
         }
       } else {
         errorMessage.value = "Data kosong";
       }
     } catch (e) {
-      errorMessage.value =
-          'Failed to fetch role';
+      errorMessage.value = 'Failed to fetch role';
     } finally {
       isGetRole.value = false;
     }

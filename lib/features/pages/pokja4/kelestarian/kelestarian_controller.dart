@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/kelestarian/report_kelestarian_model.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class KelestarianController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var reportData = Rxn<ReportKelestarianModel>();
+  var lastFailureWasNetwork = false.obs;
 
   // ================= SUBMIT DATA =================
-  Future<void> submitKelestarianData({
+  Future<bool> submitKelestarianData({
     required String idUser,
     required String jamban,
     required String spal,
@@ -32,6 +34,7 @@ class KelestarianController extends GetxController {
       isLoading(true);
       errorMessage('');
       reportData(null);
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/lingkungan-hidup',
@@ -65,6 +68,7 @@ class KelestarianController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 3),
         );
+        return true;
       } else {
         errorMessage('Gagal mengirim data');
 
@@ -76,8 +80,10 @@ class KelestarianController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } on SocketException {
+      lastFailureWasNetwork.value = true;
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -88,7 +94,9 @@ class KelestarianController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage('Server timeout');
 
       Get.snackbar(
@@ -99,7 +107,17 @@ class KelestarianController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } catch (e) {
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
+      }
       errorMessage(e.toString());
 
       Get.snackbar(
@@ -110,6 +128,7 @@ class KelestarianController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } finally {
       isLoading(false);
     }

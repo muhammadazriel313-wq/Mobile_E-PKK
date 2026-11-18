@@ -1,0 +1,289 @@
+import 'dart:convert';
+
+class DraftModel {
+  final String id; // UUID
+  final String idAkun; // id_user
+  final String jenis; // 'pancasila', 'gotong_royong', 'kader_pokja1', 'galeri'
+  final Map<String, dynamic> dataForm;
+  final List<String> daftarFoto; // Local paths
+  final String tanggalDibuat; // ISO 8601 string
+  final String status; // 'draf', 'mengirim', 'gagal_kirim'
+  final String? pesanError;
+
+  DraftModel({
+    required this.id,
+    required this.idAkun,
+    required this.jenis,
+    required this.dataForm,
+    required this.daftarFoto,
+    required this.tanggalDibuat,
+    required this.status,
+    this.pesanError,
+  });
+
+  DraftModel copyWith({
+    String? id,
+    String? idAkun,
+    String? jenis,
+    Map<String, dynamic>? dataForm,
+    List<String>? daftarFoto,
+    String? tanggalDibuat,
+    String? status,
+    String? pesanError,
+  }) {
+    return DraftModel(
+      id: id ?? this.id,
+      idAkun: idAkun ?? this.idAkun,
+      jenis: jenis ?? this.jenis,
+      dataForm: dataForm ?? this.dataForm,
+      daftarFoto: daftarFoto ?? this.daftarFoto,
+      tanggalDibuat: tanggalDibuat ?? this.tanggalDibuat,
+      status: status ?? this.status,
+      pesanError: pesanError ?? this.pesanError,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'id_akun': idAkun,
+      'jenis': jenis,
+      'data_form': jsonEncode(dataForm),
+      'daftar_foto': jsonEncode(daftarFoto),
+      'tanggal_dibuat': tanggalDibuat,
+      'status': status,
+      'pesan_error': pesanError,
+    };
+  }
+
+  factory DraftModel.fromMap(Map<String, dynamic> map) {
+    Map<String, dynamic> parsedDataForm = {};
+    if (map['data_form'] != null) {
+      if (map['data_form'] is String) {
+        try {
+          parsedDataForm = jsonDecode(map['data_form'] as String);
+        } catch (_) {}
+      } else if (map['data_form'] is Map) {
+        parsedDataForm = Map<String, dynamic>.from(map['data_form'] as Map);
+      }
+    }
+
+    List<String> parsedFoto = [];
+    if (map['daftar_foto'] != null) {
+      if (map['daftar_foto'] is String) {
+        try {
+          final decoded = jsonDecode(map['daftar_foto'] as String);
+          if (decoded is List) {
+            parsedFoto = decoded.map((e) => e.toString()).toList();
+          }
+        } catch (_) {}
+      } else if (map['daftar_foto'] is List) {
+        parsedFoto = (map['daftar_foto'] as List)
+            .map((e) => e.toString())
+            .toList();
+      }
+    }
+
+    return DraftModel(
+      id: map['id']?.toString() ?? '',
+      idAkun: map['id_akun']?.toString() ?? '',
+      jenis: map['jenis']?.toString() ?? '',
+      dataForm: parsedDataForm,
+      daftarFoto: parsedFoto,
+      tanggalDibuat:
+          map['tanggal_dibuat']?.toString() ?? DateTime.now().toIso8601String(),
+      status: map['status']?.toString() ?? 'draf',
+      pesanError: map['pesan_error']?.toString(),
+    );
+  }
+
+  String getRingkasan() {
+    switch (jenis) {
+      case 'pancasila':
+        for (final k in [
+          'kisah_kegiatan',
+          'krisan_kegiatan',
+          'kilas_kegiatan',
+          'kiat_kegiatan',
+          'kisak_kegiatan',
+          'pkbn_kegiatan',
+        ]) {
+          final val = dataForm[k]?.toString().trim() ?? '';
+          if (val.isNotEmpty) return val;
+        }
+        return 'Penghayatan & Pengamalan Pancasila';
+      case 'gotong_royong':
+        for (final k in [
+          'kerja_bakti_kegiatan',
+          'bantuan_yatim_kegiatan',
+          'kegiatan_sosial_kegiatan',
+        ]) {
+          final val = dataForm[k]?.toString().trim() ?? '';
+          if (val.isNotEmpty) return val;
+        }
+        return 'Gotong Royong';
+      case 'kader_pokja1':
+        final umum = dataForm['kader_umum']?.toString().trim() ?? '';
+        final khusus = dataForm['kader_khusus']?.toString().trim() ?? '';
+        if (umum.isNotEmpty || khusus.isNotEmpty) {
+          return 'Kader Umum: ${umum.isEmpty ? "0" : umum}, Khusus: ${khusus.isEmpty ? "0" : khusus}';
+        }
+        return 'Kader Pokja 1';
+      case 'galeri':
+        final desc = dataForm['deskripsi']?.toString().trim() ?? '';
+        if (desc.isNotEmpty) return desc;
+        return 'Galeri Kegiatan';
+      case 'laporan_umum':
+        final dusun = dataForm['dusun_lingkungan']?.toString().trim() ?? '';
+        if (dusun.isNotEmpty) return 'Dusun/Lingkungan: $dusun';
+        return 'Laporan Umum';
+      case 'pengembangan':
+        final pemula = dataForm['jumlah_kelompok_pemula']?.toString().trim() ?? '';
+        if (pemula.isNotEmpty) return 'Pemula: $pemula';
+        return 'Pengembangan Kehidupan Berkoperasi';
+      case 'pendidikan':
+        final buta = dataForm['warga_buta']?.toString().trim() ?? '';
+        if (buta.isNotEmpty) return 'Warga Buta: $buta';
+        return 'Pendidikan Ketrampilan';
+      case 'kader_pokja3':
+        final pangan = dataForm['pangan']?.toString().trim() ?? '';
+        final sandang = dataForm['sandang']?.toString().trim() ?? '';
+        if (pangan.isNotEmpty || sandang.isNotEmpty) {
+          return 'Pangan: ${pangan.isEmpty ? "0" : pangan}, Sandang: ${sandang.isEmpty ? "0" : sandang}';
+        }
+        return 'Kader Pokja III';
+      case 'pangan':
+        final beras = dataForm['beras']?.toString().trim() ?? '';
+        final nonBeras = dataForm['non_beras']?.toString().trim() ?? '';
+        if (beras.isNotEmpty || nonBeras.isNotEmpty) {
+          return 'Beras: ${beras.isEmpty ? "0" : beras}, Non Beras: ${nonBeras.isEmpty ? "0" : nonBeras}';
+        }
+        return 'Pangan';
+      case 'sandang':
+        final p = dataForm['pangan']?.toString().trim() ?? '';
+        final s = dataForm['sandang']?.toString().trim() ?? '';
+        final j = dataForm['jasa']?.toString().trim() ?? '';
+        if (p.isNotEmpty || s.isNotEmpty || j.isNotEmpty) {
+          return 'Pangan: ${p.isEmpty ? "0" : p}, Sandang: ${s.isEmpty ? "0" : s}, Jasa: ${j.isEmpty ? "0" : j}';
+        }
+        return 'Industri Rumah Tangga';
+      case 'perumahan':
+        final layak = dataForm['layak_huni']?.toString().trim() ?? '';
+        final tidakLayak = dataForm['tidak_layak']?.toString().trim() ?? '';
+        if (layak.isNotEmpty || tidakLayak.isNotEmpty) {
+          return 'Layak: ${layak.isEmpty ? "0" : layak}, Tidak Layak: ${tidakLayak.isEmpty ? "0" : tidakLayak}';
+        }
+        return 'Perumahan & Tata Laksana';
+      case 'kader_pokja4':
+        final posyandu = dataForm['posyandu']?.toString().trim() ?? '';
+        final gizi = dataForm['gizi']?.toString().trim() ?? '';
+        if (posyandu.isNotEmpty || gizi.isNotEmpty) {
+          return 'Posyandu: ${posyandu.isEmpty ? "0" : posyandu}, Gizi: ${gizi.isEmpty ? "0" : gizi}';
+        }
+        return 'Kader Pokja IV';
+      case 'kesehatan':
+        final posyandu = dataForm['jumlah_posyandu']?.toString().trim() ?? '';
+        final lansia = dataForm['jumlah_klp']?.toString().trim() ?? '';
+        if (posyandu.isNotEmpty || lansia.isNotEmpty) {
+          return 'Posyandu: ${posyandu.isEmpty ? "0" : posyandu}, Lansia: ${lansia.isEmpty ? "0" : lansia}';
+        }
+        return 'Kesehatan';
+      case 'perencanaan':
+        final pus = dataForm['J_Psubur']?.toString().trim() ?? '';
+        final wus = dataForm['J_Wsubur']?.toString().trim() ?? '';
+        if (pus.isNotEmpty || wus.isNotEmpty) {
+          return 'PUS: ${pus.isEmpty ? "0" : pus}, WUS: ${wus.isEmpty ? "0" : wus}';
+        }
+        return 'Jumlah Rumah Yang Memiliki';
+      case 'kelestarian':
+        final jamban = dataForm['jamban']?.toString().trim() ?? '';
+        final pdam = dataForm['pdam']?.toString().trim() ?? '';
+        if (jamban.isNotEmpty || pdam.isNotEmpty) {
+          return 'Jamban: ${jamban.isEmpty ? "0" : jamban}, PDAM: ${pdam.isEmpty ? "0" : pdam}';
+        }
+        return 'Kelestarian Lingkungan';
+      case 'inovasi_kegiatan':
+        final kategori = dataForm['kategori']?.toString().trim() ?? '';
+        final kader = dataForm['kader_kesehatan']?.toString().trim() ?? '';
+        if (kategori.isNotEmpty || kader.isNotEmpty) {
+          return 'Kategori: ${kategori.isEmpty ? "-" : kategori}, Kader Kes: ${kader.isEmpty ? "0" : kader}';
+        }
+        return 'Inovasi - Kegiatan Pokja 4';
+      case 'inovasi_posyandu':
+        final bulan = dataForm['bulan']?.toString().trim() ?? '';
+        final bumil = dataForm['jml_ibu_hamil']?.toString().trim() ?? '';
+        if (bulan.isNotEmpty || bumil.isNotEmpty) {
+          return 'Bulan: ${bulan.isEmpty ? "-" : bulan}, Ibu Hamil: ${bumil.isEmpty ? "0" : bumil}';
+        }
+        return 'Inovasi - Posyandu';
+      case 'inovasi_rekap_bulanan':
+        final kategori = dataForm['kategori']?.toString().trim() ?? '';
+        final rw = dataForm['rw']?.toString().trim() ?? '';
+        if (kategori.isNotEmpty || rw.isNotEmpty) {
+          return 'Kategori: ${kategori.isEmpty ? "-" : kategori}, RW: ${rw.isEmpty ? "-" : rw}';
+        }
+        return 'Inovasi - Rekap Desa Bulanan';
+      case 'inovasi_rekap_tahunan':
+        final kategori = dataForm['kategori']?.toString().trim() ?? '';
+        final rw = dataForm['rw']?.toString().trim() ?? '';
+        if (kategori.isNotEmpty || rw.isNotEmpty) {
+          return 'Kategori: ${kategori.isEmpty ? "-" : kategori}, RW: ${rw.isEmpty ? "-" : rw}';
+        }
+        return 'Inovasi - Rekap Desa Tahunan';
+      default:
+        return 'Laporan Draf';
+    }
+  }
+
+  String getJudulJenis() {
+    switch (jenis) {
+      case 'pancasila':
+        return 'Pengamalan Pancasila';
+      case 'gotong_royong':
+        return 'Gotong Royong';
+      case 'kader_pokja1':
+        return 'Kader Pokja 1';
+      case 'galeri':
+        return 'Upload Kegiatan';
+      case 'laporan_umum':
+        return 'Laporan Umum';
+      case 'pengembangan':
+        return 'Pengembangan Kehidupan Berkoperasi';
+      case 'pendidikan':
+        return 'Pendidikan Ketrampilan';
+      case 'kader_pokja3':
+        return 'Kader Pokja III';
+      case 'pangan':
+        return 'Pangan';
+      case 'sandang':
+        return 'Industri Rumah Tangga';
+      case 'perumahan':
+        return 'Perumahan & Tata Laksana';
+      case 'kader_pokja4':
+        return 'Kader Pokja IV';
+      case 'kesehatan':
+        return 'Kesehatan';
+      case 'perencanaan':
+        return 'Jumlah Rumah Yang Memiliki';
+      case 'kelestarian':
+        return 'Kelestarian Lingkungan';
+      case 'inovasi_kegiatan':
+        return 'Inovasi - Kegiatan Pokja 4';
+      case 'inovasi_posyandu':
+        return 'Inovasi - Posyandu';
+      case 'inovasi_rekap_bulanan':
+        return 'Inovasi - Rekap Desa Bulanan';
+      case 'inovasi_rekap_tahunan':
+        return 'Inovasi - Rekap Desa Tahunan';
+      default:
+        return 'Laporan';
+    }
+  }
+
+  int get jumlahFoto {
+    if (daftarFoto.isNotEmpty) return daftarFoto.length;
+    final base64Str = dataForm['foto_base64']?.toString();
+    if (base64Str != null && base64Str.isNotEmpty) return 1;
+    return 0;
+  }
+}

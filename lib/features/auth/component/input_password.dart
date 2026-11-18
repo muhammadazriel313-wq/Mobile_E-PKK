@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
 class InputPassword extends StatefulWidget {
   final String hintText;
   final String svgIconPath;
@@ -54,19 +53,14 @@ class _InputPasswordState extends State<InputPassword> {
             letterSpacing: 1.w,
           ),
           prefixIcon: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 14.h,
-              horizontal: 13.w,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 13.w),
             child: SvgPicture.asset(
               widget.svgIconPath,
               color: TextColors.grey500,
             ),
           ),
           suffixIcon: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: IconButton(
               icon: Icon(
                 _isObscure
@@ -83,24 +77,15 @@ class _InputPasswordState extends State<InputPassword> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
         ),
       ),
