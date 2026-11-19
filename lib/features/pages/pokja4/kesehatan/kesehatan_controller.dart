@@ -17,14 +17,24 @@ class KesehatanController extends GetxController {
   // ================= SUBMIT DATA =================
   Future<void> submitKesehatanData({
     required String idUser,
-    required String jumlahPosyandu,
-    required String jumlahPosyanduIterasi,
-    required String jumlahKip,
-    required String jumlahAnggota,
-    required String jumlahKartuGratis,
+    required String kaderKesehatan,
+    required String kaderGizi,
+    required String kaderKesling,
+    required String kaderPhbs,
+    required String kaderKb,
+    required String posyandu,
+    required String imunisasiVaksinasi,
+    required String pkg,
+    required String tbc,
     required String idRole,
     required String idOrganization,
     String? catatan,
+    // Optional legacy params jika dipanggil dari tempat lama
+    String? jumlahPosyandu,
+    String? jumlahPosyanduIterasi,
+    String? jumlahKip,
+    String? jumlahAnggota,
+    String? jumlahKartuGratis,
   }) async {
     try {
       isLoading(true);
@@ -35,27 +45,29 @@ class KesehatanController extends GetxController {
         '/report/kesehatan',
         data: {
           'id_user': idUser,
-          'jumlah_posyandu': jumlahPosyandu,
-          'jumlah_posyandu_iterasi':
-              jumlahPosyanduIterasi,
-          'jumlah_klp': jumlahKip,
-          'jumlah_anggota': jumlahAnggota,
-          'jumlah_kartu_gratis':
-              jumlahKartuGratis,
+          'kader_kesehatan': kaderKesehatan,
+          'kader_gizi': kaderGizi,
+          'kader_kesling': kaderKesling,
+          'kader_phbs': kaderPhbs,
+          'kader_kb': kaderKb,
+          'posyandu': posyandu,
+          'imunisasi_vaksinasi': imunisasiVaksinasi,
+          'pkg': pkg,
+          'tbc': tbc,
           'id_role': idRole,
-          'id_organization':
-              idOrganization,
-          if (catatan != null &&
-              catatan.isNotEmpty)
-            'catatan': catatan,
+          'id_organization': idOrganization,
+          // Support kolom legacy
+          'jumlah_posyandu': jumlahPosyandu ?? posyandu,
+          'jumlah_posyandu_iterasi': jumlahPosyanduIterasi ?? kaderGizi,
+          'jumlah_klp': jumlahKip ?? kaderKesling,
+          'jumlah_anggota': jumlahAnggota ?? kaderPhbs,
+          'jumlah_kartu_gratis': jumlahKartuGratis ?? kaderKb,
+          if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
         },
       );
 
       if (response.statusCode == 200) {
-        final result =
-            ReportKesehatanModel.fromJson(
-          response.data,
-        );
+        final result = ReportKesehatanModel.fromJson(response.data);
 
         reportData(result);
 
@@ -70,37 +82,27 @@ class KesehatanController extends GetxController {
           duration: const Duration(seconds: 3),
         );
       } else {
-        errorMessage(
-          'Gagal mengirim data',
-        );
+        errorMessage('Gagal mengirim data');
 
         Get.snackbar(
           'Gagal',
           'Gagal mengirim data',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       }
     } on SocketException {
-      errorMessage(
-        'Tidak ada koneksi internet',
-      );
+      errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
         'Error',
         'Tidak ada koneksi internet',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } on TimeoutException {
       errorMessage('Server timeout');
@@ -108,13 +110,10 @@ class KesehatanController extends GetxController {
       Get.snackbar(
         'Error',
         'Server tidak merespons',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } catch (e) {
       errorMessage(e.toString());
@@ -122,13 +121,10 @@ class KesehatanController extends GetxController {
       Get.snackbar(
         'Error',
         e.toString(),
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } finally {
       isLoading(false);

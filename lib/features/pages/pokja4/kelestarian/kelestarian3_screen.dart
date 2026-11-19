@@ -51,15 +51,18 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
 
               SizedBox(width: 12.w),
 
-              Text(
-                value ?? '0',
+              Flexible(
+                child: Text(
+                  value ?? '0',
+                  textAlign: TextAlign.right,
 
-                style: TextStyle(
-                  fontSize: 13.sp,
+                  style: TextStyle(
+                    fontSize: 13.sp,
 
-                  fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w600,
 
-                  color: TextColors.grey900,
+                    color: TextColors.grey900,
+                  ),
                 ),
               ),
             ],
@@ -290,22 +293,35 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
                           children: [
                             // ================= SECTION 1 =================
                             _section('Jumlah Rumah Yang Memiliki', [
-                              _row('Jamban', data['jamban']),
+                              _row('Jamban (WC)', data['jamban']),
 
                               _row('SPAL', data['spal']),
 
-                              _row('Tempat Pembuangan Sampah', data['tps']),
+                              _row('TPS', data['tps']),
 
                               _row('Jumlah MCK', data['mck']),
                             ]),
 
                             // ================= SECTION 2 =================
-                            _section('Jumlah KART Yang Menggunakan Air', [
+                            _section('Jumlah KRT Yang Menggunakan Air', [
                               _row('PDAM', data['pdam']),
 
                               _row('Sumur', data['sumur']),
 
                               _row('Lain-lain', data['dll']),
+                            ]),
+
+                            // ================= SECTION 3 =================
+                            _section('Catatan', [
+                              _row(
+                                'Catatan',
+                                (data['catatan'] ?? '')
+                                        .toString()
+                                        .trim()
+                                        .isEmpty
+                                    ? '-'
+                                    : data['catatan'].toString(),
+                              ),
                             ]),
                           ],
                         ),
@@ -341,6 +357,7 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
                                     sumur: data['sumur'],
 
                                     lainnya: data['dll'],
+                                    catatan: data['catatan'],
 
                                     idRole: data['id_role'],
 

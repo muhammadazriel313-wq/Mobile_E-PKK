@@ -236,7 +236,7 @@ class _Kelestarian1ScreenState
                                 jambanController,
 
                             label:
-                                'Jamban',
+                                'Jamban (WC)',
                           ),
 
                           /// SPAL
@@ -254,7 +254,7 @@ class _Kelestarian1ScreenState
                                 sampahController,
 
                             label:
-                                'Tempat Pembuangan Sampah',
+                                'TPS',
                           ),
 
                           /// MCK

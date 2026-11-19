@@ -1,32 +1,61 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 
 /// =====================================================================
-/// SAKLAR SERVER
-///   true  -> server LOKAL (XAMPP di laptop)  : untuk testing / demo lokal
-///   false -> server PRODUKSI (hosting)       : untuk push / rilis
+/// PILIH SERVER
 ///
-/// Cukup ubah satu baris ini. Alamat lokal dipilih otomatis:
-///   Chrome (web)     -> http://localhost/...
-///   Android emulator -> http://10.0.2.2/...
+/// Cara 1 (disarankan): tanpa mengubah file, pakai --dart-define
+///   flutter run --dart-define=SERVER=produksi     -> hosting
+///   flutter run --dart-define=SERVER=artisan      -> php artisan serve (port 8000)
+///   flutter run --dart-define=SERVER=xampp        -> XAMPP (Apache, port 80)
+///   flutter run --dart-define=SERVER=hp           -> HP fisik (isi _ipLaptop)
 ///
-/// Kalau memakai HP fisik, ganti [_lokalHp] dengan IP laptop di WiFi yang
-/// sama, contoh: 'http://192.168.1.10/Website_PKK/public/api'
+/// Cara 2: ubah nilai defaultValue di bawah.
+///
+/// Build rilis (flutter build apk --release) SELALU memakai produksi,
+/// apa pun pilihan di atas, supaya tidak salah kirim ke server lokal.
+///
+/// PENTING: website dan mobile harus memakai server/database yang SAMA.
 /// =====================================================================
-const bool kPakaiServerLokal = false;
+const String _pilihan = String.fromEnvironment(
+  'SERVER',
+  defaultValue: 'artisan',
+);
 
 class ApiHelper {
   static const String _produksi = 'https://epkknganjuk.pbltifnganjuk.com/api';
 
-  static const String _lokalWeb = 'http://localhost/Website_PKK/public/api';
-
-  static const String _lokalEmulator = 'http://10.0.2.2/Website_PKK/public/api';
+  // Isi dengan IP laptop di WiFi yang sama (cek lewat `ipconfig`), tanpa http://
+  static const String _ipLaptop = '192.168.1.10';
 
   static String get _baseUrl {
-    if (!kPakaiServerLokal) return _produksi;
+    // Rilis selalu ke hosting
+    if (!kDebugMode) return _produksi;
 
-    return kIsWeb ? _lokalWeb : _lokalEmulator;
+    switch (_pilihan) {
+      case 'artisan':
+        // php artisan serve --host=0.0.0.0
+        // Emulator Android: 10.0.2.2 | Chrome: localhost
+        return kIsWeb
+            ? 'http://localhost:8000/api'
+            : 'http://10.0.2.2:8000/api';
+
+      case 'xampp':
+        return kIsWeb
+            ? 'http://localhost/Website_E-PKK/public/api'
+            : 'http://10.0.2.2/Website_E-PKK/public/api';
+
+      case 'hp':
+        return 'http://$_ipLaptop:8000/api';
+
+      case 'produksi':
+      default:
+        return _produksi;
+    }
   }
+
+  /// Tampilkan di log supaya jelas server mana yang sedang dipakai.
+  static String get baseUrlAktif => _baseUrl;
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -49,10 +78,7 @@ class ApiHelper {
     String endpoint, {
     Map<String, dynamic>? queryParameters,
   }) async {
-    return await _dio.get(
-      endpoint,
-      queryParameters: queryParameters,
-    );
+    return await _dio.get(endpoint, queryParameters: queryParameters);
   }
 
   /// ================= POST =================
@@ -104,11 +130,7 @@ class ApiHelper {
     return await _dio.post(
       endpoint,
       data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      ),
+      options: Options(headers: {'Content-Type': 'multipart/form-data'}),
     );
   }
 }

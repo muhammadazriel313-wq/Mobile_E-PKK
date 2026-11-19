@@ -11,20 +11,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
-class KesehatanScreen
-    extends StatefulWidget {
-  const KesehatanScreen({
-    super.key,
-  });
+class KesehatanScreen extends StatefulWidget {
+  const KesehatanScreen({super.key});
 
   @override
-  State<KesehatanScreen>
-  createState() =>
-      _KesehatanScreenState();
+  State<KesehatanScreen> createState() => _KesehatanScreenState();
 }
 
-class _KesehatanScreenState
-    extends State<KesehatanScreen> {
+class _KesehatanScreenState extends State<KesehatanScreen> {
   String? idUser;
   String? idRole;
   String? idOrganization;
@@ -32,386 +26,277 @@ class _KesehatanScreenState
   String? nameRole;
   String? nameOrganization;
 
-  final posyanduJumlahController =
-      TextEditingController();
+  // Controllers Kolom Kesehatan (Lampiran 4.24, Kolom 3 - 11)
+  final kaderKesehatanController = TextEditingController();
+  final kaderGiziController = TextEditingController();
+  final kaderKeslingController = TextEditingController();
+  final kaderPhbsController = TextEditingController();
+  final kaderKbController = TextEditingController();
+  final posyanduController = TextEditingController();
+  final imunisasiController = TextEditingController();
+  final pkgController = TextEditingController();
+  final tbcController = TextEditingController();
+  final catatanController = TextEditingController();
 
-  final posyanduTintegrasiController =
-      TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  final lansiaKlpController =
-      TextEditingController();
-
-  final lansiaAnggotaController =
-      TextEditingController();
-
-  final lansiaKartuController =
-      TextEditingController();
-
-  final _formKey =
-      GlobalKey<FormState>();
-
-  final KesehatanController
-  uploadReportController =
-      Get.put(
-        KesehatanController(),
-      );
+  final KesehatanController uploadReportController = Get.put(
+    KesehatanController(),
+  );
 
   @override
   void initState() {
     super.initState();
 
     final args = Get.arguments;
-
-    idUser = args['id_user'];
-
-    fullName = args['full_name'];
-
-    idRole = args['id_role'];
-
-    nameRole = args['name_role'];
-
-    idOrganization =
-        args['id_organization'];
-
-    nameOrganization =
-        args['name_organization'];
-
-    debugPrint(
-      'Diterima dari argument: '
-      'id_user=$idUser, '
-      'id_role=$idRole, '
-      'id_org=$idOrganization',
-    );
+    if (args != null) {
+      idUser = args['id_user']?.toString();
+      fullName = args['full_name']?.toString();
+      idRole = args['id_role']?.toString();
+      nameRole = args['name_role']?.toString();
+      idOrganization = args['id_organization']?.toString();
+      nameOrganization = args['name_organization']?.toString();
+    }
   }
 
   @override
   void dispose() {
-    posyanduJumlahController
-        .dispose();
-
-    posyanduTintegrasiController
-        .dispose();
-
-    lansiaKlpController.dispose();
-
-    lansiaAnggotaController
-        .dispose();
-
-    lansiaKartuController
-        .dispose();
-
+    kaderKesehatanController.dispose();
+    kaderGiziController.dispose();
+    kaderKeslingController.dispose();
+    kaderPhbsController.dispose();
+    kaderKbController.dispose();
+    posyanduController.dispose();
+    imunisasiController.dispose();
+    pkgController.dispose();
+    tbcController.dispose();
+    catatanController.dispose();
     super.dispose();
   }
 
   void clearForm() {
-    posyanduJumlahController
-        .clear();
-
-    posyanduTintegrasiController
-        .clear();
-
-    lansiaKlpController.clear();
-
-    lansiaAnggotaController
-        .clear();
-
-    lansiaKartuController
-        .clear();
+    kaderKesehatanController.clear();
+    kaderGiziController.clear();
+    kaderKeslingController.clear();
+    kaderPhbsController.clear();
+    kaderKbController.clear();
+    posyanduController.clear();
+    imunisasiController.clear();
+    pkgController.clear();
+    tbcController.clear();
+    catatanController.clear();
   }
 
   Widget buildInput({
-    required TextEditingController
-    controller,
-
+    required TextEditingController controller,
     required String label,
-
-    TextInputAction action =
-        TextInputAction.next,
+    String hintText = 'Masukkan jumlah',
+    TextInputAction action = TextInputAction.next,
+    bool isOptional = false,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 20.h,
-      ),
-
+      padding: EdgeInsets.only(bottom: 16.h),
       child: InputFormField(
         controller: controller,
-
-        hintText: 'Masukkan jumlah',
-
+        hintText: hintText,
         label: label,
-
-        keyboardType:
-            TextInputType.number,
-
+        keyboardType: isOptional ? TextInputType.text : TextInputType.number,
         textInputAction: action,
+        validator: isOptional
+            ? null
+            : (value) => ValidatorForm.validateDefault(value),
+      ),
+    );
+  }
 
-        validator: (value) =>
-            ValidatorForm
-                .validateDefault(
-                  value,
-                ),
+  Widget buildSectionHeader(String title) {
+    return Padding(
+      padding: EdgeInsets.only(top: 8.h, bottom: 12.h),
+      child: Row(
+        children: [
+          Container(
+            width: 4.w,
+            height: 18.h,
+            decoration: BoxDecoration(
+              color: BrandColors.brandPrimary500,
+              borderRadius: BorderRadius.circular(2.r),
+            ),
+          ),
+          SizedBox(width: 8.w),
+          TypographyStyles.bodyCaptionSemiBold(
+            title,
+            color: TextColors.grey900,
+          ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final media =
-        MediaQuery.of(context);
-
-    final isTablet =
-        media.size.width >= 600;
+    final media = MediaQuery.of(context);
+    final isTablet = media.size.width >= 600;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-
       backgroundColor: Colors.white,
-
-      appBar: AppBarSecondary(
-        title: 'Kesehatan',
-      ),
-
+      appBar: AppBarSecondary(title: 'Kesehatan (Pokja IV)'),
       body: SafeArea(
         child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context)
-                  .unfocus(),
-
+          onTap: () => FocusScope.of(context).unfocus(),
           child: LayoutBuilder(
-            builder:
-                (context, constraints) {
+            builder: (context, constraints) {
               return SingleChildScrollView(
-                physics:
-                    const BouncingScrollPhysics(),
-
+                physics: const BouncingScrollPhysics(),
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior
-                        .manual,
-
+                    ScrollViewKeyboardDismissBehavior.manual,
                 padding: EdgeInsets.only(
-                  left:
-                      isTablet ? 40.w : 16.w,
-
-                  right:
-                      isTablet ? 40.w : 16.w,
-
-                  top: 20.h,
-
-                  bottom:
-                      media.viewInsets.bottom +
-                          20.h,
+                  left: isTablet ? 40.w : 16.w,
+                  right: isTablet ? 40.w : 16.w,
+                  top: 16.h,
+                  bottom: media.viewInsets.bottom + 24.h,
                 ),
-
                 child: Center(
                   child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(
-                      maxWidth: isTablet
-                          ? 600
-                          : double.infinity,
-
-                      minHeight:
-                          constraints
-                              .maxHeight,
+                    constraints: BoxConstraints(
+                      maxWidth: isTablet ? 600 : double.infinity,
+                      minHeight: constraints.maxHeight,
                     ),
-
                     child: Form(
                       key: _formKey,
-
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
-
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                              height: 16.h),
-
-                          /// POSYANDU
-                          TypographyStyles
-                              .bodyCaptionSemiBold(
-                                'Posyandu',
-
-                                color:
-                                    TextColors
-                                        .grey900,
-                              ),
-
-                          SizedBox(
-                              height: 12.h),
+                          /// JUMLAH KADER (KOLOM 3-7)
+                          buildSectionHeader('Jumlah Kader'),
 
                           buildInput(
-                            controller:
-                                posyanduJumlahController,
+                            controller: kaderKesehatanController,
+                            label: 'Kader Kesehatan',
+                          ),
+                          buildInput(
+                            controller: kaderGiziController,
+                            label: 'Gizi',
+                          ),
+                          buildInput(
+                            controller: kaderKeslingController,
+                            label: 'Kesling',
+                          ),
+                          buildInput(
+                            controller: kaderPhbsController,
+                            label: 'PHBS',
+                          ),
+                          buildInput(
+                            controller: kaderKbController,
+                            label: 'KB',
+                          ),
 
-                            label:
-                                'Jumlah Posyandu',
+                          /// POSYANDU & LAYANAN KESEHATAN (KOLOM 8-11)
+                          buildSectionHeader(
+                            'Posyandu, Imunisasi, PKG dan TBC',
                           ),
 
                           buildInput(
-                            controller:
-                                posyanduTintegrasiController,
-
-                            label:
-                                'Posyandu Terintegrasi',
+                            controller: posyanduController,
+                            label: 'Posyandu',
+                            hintText: 'Jumlah total posyandu',
                           ),
-
-                          SizedBox(
-                              height: 8.h),
-
-                          /// LANSIA
-                          TypographyStyles
-                              .bodyCaptionSemiBold(
-                                'Lansia',
-
-                                color:
-                                    TextColors
-                                        .grey900,
-                              ),
-
-                          SizedBox(
-                              height: 12.h),
-
                           buildInput(
-                            controller:
-                                lansiaKlpController,
-
-                            label:
-                                'Jumlah KLP',
+                            controller: imunisasiController,
+                            label: 'Imunisasi / Vaksinasi Bayi / Balita',
                           ),
-
                           buildInput(
-                            controller:
-                                lansiaAnggotaController,
-
-                            label:
-                                'Jumlah Anggota',
+                            controller: pkgController,
+                            label: 'PKG',
+                            hintText: 'Pemeriksaan Kesehatan Gratis',
                           ),
-
                           buildInput(
-                            controller:
-                                lansiaKartuController,
-
-                            label:
-                                'Jumlah yang Memiliki Kartu Berobat Gratis',
-
-                            action:
-                                TextInputAction
-                                    .done,
+                            controller: tbcController,
+                            label: 'TBC',
+                            hintText: 'Jumlah penderita TBC',
                           ),
 
-                          SizedBox(
-                              height: 10.h),
+                          /// CATATAN OPSIONAL
+                          buildSectionHeader('Catatan Tambahan (Opsional)'),
+                          buildInput(
+                            controller: catatanController,
+                            label: 'Catatan',
+                            hintText: 'Tulis catatan jika ada',
+                            action: TextInputAction.done,
+                            isOptional: true,
+                          ),
 
-                          /// BUTTON
+                          SizedBox(height: 12.h),
+
+                          /// SUBMIT BUTTON
                           ZoomTapAnimation(
                             child: Obx(
                               () => ButtonFill(
-                                text: uploadReportController
-                                        .isLoading
-                                        .value
-                                    ? 'Loading...'
-                                    : 'Kirim',
-
-                                textColor:
-                                    Colors
-                                        .white,
-
+                                text: uploadReportController.isLoading.value
+                                    ? 'Mengirim Data...'
+                                    : 'Kirim Laporan',
+                                textColor: Colors.white,
                                 onPressed:
-                                    uploadReportController
-                                            .isLoading
-                                            .value
-                                        ? null
-                                        : () async {
-                                            final isFormValid =
-                                                _formKey
-                                                    .currentState!
-                                                    .validate();
+                                    uploadReportController.isLoading.value
+                                    ? null
+                                    : () async {
+                                        final isFormValid = _formKey
+                                            .currentState!
+                                            .validate();
 
-                                            if (!isFormValid) {
-                                              Get.snackbar(
-                                                'Error',
+                                        if (!isFormValid) {
+                                          Get.snackbar(
+                                            'Peringatan',
+                                            'Form belum lengkap! Silakan periksa kolom isian.',
+                                            snackPosition: SnackPosition.TOP,
+                                            backgroundColor: Colors.orange,
+                                            colorText: Colors.white,
+                                          );
+                                          return;
+                                        }
 
-                                                'Form tidak valid! Mohon periksa kembali input Anda.',
+                                        await uploadReportController
+                                            .submitKesehatanData(
+                                              idUser: idUser ?? '',
+                                              kaderKesehatan:
+                                                  kaderKesehatanController.text,
+                                              kaderGizi:
+                                                  kaderGiziController.text,
+                                              kaderKesling:
+                                                  kaderKeslingController.text,
+                                              kaderPhbs:
+                                                  kaderPhbsController.text,
+                                              kaderKb: kaderKbController.text,
+                                              posyandu: posyanduController.text,
+                                              imunisasiVaksinasi:
+                                                  imunisasiController.text,
+                                              pkg: pkgController.text,
+                                              tbc: tbcController.text,
+                                              idRole: idRole ?? '',
+                                              idOrganization:
+                                                  idOrganization ?? '',
+                                              catatan: catatanController.text,
+                                            );
 
-                                                snackPosition:
-                                                    SnackPosition
-                                                        .TOP,
-
-                                                backgroundColor:
-                                                    Colors
-                                                        .orange,
-
-                                                colorText:
-                                                    Colors
-                                                        .white,
-                                              );
-
-                                              return;
-                                            }
-
-                                            await uploadReportController
-                                                .submitKesehatanData(
-                                                  idUser:
-                                                      idUser ??
-                                                          '',
-
-                                                  jumlahPosyandu:
-                                                      posyanduJumlahController
-                                                          .text,
-
-                                                  jumlahPosyanduIterasi:
-                                                      posyanduTintegrasiController
-                                                          .text,
-
-                                                  jumlahKip:
-                                                      lansiaKlpController
-                                                          .text,
-
-                                                  jumlahAnggota:
-                                                      lansiaAnggotaController
-                                                          .text,
-
-                                                  jumlahKartuGratis:
-                                                      lansiaKartuController
-                                                          .text,
-
-                                                  idRole:
-                                                      idRole ??
-                                                          '',
-
-                                                  idOrganization:
-                                                      idOrganization ??
-                                                          '',
-                                                );
-
-                                            if (uploadReportController
-                                                        .reportData
-                                                        .value !=
-                                                    null &&
-                                                uploadReportController
-                                                        .reportData
-                                                        .value!
-                                                        .statusCode ==
-                                                    200) {
-
-                                              _formKey
-                                                  .currentState
-                                                  ?.reset();
-
-                                              clearForm();
-
-                                              Get.offAllNamed(
-                                                '/main',
-                                              );
-                                            }
-                                          },
+                                        if (uploadReportController
+                                                    .reportData
+                                                    .value !=
+                                                null &&
+                                            uploadReportController
+                                                    .reportData
+                                                    .value!
+                                                    .statusCode ==
+                                                200) {
+                                          _formKey.currentState?.reset();
+                                          clearForm();
+                                          Get.offAllNamed('/main');
+                                        }
+                                      },
                               ),
                             ),
                           ),
 
-                          SizedBox(
-                              height: 20.h),
+                          SizedBox(height: 24.h),
                         ],
                       ),
                     ),

@@ -22,6 +22,7 @@ class PerencanaanController extends GetxController {
     required String kbPria,
     required String kbWanita,
     required String kkTabungan,
+    required String kkAsuransi,
     required String idRole,
     required String idOrganization,
     String? catatan,
@@ -40,19 +41,15 @@ class PerencanaanController extends GetxController {
           'Kb_p': kbPria,
           'Kb_w': kbWanita,
           'Kk_tbg': kkTabungan,
+          'Kk_asuransi': kkAsuransi,
           'id_role': idRole,
           'id_organization': idOrganization,
-          if (catatan != null &&
-              catatan.isNotEmpty)
-            'catatan': catatan,
+          if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
         },
       );
 
       if (response.statusCode == 200) {
-        final result =
-            ReportPerencanaanModel.fromJson(
-          response.data,
-        );
+        final result = ReportPerencanaanModel.fromJson(response.data);
 
         reportData(result);
 
@@ -67,37 +64,27 @@ class PerencanaanController extends GetxController {
           duration: const Duration(seconds: 3),
         );
       } else {
-        errorMessage(
-          'Gagal mengirim data',
-        );
+        errorMessage('Gagal mengirim data');
 
         Get.snackbar(
           'Gagal',
           'Gagal mengirim data',
-          snackPosition:
-              SnackPosition.TOP,
-          backgroundColor:
-              Colors.red,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
           colorText: Colors.white,
-          duration:
-              const Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         );
       }
     } on SocketException {
-      errorMessage(
-        'Tidak ada koneksi internet',
-      );
+      errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
         'Error',
         'Tidak ada koneksi internet',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } on TimeoutException {
       errorMessage('Server timeout');
@@ -105,13 +92,10 @@ class PerencanaanController extends GetxController {
       Get.snackbar(
         'Error',
         'Server tidak merespons',
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } catch (e) {
       errorMessage(e.toString());
@@ -119,13 +103,10 @@ class PerencanaanController extends GetxController {
       Get.snackbar(
         'Error',
         e.toString(),
-        snackPosition:
-            SnackPosition.TOP,
-        backgroundColor:
-            Colors.red,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration:
-            const Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       );
     } finally {
       isLoading(false);
