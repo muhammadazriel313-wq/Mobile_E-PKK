@@ -23,7 +23,7 @@ class PeringkatScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: PeringkatColors.navy,
+      backgroundColor: PeringkatColors.biru,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

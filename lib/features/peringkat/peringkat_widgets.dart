@@ -3,10 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'peringkat_model.dart';
 
 class PeringkatColors {
+  static const biru = Color(0xFF0B6EC7); // warna Figma: header & tab aktif
   static const navy = Color(0xFF0B4F8A);
   static const navyDark = Color(0xFF0A3F73);
-  static const headerTop = Color(0xFF0B4F8A);
-  static const headerBottom = Color(0xFF1B6FB8);
+  static const headerTop = biru;
+  static const headerBottom = biru;
   static const pill = Color(0xFFE6F0FA);
   static const softBlue = Color(0xFFE8F1FB);
   static const border = Color(0xFFDCE6F1);
@@ -63,7 +64,7 @@ class PeringkatToggle extends StatelessWidget {
             height: 40.h,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: on ? PeringkatColors.navy : Colors.transparent,
+              color: on ? PeringkatColors.biru : Colors.transparent,
               borderRadius: BorderRadius.circular(30.r),
             ),
             child: Text(
