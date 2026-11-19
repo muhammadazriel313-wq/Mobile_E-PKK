@@ -1,36 +1,59 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 /// =====================================================================
-/// SAKLAR SERVER
-///   true  -> server LOKAL (XAMPP di laptop)  : untuk testing / demo lokal
-///   false -> server PRODUKSI (hosting)       : untuk push / rilis
+/// ALAMAT SERVER
 ///
-/// Cukup ubah satu baris ini. Alamat lokal dipilih otomatis:
-///   Chrome (web)     -> http://localhost/...
-///   Android emulator -> http://10.0.2.2/...
+///   flutter run (mode debug) -> server LOKAL, dicari otomatis berurutan:
+///        1) php artisan serve (Laragon) : http://127.0.0.1:8000/api
+///        2) XAMPP (Apache)              : http://localhost/Website_PKK/public/api
+///      Aplikasi memakai alamat pertama yang menjawab. Jadi pengguna XAMPP
+///      maupun Laragon cukup `flutter run`, tanpa mengubah kode.
+///   build rilis              -> server PRODUKSI (hosting)
 ///
-/// Kalau memakai HP fisik, ganti [_lokalHp] dengan IP laptop di WiFi yang
-/// sama, contoh: 'http://192.168.1.10/Website_PKK/public/api'
+/// Khusus: --dart-define=API_BASE_URL=... memaksa satu alamat tertentu,
+/// misalnya HP asli: --dart-define=API_BASE_URL=http://IP-LAPTOP:8000/api
+/// (Emulator Android memakai 10.0.2.2 secara otomatis.)
 /// =====================================================================
-const bool kPakaiServerLokal = true;
+const bool kPakaiServerLokal = kDebugMode;
+
+const String kAlamatApiKhusus = String.fromEnvironment('API_BASE_URL');
 
 class ApiHelper {
   static const String _produksi = 'https://epkknganjuk.pbltifnganjuk.com/api';
 
-  static const String _lokalWeb = 'http://localhost/Website_PKK/public/api';
+  static const List<String> _kandidatWeb = [
+    'http://127.0.0.1:8000/api', // php artisan serve (Laragon)
+    'http://localhost/Website_PKK/public/api', // XAMPP
+  ];
 
-  static const String _lokalEmulator = 'http://10.0.2.2/Website_PKK/public/api';
+  static const List<String> _kandidatEmulator = [
+    'http://10.0.2.2:8000/api',
+    'http://10.0.2.2/Website_PKK/public/api',
+  ];
 
-  static String get _baseUrl {
-    if (!kPakaiServerLokal) return _produksi;
+  /// Indeks alamat yang terakhir berhasil dipakai.
+  static int _aktif = 0;
 
-    return kIsWeb ? _lokalWeb : _lokalEmulator;
+  static List<String> get _kandidat {
+    if (kAlamatApiKhusus.isNotEmpty) return [kAlamatApiKhusus];
+    if (!kPakaiServerLokal) return [_produksi];
+    return kIsWeb ? _kandidatWeb : _kandidatEmulator;
   }
+
+  /// Alamat dasar API yang sedang dipakai (dipakai juga oleh fitur Peringkat).
+  static String get baseUrl {
+    final k = _kandidat;
+    return k[_aktif < k.length ? _aktif : 0];
+  }
+
+  static bool _gagalTerhubung(DioException e) =>
+      e.type == DioExceptionType.connectionError ||
+      e.type == DioExceptionType.connectionTimeout;
 
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: _baseUrl,
+      baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 10),
       // Upload foto bisa lebih lama dari request biasa
       sendTimeout: const Duration(seconds: 60),
@@ -42,6 +65,54 @@ class ApiHelper {
       },
     ),
   );
+
+  ApiHelper() {
+    _dio.interceptors.add(InterceptorsWrapper(onError: _cobaAlamatLain));
+  }
+
+  /// Bila server tidak bisa dihubungi, coba alamat lokal berikutnya.
+  /// Alamat yang menjawab (selain 404) diingat dan dipakai seterusnya.
+  Future<void> _cobaAlamatLain(
+    DioException e,
+    ErrorInterceptorHandler handler,
+  ) async {
+    final k = _kandidat;
+
+    // Hanya untuk kegagalan koneksi, dan jangan berulang tanpa akhir.
+    if (!_gagalTerhubung(e) ||
+        k.length < 2 ||
+        e.requestOptions.extra['sudah_coba_alamat_lain'] == true) {
+      return handler.next(e);
+    }
+
+    for (var i = 0; i < k.length; i++) {
+      if (k[i] == e.requestOptions.baseUrl) continue;
+
+      final data = e.requestOptions.data;
+      final opsi = e.requestOptions.copyWith(
+        baseUrl: k[i],
+        data: data is FormData ? data.clone() : data,
+        extra: {...e.requestOptions.extra, 'sudah_coba_alamat_lain': true},
+      );
+
+      try {
+        final res = await _dio.fetch(opsi);
+        _aktif = i;
+        return handler.resolve(res);
+      } on DioException catch (e2) {
+        final kode = e2.response?.statusCode;
+        // Server ini menjawab (mis. 401, 422, 500) -> inilah server yang benar.
+        if (kode != null && kode != 404) {
+          _aktif = i;
+          return handler.next(e2);
+        }
+        // Tidak terhubung atau 404 (bukan aplikasi kita) -> coba berikutnya.
+      }
+    }
+
+    _aktif = 0;
+    handler.next(e);
+  }
 
   /// ================= GET =================
   Future<Response> get(
