@@ -21,6 +21,8 @@ import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 
 // [PERUBAHAN BARU] Import section Peringkat
 import 'package:epkk_nganjuk/features/peringkat/peringkat_home_section.dart';
+// [PERUBAHAN 20-11-2026] Dibutuhkan untuk memilih podium desa/kecamatan
+import 'package:epkk_nganjuk/features/peringkat/peringkat_model.dart';
 
 import 'package:epkk_nganjuk/routes/app_routes.dart';
 
@@ -44,6 +46,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String? roleBidang;
 
   String? fullName = 'User';
+
+  // [PERUBAHAN 20-11-2026] Akun kecamatan melihat podium kecamatan,
+  // akun lain melihat podium desa.
+  bool get _akunKecamatan => role.toLowerCase().contains('kecamatan');
 
   // ================= CONTROLLER =================
   final PengumumanController pengumumanController = Get.put(
@@ -328,8 +334,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       SizedBox(height: 32.h),
 
                       // ================= PERINGKAT (BARU) =================
-                      // [PERUBAHAN BARU] Peringkat Desa & Kecamatan di beranda
-                      const PeringkatHomeSection(),
+                      // [PERUBAHAN 20-11-2026] Akun kecamatan -> podium kecamatan,
+                      // akun lain -> podium desa.
+                      PeringkatHomeSection(
+                        jenis: _akunKecamatan
+                            ? PeringkatJenis.kecamatan
+                            : PeringkatJenis.desa,
+                      ),
 
                       SizedBox(height: 24.h),
 
