@@ -19,15 +19,15 @@ class KesehatanController extends GetxController {
   // ================= SUBMIT DATA =================
   Future<bool> submitKesehatanData({
     required String idUser,
-    required String kaderKesehatan,
-    required String kaderGizi,
-    required String kaderKesling,
-    required String kaderPhbs,
-    required String kaderKb,
-    required String posyandu,
-    required String imunisasiVaksinasi,
-    required String pkg,
-    required String tbc,
+    String kaderKesehatan = '',
+    String kaderGizi = '',
+    String kaderKesling = '',
+    String kaderPhbs = '',
+    String kaderKb = '',
+    String posyandu = '',
+    String imunisasiVaksinasi = '',
+    String pkg = '',
+    String tbc = '',
     required String idRole,
     required String idOrganization,
     String? catatan,
@@ -48,16 +48,16 @@ class KesehatanController extends GetxController {
         '/report/kesehatan',
         data: {
           'id_user': idUser,
-<<<<<<< HEAD
-          'kader_kesehatan': kaderKesehatan,
-          'kader_gizi': kaderGizi,
-          'kader_kesling': kaderKesling,
-          'kader_phbs': kaderPhbs,
-          'kader_kb': kaderKb,
-          'posyandu': posyandu,
-          'imunisasi_vaksinasi': imunisasiVaksinasi,
-          'pkg': pkg,
-          'tbc': tbc,
+          if (kaderKesehatan.isNotEmpty) 'kader_kesehatan': kaderKesehatan,
+          if (kaderGizi.isNotEmpty) 'kader_gizi': kaderGizi,
+          if (kaderKesling.isNotEmpty) 'kader_kesling': kaderKesling,
+          if (kaderPhbs.isNotEmpty) 'kader_phbs': kaderPhbs,
+          if (kaderKb.isNotEmpty) 'kader_kb': kaderKb,
+          if (posyandu.isNotEmpty) 'posyandu': posyandu,
+          if (imunisasiVaksinasi.isNotEmpty)
+            'imunisasi_vaksinasi': imunisasiVaksinasi,
+          if (pkg.isNotEmpty) 'pkg': pkg,
+          if (tbc.isNotEmpty) 'tbc': tbc,
           'id_role': idRole,
           'id_organization': idOrganization,
           // Support kolom legacy
@@ -66,15 +66,6 @@ class KesehatanController extends GetxController {
           'jumlah_klp': jumlahKip ?? kaderKesling,
           'jumlah_anggota': jumlahAnggota ?? kaderPhbs,
           'jumlah_kartu_gratis': jumlahKartuGratis ?? kaderKb,
-=======
-          'jumlah_posyandu': jumlahPosyandu,
-          'jumlah_posyandu_iterasi': jumlahPosyanduIterasi,
-          'jumlah_klp': jumlahKip,
-          'jumlah_anggota': jumlahAnggota,
-          'jumlah_kartu_gratis': jumlahKartuGratis,
-          'id_role': idRole,
-          'id_organization': idOrganization,
->>>>>>> 79c91a4f90358c475f9ad3f32e3219d5aee2b664
           if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
         },
       );
@@ -109,10 +100,7 @@ class KesehatanController extends GetxController {
         return false;
       }
     } on SocketException {
-<<<<<<< HEAD
-=======
       lastFailureWasNetwork.value = true;
->>>>>>> 79c91a4f90358c475f9ad3f32e3219d5aee2b664
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -138,14 +126,13 @@ class KesehatanController extends GetxController {
       );
       return false;
     } catch (e) {
-      if (e is DioException) {
-        if (e.type == DioExceptionType.connectionTimeout ||
-            e.type == DioExceptionType.sendTimeout ||
-            e.type == DioExceptionType.receiveTimeout ||
-            e.type == DioExceptionType.connectionError ||
-            e.error is SocketException) {
-          lastFailureWasNetwork.value = true;
-        }
+      if (e is DioException &&
+          (e.type == DioExceptionType.connectionTimeout ||
+              e.type == DioExceptionType.sendTimeout ||
+              e.type == DioExceptionType.receiveTimeout ||
+              e.type == DioExceptionType.connectionError ||
+              e.error is SocketException)) {
+        lastFailureWasNetwork.value = true;
       }
       errorMessage(e.toString());
 

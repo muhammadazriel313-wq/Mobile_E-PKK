@@ -24,7 +24,7 @@ class PerencanaanController extends GetxController {
     required String kbPria,
     required String kbWanita,
     required String kkTabungan,
-    required String kkAsuransi,
+    String kkAsuransi = '',
     required String idRole,
     required String idOrganization,
     String? catatan,
@@ -44,7 +44,7 @@ class PerencanaanController extends GetxController {
           'Kb_p': kbPria,
           'Kb_w': kbWanita,
           'Kk_tbg': kkTabungan,
-          'Kk_asuransi': kkAsuransi,
+          if (kkAsuransi.isNotEmpty) 'Kk_asuransi': kkAsuransi,
           'id_role': idRole,
           'id_organization': idOrganization,
           if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
@@ -81,10 +81,7 @@ class PerencanaanController extends GetxController {
         return false;
       }
     } on SocketException {
-<<<<<<< HEAD
-=======
       lastFailureWasNetwork.value = true;
->>>>>>> 79c91a4f90358c475f9ad3f32e3219d5aee2b664
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -110,14 +107,13 @@ class PerencanaanController extends GetxController {
       );
       return false;
     } catch (e) {
-      if (e is DioException) {
-        if (e.type == DioExceptionType.connectionTimeout ||
-            e.type == DioExceptionType.sendTimeout ||
-            e.type == DioExceptionType.receiveTimeout ||
-            e.type == DioExceptionType.connectionError ||
-            e.error is SocketException) {
-          lastFailureWasNetwork.value = true;
-        }
+      if (e is DioException &&
+          (e.type == DioExceptionType.connectionTimeout ||
+              e.type == DioExceptionType.sendTimeout ||
+              e.type == DioExceptionType.receiveTimeout ||
+              e.type == DioExceptionType.connectionError ||
+              e.error is SocketException)) {
+        lastFailureWasNetwork.value = true;
       }
       errorMessage(e.toString());
 

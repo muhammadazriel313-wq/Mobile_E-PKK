@@ -1,61 +1,55 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 
 /// =====================================================================
-/// PILIH SERVER
+/// ALAMAT SERVER
 ///
-/// Cara 1 (disarankan): tanpa mengubah file, pakai --dart-define
-///   flutter run --dart-define=SERVER=produksi     -> hosting
-///   flutter run --dart-define=SERVER=artisan      -> php artisan serve (port 8000)
-///   flutter run --dart-define=SERVER=xampp        -> XAMPP (Apache, port 80)
-///   flutter run --dart-define=SERVER=hp           -> HP fisik (isi _ipLaptop)
+///   flutter run (mode debug) -> server LOKAL, dicari otomatis berurutan:
+///        1) php artisan serve (Laragon) : http://127.0.0.1:8000/api
+///        2) XAMPP (Apache)              : http://localhost/Website_PKK/public/api
+///      Aplikasi memakai alamat pertama yang menjawab. Jadi pengguna XAMPP
+///      maupun Laragon cukup `flutter run`, tanpa mengubah kode.
+///   build rilis              -> server PRODUKSI (hosting)
 ///
-/// Cara 2: ubah nilai defaultValue di bawah.
-///
-/// Build rilis (flutter build apk --release) SELALU memakai produksi,
-/// apa pun pilihan di atas, supaya tidak salah kirim ke server lokal.
-///
-/// PENTING: website dan mobile harus memakai server/database yang SAMA.
+/// Khusus: --dart-define=API_BASE_URL=... memaksa satu alamat tertentu,
+/// misalnya HP asli: --dart-define=API_BASE_URL=http://IP-LAPTOP:8000/api
+/// (Emulator Android memakai 10.0.2.2 secara otomatis.)
 /// =====================================================================
-const String _pilihan = String.fromEnvironment(
-  'SERVER',
-  defaultValue: 'artisan',
-);
+const bool kPakaiServerLokal = kDebugMode;
+
+const String kAlamatApiKhusus = String.fromEnvironment('API_BASE_URL');
 
 class ApiHelper {
   static const String _produksi = 'https://epkknganjuk.pbltifnganjuk.com/api';
 
-  // Isi dengan IP laptop di WiFi yang sama (cek lewat `ipconfig`), tanpa http://
-  static const String _ipLaptop = '192.168.1.10';
+  static const List<String> _kandidatWeb = [
+    'http://127.0.0.1:8000/api', // php artisan serve (Laragon)
+    'http://localhost/Website_PKK/public/api', // XAMPP
+  ];
 
-  static String get _baseUrl {
-    // Rilis selalu ke hosting
-    if (!kDebugMode) return _produksi;
+  static const List<String> _kandidatEmulator = [
+    'http://10.0.2.2:8000/api',
+    'http://10.0.2.2/Website_PKK/public/api',
+  ];
 
-    switch (_pilihan) {
-      case 'artisan':
-        // php artisan serve --host=0.0.0.0
-        // Emulator Android: 10.0.2.2 | Chrome: localhost
-        return kIsWeb
-            ? 'http://localhost:8000/api'
-            : 'http://10.0.2.2:8000/api';
+  /// Indeks alamat yang terakhir berhasil dipakai.
+  static int _aktif = 0;
 
-      case 'xampp':
-        return kIsWeb
-            ? 'http://localhost/Website_E-PKK/public/api'
-            : 'http://10.0.2.2/Website_E-PKK/public/api';
-
-      case 'hp':
-        return 'http://$_ipLaptop:8000/api';
-
-      case 'produksi':
-      default:
-        return _produksi;
-    }
+  static List<String> get _kandidat {
+    if (kAlamatApiKhusus.isNotEmpty) return [kAlamatApiKhusus];
+    if (!kPakaiServerLokal) return [_produksi];
+    return kIsWeb ? _kandidatWeb : _kandidatEmulator;
   }
 
-  /// Tampilkan di log supaya jelas server mana yang sedang dipakai.
-  static String get baseUrlAktif => _baseUrl;
+  /// Alamat dasar API yang sedang dipakai (dipakai juga oleh fitur Peringkat).
+  static String get baseUrl {
+    final k = _kandidat;
+    return k[_aktif < k.length ? _aktif : 0];
+  }
+
+  static bool _gagalTerhubung(DioException e) =>
+      e.type == DioExceptionType.connectionError ||
+      e.type == DioExceptionType.connectionTimeout;
 
   final Dio _dio = Dio(
     BaseOptions(
