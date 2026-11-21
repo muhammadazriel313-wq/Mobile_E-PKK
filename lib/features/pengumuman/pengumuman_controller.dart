@@ -38,7 +38,9 @@ class PengumumanController extends GetxController {
     // Di Dart: DateTime.monday = 1 ... DateTime.sunday = 7
     final daysFromMonday = today.weekday - DateTime.monday;
     final monday = today.subtract(Duration(days: daysFromMonday));
-    final sunday = monday.add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
+    final sunday = monday.add(
+      const Duration(days: 6, hours: 23, minutes: 59, seconds: 59),
+    );
 
     final formatter = DateFormat('yyyy-MM-dd');
     return {
@@ -104,10 +106,7 @@ class PengumumanController extends GetxController {
 
       final response = await apiHelper.get(
         '/announcement',
-        queryParameters: {
-          'bulan': bulanStr,
-          'limit': 100,
-        },
+        queryParameters: {'bulan': bulanStr, 'limit': 100},
       );
 
       final data = PengumumanResponse.fromJson(response.data);

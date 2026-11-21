@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +16,7 @@ class UploadReportController extends GetxController {
   var isCreateKaderPokja1 = false.obs;
 
   var errorMessage = ''.obs;
+  var lastFailureWasNetwork = false.obs;
 
   Future<void> createKaderPokja1Controller({
     required String id_user,
@@ -24,6 +26,7 @@ class UploadReportController extends GetxController {
     required String id_organization,
   }) async {
     isCreateKaderPokja1.value = true;
+    lastFailureWasNetwork.value = false;
 
     errorMessage.value = '';
 
@@ -120,6 +123,7 @@ class UploadReportController extends GetxController {
         );
       }
     } on SocketException {
+      lastFailureWasNetwork.value = true;
       errorMessage.value = 'Tidak ada koneksi internet';
 
       Get.snackbar(
@@ -133,8 +137,28 @@ class UploadReportController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage.value = 'Server tidak merespons';
 
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF5350),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        borderRadius: 12,
+        duration: const Duration(seconds: 3),
+      );
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.connectionError ||
+          e.error is SocketException) {
+        lastFailureWasNetwork.value = true;
+      }
+      errorMessage.value = 'Terjadi kesalahan koneksi';
       Get.snackbar(
         'Error',
         errorMessage.value,

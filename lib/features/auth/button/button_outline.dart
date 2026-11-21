@@ -28,10 +28,7 @@ class _ButtonOutlineState extends State<ButtonOutline> {
         onPressed: widget.onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFFFFFFF),
-          side: BorderSide(
-            width: 1.2.w,
-            color: const Color(0xFFFFFFFF),
-          ),
+          side: BorderSide(width: 1.2.w, color: const Color(0xFFFFFFFF)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.r),
           ),

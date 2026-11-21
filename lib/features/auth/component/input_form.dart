@@ -38,7 +38,8 @@ class _InputFormState extends State<InputForm> {
         controller: widget.controller,
         validator: widget.validator,
         keyboardType: widget.keyboardType,
-        inputFormatters: widget.inputFormatters ??
+        inputFormatters:
+            widget.inputFormatters ??
             <TextInputFormatter>[
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(14),
@@ -52,10 +53,7 @@ class _InputFormState extends State<InputForm> {
             color: TextColors.grey500,
           ),
           prefixIcon: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 14.h,
-              horizontal: 13,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 13),
             child: SvgPicture.asset(
               widget.svgIconPath,
               color: TextColors.grey500,
@@ -63,24 +61,15 @@ class _InputFormState extends State<InputForm> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
         ),
       ),

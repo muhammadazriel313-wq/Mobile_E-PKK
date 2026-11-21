@@ -16,9 +16,7 @@ class ReportUmumModel {
       statusCode: json['statusCode'] ?? 500,
       message: json['message']?.toString() ?? 'Unknown error',
 
-      data: json['data'] != null
-          ? UmumEntry.fromJson(json['data'])
-          : null,
+      data: json['data'] != null ? UmumEntry.fromJson(json['data']) : null,
 
       error: json['error'] != null
           ? ErrorMessage.fromJson(json['error'])
@@ -101,91 +99,63 @@ class UmumEntry {
 
   factory UmumEntry.fromJson(Map<String, dynamic> json) {
     return UmumEntry(
-      idLaporanUmum:
-          json['id_laporan_umum']?.toString() ?? '',
+      idLaporanUmum: json['id_laporan_umum']?.toString() ?? '',
 
-      uuid:
-          json['uuid']?.toString() ?? '',
+      uuid: json['uuid']?.toString() ?? '',
 
-      idUser:
-          json['id_user']?.toString() ?? '',
+      idUser: json['id_user']?.toString() ?? '',
 
-      dusunLingkungan:
-          json['dusun_lingkungan']?.toString() ?? '',
+      dusunLingkungan: json['dusun_lingkungan']?.toString() ?? '',
 
-      pkkRw:
-          json['PKK_RW']?.toString() ?? '0',
+      pkkRw: json['PKK_RW']?.toString() ?? '0',
 
-      pkkRt:
-          json['PKK_RT']?.toString() ?? '0',
+      pkkRt: json['PKK_RT']?.toString() ?? '0',
 
-      desaWisma:
-          json['desa_wisma']?.toString() ?? '',
+      desaWisma: json['desa_wisma']?.toString() ?? '',
 
-      krt:
-          json['KRT']?.toString() ?? '0',
+      krt: json['KRT']?.toString() ?? '0',
 
-      kk:
-          json['KK']?.toString() ?? '0',
+      kk: json['KK']?.toString() ?? '0',
 
-      jiwaLaki:
-          json['jiwa_laki']?.toString() ?? '0',
+      jiwaLaki: json['jiwa_laki']?.toString() ?? '0',
 
-      jiwaPerempuan:
-          json['jiwa_perempuan']?.toString() ?? '0',
+      jiwaPerempuan: json['jiwa_perempuan']?.toString() ?? '0',
 
-      anggotaLaki:
-          json['anggota_laki']?.toString() ?? '0',
+      anggotaLaki: json['anggota_laki']?.toString() ?? '0',
 
-      anggotaPerempuan:
-          json['anggota_perempuan']?.toString() ?? '0',
+      anggotaPerempuan: json['anggota_perempuan']?.toString() ?? '0',
 
-      umumLaki:
-          json['umum_laki']?.toString() ?? '0',
+      umumLaki: json['umum_laki']?.toString() ?? '0',
 
-      umumPerempuan:
-          json['umum_perempuan']?.toString() ?? '0',
+      umumPerempuan: json['umum_perempuan']?.toString() ?? '0',
 
-      khususLaki:
-          json['khusus_laki']?.toString() ?? '0',
+      khususLaki: json['khusus_laki']?.toString() ?? '0',
 
-      khususPerempuan:
-          json['khusus_perempuan']?.toString() ?? '0',
+      khususPerempuan: json['khusus_perempuan']?.toString() ?? '0',
 
-      honorerLaki:
-          json['honorer_laki']?.toString() ?? '0',
+      honorerLaki: json['honorer_laki']?.toString() ?? '0',
 
-      honorerPerempuan:
-          json['honorer_perempuan']?.toString() ?? '0',
+      honorerPerempuan: json['honorer_perempuan']?.toString() ?? '0',
 
-      bantuanLaki:
-          json['bantuan_laki']?.toString() ?? '0',
+      bantuanLaki: json['bantuan_laki']?.toString() ?? '0',
 
-      bantuanPerempuan:
-          json['bantuan_perempuan']?.toString() ?? '0',
+      bantuanPerempuan: json['bantuan_perempuan']?.toString() ?? '0',
 
-      catatan:
-          json['catatan']?.toString(),
+      catatan: json['catatan']?.toString(),
 
-      keterangan:
-          json['keterangan']?.toString(),
+      keterangan: json['keterangan']?.toString(),
 
-      status:
-          json['status']?.toString() ?? 'Proses',
+      status: json['status']?.toString() ?? 'Proses',
 
-      createdAt: DateTime.tryParse(
-            json['created_at']?.toString() ?? '',
-          ) ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
 
-      updatedAt: DateTime.tryParse(
-            json['updated_at']?.toString() ?? '',
-          ) ??
+      updatedAt:
+          DateTime.tryParse(json['updated_at']?.toString() ?? '') ??
           DateTime.now(),
 
-      role: json['role'] != null
-          ? Role.fromJson(json['role'])
-          : null,
+      role: json['role'] != null ? Role.fromJson(json['role']) : null,
 
       organization: json['organization'] != null
           ? Organization.fromJson(json['organization'])
@@ -234,11 +204,7 @@ class Role {
   final String uuid;
   final String name;
 
-  Role({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Role({required this.id, required this.uuid, required this.name});
 
   factory Role.fromJson(Map<String, dynamic> json) {
     return Role(
@@ -249,11 +215,7 @@ class Role {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
@@ -262,11 +224,7 @@ class Organization {
   final String uuid;
   final String name;
 
-  Organization({
-    required this.id,
-    required this.uuid,
-    required this.name,
-  });
+  Organization({required this.id, required this.uuid, required this.name});
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -277,20 +235,14 @@ class Organization {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'name': name,
-    };
+    return {'id': id, 'uuid': uuid, 'name': name};
   }
 }
 
 class ErrorMessage {
   final String message;
 
-  ErrorMessage({
-    required this.message,
-  });
+  ErrorMessage({required this.message});
 
   factory ErrorMessage.fromJson(Map<String, dynamic> json) {
     return ErrorMessage(
@@ -299,8 +251,6 @@ class ErrorMessage {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-    };
+    return {'message': message};
   }
 }

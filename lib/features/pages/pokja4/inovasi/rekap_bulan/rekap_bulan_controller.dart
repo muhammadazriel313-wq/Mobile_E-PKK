@@ -2,6 +2,9 @@
 /// FILE : rekap_bulan_controller.dart
 /// =======================================================
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 import 'package:epkk_nganjuk/core/api_helper.dart';
@@ -20,6 +23,17 @@ class RekapDesaBulananController extends GetxController {
   var isLoading = false.obs;
 
   var errorMessage = ''.obs;
+
+  var lastFailureWasNetwork = false.obs;
+
+  Map<String, dynamic> toSnapshot(
+    Map<String, dynamic> values, {
+    required int step,
+  }) => {...values, 'langkah': step};
+
+  void applySnapshot(Map<String, dynamic> snapshot) {
+    // Form values are owned by the step screens and restored there.
+  }
 
   /// ================= USER =================
 
@@ -41,11 +55,11 @@ class RekapDesaBulananController extends GetxController {
   Future<void> loadUser() async {
     final user = await PreferencesService.getUser();
 
-    idUser = user?.id?.toString() ?? '';
+    idUser = user?.id.toString() ?? '';
 
-    idRole = user?.role?.id?.toString() ?? '';
+    idRole = user?.role?.id.toString() ?? '';
 
-    idOrganization = user?.organization?.id?.toString() ?? '';
+    idOrganization = user?.organization?.id.toString() ?? '';
   }
 
   /// ================= SUBMIT =================
@@ -107,6 +121,8 @@ class RekapDesaBulananController extends GetxController {
       isLoading(true);
 
       errorMessage('');
+
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/rekap-desa-bulanan',
@@ -183,9 +199,21 @@ class RekapDesaBulananController extends GetxController {
         return false;
       }
     } catch (e) {
+      if (e is SocketException || e is TimeoutException) {
+        lastFailureWasNetwork.value = true;
+      }
+
       errorMessage(e.toString());
 
       if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
+
         debugPrint(e.response?.data.toString());
         Get.snackbar(
           'Server Error',

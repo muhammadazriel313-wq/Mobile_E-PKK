@@ -1,28 +1,14 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'peringkat_model.dart';
 
 class PeringkatController extends GetxController {
-  // =====================================================
-  // PENGATURAN ALAMAT API PERINGKAT (khusus fitur ini)
-  //
-  // _pakaiLokal = true  -> pakai XAMPP di laptop (untuk tes)
-  // _pakaiLokal = false -> pakai hosting (isi _hostingUrl dulu!)
-  //
-  // _hostLokal:
-  //  - Emulator Android : '10.0.2.2'
-  //  - HP asli          : IP laptop, mis. '192.168.1.10' (satu Wi-Fi)
-  // =====================================================
-  static const bool _pakaiLokal = true;
-  static const String _hostLokal = '10.0.2.2';
-  static const String _hostingUrl = 'https://GANTI-DOMAIN-HOSTING/api';
-
-  // Di Chrome/web, '10.0.2.2' tidak berlaku -> pakai 'localhost'.
-  String get _base => _pakaiLokal
-      ? 'http://${kIsWeb ? 'localhost' : _hostLokal}/Website_PKK/public/api'
-      : _hostingUrl;
+  // Alamat server mengikuti ApiHelper (lihat lib/core/api_helper.dart):
+  // debug -> Laragon (artisan serve) atau XAMPP dicari otomatis, rilis -> hosting.
+  final ApiHelper _api = ApiHelper();
 
   final jenis = PeringkatJenis.desa.obs;
   final periode = PeringkatPeriode.tahunIni.obs;
@@ -53,37 +39,50 @@ class PeringkatController extends GetxController {
     error.value = null;
 
     final path = jenis.value == PeringkatJenis.desa ? 'desa' : 'kecamatan';
-    final uri = Uri.parse('$_base/ranking/$path').replace(
-      queryParameters: {
-        'periode': periode.value.kode,
-        if (limit != null) 'limit': '$limit',
-      },
-    );
 
     try {
-      debugPrint('[PERINGKAT] GET $uri');
-      final res = await http
-          .get(uri, headers: {'Accept': 'application/json'})
-          .timeout(const Duration(seconds: 30));
+      debugPrint('[PERINGKAT] GET ${ApiHelper.baseUrl}/ranking/$path');
+      final res = await _api.get(
+        '/ranking/$path',
+        queryParameters: {
+          'periode': periode.value.kode,
+          if (limit != null) 'limit': '$limit',
+        },
+      );
       debugPrint('[PERINGKAT] status ${res.statusCode}');
-
-      if (res.statusCode != 200) {
-        throw 'Server membalas ${res.statusCode}';
-      }
 
       if (ini != _permintaanKe) return; // sudah ada permintaan yang lebih baru
 
-      final body = jsonDecode(res.body);
+      final body = res.data is String ? jsonDecode(res.data as String) : res.data;
       final raw = body['items'] ?? body['data']?['items'] ?? [];
       final list = raw as List;
 
       items.assignAll(
         list.map((e) => PeringkatItem.fromJson(Map<String, dynamic>.from(e))),
       );
+    } on DioException catch (e) {
+      if (ini != _permintaanKe) return;
+      debugPrint('[PERINGKAT] ERROR: $e');
+
+      final kode = e.response?.statusCode;
+      var pesan = kode != null
+          ? 'Server membalas $kode'
+          : 'Tidak dapat terhubung ke server';
+
+      // Bila server mengirim pesan kesalahan (mis. dari Laravel), tampilkan
+      // agar penyebab error 500 mudah dilacak.
+      final data = e.response?.data;
+      if (data is Map && data['message'] != null) {
+        final m = data['message'].toString();
+        pesan += '\n${m.length > 220 ? '${m.substring(0, 220)}...' : m}';
+      }
+
+      error.value = 'Gagal memuat peringkat.\n$pesan\n\nURL: ${e.requestOptions.uri}';
+      items.clear();
     } catch (e) {
       if (ini != _permintaanKe) return;
       debugPrint('[PERINGKAT] ERROR: $e');
-      error.value = 'Gagal memuat peringkat.\n$e\n\nURL: $uri';
+      error.value = 'Gagal memuat peringkat.\n$e';
       items.clear();
     } finally {
       if (ini == _permintaanKe) loading.value = false;

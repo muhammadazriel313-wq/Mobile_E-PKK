@@ -38,47 +38,30 @@ class DropdownComponent extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.r),
       ),
       child: DropdownButtonFormField2<String>(
-
         /// 🔥 INI YANG BENAR DI v2
         value: listItem.contains(selectedValue) ? selectedValue : null,
 
         isExpanded: true,
 
         decoration: InputDecoration(
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
 
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide(
-              width: 1.w,
-              color: TextColors.grey300,
-            ),
+            borderSide: BorderSide(width: 1.w, color: TextColors.grey300),
           ),
 
           prefixIcon: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 14.h,
-              horizontal: 13.w,
-            ),
-            child: SvgPicture.asset(
-              svgIconPath,
-              color: TextColors.grey500,
-            ),
+            padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 13.w),
+            child: SvgPicture.asset(svgIconPath, color: TextColors.grey500),
           ),
 
           suffixIcon: suffixIcon,
@@ -99,10 +82,7 @@ class DropdownComponent extends StatelessWidget {
             value: item,
             child: Text(
               item,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade700),
             ),
           );
         }).toList(),
@@ -128,11 +108,7 @@ class DropdownComponent extends StatelessWidget {
 
           searchInnerWidget: Container(
             height: 50.h,
-            padding: EdgeInsets.only(
-              top: 10.h,
-              right: 8.w,
-              left: 8.w,
-            ),
+            padding: EdgeInsets.only(top: 10.h, right: 8.w, left: 8.w),
             child: TextFormField(
               controller: dropdownSearch,
               decoration: InputDecoration(
@@ -150,9 +126,9 @@ class DropdownComponent extends StatelessWidget {
           ),
 
           searchMatchFn: (item, searchValue) {
-            return item.value!
-                .toLowerCase()
-                .contains(searchValue.toLowerCase());
+            return item.value!.toLowerCase().contains(
+              searchValue.toLowerCase(),
+            );
           },
         ),
 
@@ -165,9 +141,7 @@ class DropdownComponent extends StatelessWidget {
 
         dropdownStyleData: DropdownStyleData(
           maxHeight: maxHeight ?? 300.h,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12.r)),
         ),
       ),
     );

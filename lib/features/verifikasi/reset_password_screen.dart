@@ -23,14 +23,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   late String _phone;
   late String _otp;
-  late String _role;
 
   @override
   void initState() {
     super.initState();
     _phone = Get.arguments['phone'] ?? '';
     _otp = Get.arguments['otp'] ?? '';
-    _role = Get.arguments['role'] ?? 'Tidak diketahui';
     print('Phone: $_phone');
     print('OTP: $_otp');
   }

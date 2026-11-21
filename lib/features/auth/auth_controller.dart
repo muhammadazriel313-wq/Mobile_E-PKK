@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/features/akun/profile_controller.dart';
 import 'package:epkk_nganjuk/features/home/nav_controller.dart';
@@ -366,8 +364,6 @@ class AuthController extends GetxController {
 
   /// ================= UTIL =================
   void generateRandomNumber() {
-    final random = Random();
-
     generatedOtp = "1234"; // BYPASS OTP
   }
 

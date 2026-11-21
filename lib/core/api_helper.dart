@@ -59,9 +59,8 @@ class ApiHelper {
 
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: _baseUrl,
+      baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 10),
-
       // Upload foto bisa lebih lama dari request biasa
       sendTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
@@ -72,6 +71,54 @@ class ApiHelper {
       },
     ),
   );
+
+  ApiHelper() {
+    _dio.interceptors.add(InterceptorsWrapper(onError: _cobaAlamatLain));
+  }
+
+  /// Bila server tidak bisa dihubungi, coba alamat lokal berikutnya.
+  /// Alamat yang menjawab (selain 404) diingat dan dipakai seterusnya.
+  Future<void> _cobaAlamatLain(
+    DioException e,
+    ErrorInterceptorHandler handler,
+  ) async {
+    final k = _kandidat;
+
+    // Hanya untuk kegagalan koneksi, dan jangan berulang tanpa akhir.
+    if (!_gagalTerhubung(e) ||
+        k.length < 2 ||
+        e.requestOptions.extra['sudah_coba_alamat_lain'] == true) {
+      return handler.next(e);
+    }
+
+    for (var i = 0; i < k.length; i++) {
+      if (k[i] == e.requestOptions.baseUrl) continue;
+
+      final data = e.requestOptions.data;
+      final opsi = e.requestOptions.copyWith(
+        baseUrl: k[i],
+        data: data is FormData ? data.clone() : data,
+        extra: {...e.requestOptions.extra, 'sudah_coba_alamat_lain': true},
+      );
+
+      try {
+        final res = await _dio.fetch(opsi);
+        _aktif = i;
+        return handler.resolve(res);
+      } on DioException catch (e2) {
+        final kode = e2.response?.statusCode;
+        // Server ini menjawab (mis. 401, 422, 500) -> inilah server yang benar.
+        if (kode != null && kode != 404) {
+          _aktif = i;
+          return handler.next(e2);
+        }
+        // Tidak terhubung atau 404 (bukan aplikasi kita) -> coba berikutnya.
+      }
+    }
+
+    _aktif = 0;
+    handler.next(e);
+  }
 
   /// ================= GET =================
   Future<Response> get(

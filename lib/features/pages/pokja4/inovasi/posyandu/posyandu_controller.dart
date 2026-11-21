@@ -2,6 +2,9 @@
 /// FILE : posyandu_controller.dart
 /// =======================================================
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 import 'package:epkk_nganjuk/core/api_helper.dart';
@@ -20,6 +23,7 @@ class PosyanduController extends GetxController {
   var isLoading = false.obs;
 
   var errorMessage = ''.obs;
+  var lastFailureWasNetwork = false.obs;
 
   /// ================= USER =================
 
@@ -41,11 +45,11 @@ class PosyanduController extends GetxController {
   Future<void> loadUser() async {
     final user = await PreferencesService.getUser();
 
-    idUser = user?.id?.toString() ?? '';
+    idUser = user?.id.toString() ?? '';
 
-    idRole = user?.role?.id?.toString() ?? '';
+    idRole = user?.role?.id.toString() ?? '';
 
-    idOrganization = user?.organization?.id?.toString() ?? '';
+    idOrganization = user?.organization?.id.toString() ?? '';
   }
 
   /// ================= SAFE STRING =================
@@ -108,6 +112,7 @@ class PosyanduController extends GetxController {
       isLoading(true);
 
       errorMessage('');
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/posyandu',
@@ -207,6 +212,16 @@ class PosyanduController extends GetxController {
       }
     } catch (e) {
       errorMessage(e.toString());
+      if (e is SocketException ||
+          e is TimeoutException ||
+          (e is DioException &&
+              (e.type == DioExceptionType.connectionTimeout ||
+                  e.type == DioExceptionType.sendTimeout ||
+                  e.type == DioExceptionType.receiveTimeout ||
+                  e.type == DioExceptionType.connectionError ||
+                  e.error is SocketException))) {
+        lastFailureWasNetwork.value = true;
+      }
 
       if (e is DioException) {
         debugPrint(e.response?.data.toString());

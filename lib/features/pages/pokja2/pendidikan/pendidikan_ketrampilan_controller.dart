@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,87 @@ class PendidikanKeterampilanController extends GetxController {
 
   // ================= STATE =================
   var isLoading = false.obs;
+  var errorMessage = ''.obs;
+  var lastFailureWasNetwork = false.obs;
   var reportData = Rxn<ReportPendidikanKeterampilanModel>();
+
+  Map<String, dynamic> draftData({required int langkah}) => {
+    'id_role': idRole,
+    'id_organization': idOrganization,
+    'warga_buta': wargaButa,
+    'kel_belajarA': kelBelajarA,
+    'warga_belajarA': wargaBelajarA,
+    'kel_belajarB': kelBelajarB,
+    'warga_belajarB': wargaBelajarB,
+    'kel_belajarC': kelBelajarC,
+    'warga_belajarC': wargaBelajarC,
+    'kel_belajarKF': kelBelajarKF,
+    'warga_belajarKF': wargaBelajarKF,
+    'paud': paud,
+    'taman_bacaan': tamanBacaan,
+    'jumlah_klp': jumlahKlp,
+    'jumlah_ibu_peserta': jumlahIbuPeserta,
+    'jumlah_ape': jumlahApe,
+    'jumlah_kel_simulasi': jumlahKelSimulasi,
+    'KF': kf,
+    'paud_tutor': paudTutor,
+    'BKB': bkb,
+    'koperasi': koperasi,
+    'ketrampilan': ketrampilan,
+    'LP3PKK': lp3pkk,
+    'TP3PKK': tp3pkk,
+    'damas_pkk': damasPkk,
+    'langkah': langkah,
+  };
+
+  void restoreDraft(Map<String, dynamic> data) {
+    idUser = data['id_user']?.toString() ?? idUser;
+    idRole = data['id_role']?.toString() ?? idRole;
+    idOrganization = data['id_organization']?.toString() ?? idOrganization;
+    setStep1(
+      wargaButaVal: data['warga_buta']?.toString() ?? '',
+      kelA: data['kel_belajarA']?.toString() ?? '',
+      wargaA: data['warga_belajarA']?.toString() ?? '',
+      kelB: data['kel_belajarB']?.toString() ?? '',
+      wargaB: data['warga_belajarB']?.toString() ?? '',
+    );
+    setStep2(
+      kelC: data['kel_belajarC']?.toString() ?? '',
+      wargaC: data['warga_belajarC']?.toString() ?? '',
+      kelKF: data['kel_belajarKF']?.toString() ?? '',
+      wargaKF: data['warga_belajarKF']?.toString() ?? '',
+      paudVal: data['paud']?.toString() ?? '',
+      taman: data['taman_bacaan']?.toString() ?? '',
+    );
+    setStep3(
+      klp: data['jumlah_klp']?.toString() ?? '',
+      ibu: data['jumlah_ibu_peserta']?.toString() ?? '',
+      ape: data['jumlah_ape']?.toString() ?? '',
+      simulasi: data['jumlah_kel_simulasi']?.toString() ?? '',
+      kfVal: data['KF']?.toString() ?? '',
+      paudTutorVal: data['paud_tutor']?.toString() ?? '',
+      bkbVal: data['BKB']?.toString() ?? '',
+      koperasiVal: data['koperasi']?.toString() ?? '',
+      ketrampilanVal: data['ketrampilan']?.toString() ?? '',
+    );
+    setStep4(
+      lp3: data['LP3PKK']?.toString() ?? '',
+      tp3: data['TP3PKK']?.toString() ?? '',
+      damas: data['damas_pkk']?.toString() ?? '',
+    );
+  }
+
+  Future<bool> submitDraftData(Map<String, dynamic> data) async {
+    restoreDraft(data);
+    return submit();
+  }
+
+  bool get hasDraftInput => draftData(langkah: 1).entries.any(
+    (entry) => entry.key != 'langkah' &&
+        entry.key != 'id_role' &&
+        entry.key != 'id_organization' &&
+        entry.value.toString().trim().isNotEmpty,
+  );
 
   // ================= INIT =================
   @override
@@ -31,9 +112,9 @@ class PendidikanKeterampilanController extends GetxController {
     final user = await PreferencesService.getUser();
 
     if (user != null) {
-      idUser = user.id?.toString() ?? '';
-      idRole = user.role?.id?.toString() ?? '';
-      idOrganization = user.organization?.id?.toString() ?? '';
+      idUser = user.id.toString();
+      idRole = user.role?.id.toString() ?? '';
+      idOrganization = user.organization?.id.toString() ?? '';
 
       print("LOGIN USER -> $idUser | $idRole | $idOrganization");
     } else {
@@ -178,6 +259,8 @@ class PendidikanKeterampilanController extends GetxController {
 
     try {
       isLoading.value = true;
+      errorMessage.value = '';
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/pendidikan-keterampilan',
@@ -229,6 +312,7 @@ class PendidikanKeterampilanController extends GetxController {
 
         return true;
       } else {
+        errorMessage.value = 'Upload gagal';
         Get.snackbar(
           'Gagal',
           'Upload gagal',
@@ -240,8 +324,41 @@ class PendidikanKeterampilanController extends GetxController {
 
         return false;
       }
+    } on SocketException catch (e) {
+      lastFailureWasNetwork.value = true;
+      errorMessage.value = e.message.isEmpty ? 'Tidak ada koneksi internet' : e.message;
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+      return false;
+    } on TimeoutException catch (e) {
+      lastFailureWasNetwork.value = true;
+      errorMessage.value = e.toString();
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+      return false;
     } catch (e) {
+      errorMessage.value = e.toString();
       if (e is DioException) {
+        lastFailureWasNetwork.value =
+            e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout;
+        errorMessage.value = e.response?.data?['message']?.toString() ??
+            e.message ??
+            e.toString();
         Get.snackbar(
           'Server Error',
           e.response?.data?['message'] ??

@@ -14,10 +14,7 @@ class StatusFilterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: 16.w,
-        vertical: 14.h,
-      ),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
 
       padding: EdgeInsets.all(6.w),
 
@@ -26,9 +23,7 @@ class StatusFilterCard extends StatelessWidget {
 
         borderRadius: BorderRadius.circular(18.r),
 
-        border: Border.all(
-          color: const Color(0xFFE7EDF3),
-        ),
+        border: Border.all(color: const Color(0xFFE7EDF3)),
       ),
 
       child: Row(
@@ -36,8 +31,7 @@ class StatusFilterCard extends StatelessWidget {
           Expanded(
             child: _buildStatusButton(
               label: 'Proses',
-              isActive:
-                  selectedStatus == 'Proses',
+              isActive: selectedStatus == 'Proses',
             ),
           ),
 
@@ -46,8 +40,7 @@ class StatusFilterCard extends StatelessWidget {
           Expanded(
             child: _buildStatusButton(
               label: 'Revisi',
-              isActive:
-                  selectedStatus == 'Revisi',
+              isActive: selectedStatus == 'Revisi',
             ),
           ),
 
@@ -56,8 +49,7 @@ class StatusFilterCard extends StatelessWidget {
           Expanded(
             child: _buildStatusButton(
               label: 'Selesai',
-              isActive:
-                  selectedStatus == 'Selesai',
+              isActive: selectedStatus == 'Selesai',
             ),
           ),
         ],
@@ -65,57 +57,39 @@ class StatusFilterCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusButton({
-    required String label,
-    required bool isActive,
-  }) {
+  Widget _buildStatusButton({required String label, required bool isActive}) {
     return GestureDetector(
       onTap: () => onStatusSelected(label),
 
       child: AnimatedContainer(
-        duration: const Duration(
-          milliseconds: 220,
-        ),
+        duration: const Duration(milliseconds: 220),
 
-        padding: EdgeInsets.symmetric(
-          vertical: 12.h,
-        ),
+        padding: EdgeInsets.symmetric(vertical: 12.h),
 
         decoration: BoxDecoration(
-          color: isActive
-              ? const Color(0xFF3F8FC1)
-              : Colors.transparent,
+          color: isActive ? const Color(0xFF3F8FC1) : Colors.transparent,
 
-          borderRadius:
-              BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(14.r),
 
           border: Border.all(
-            color: isActive
-                ? const Color(0xFF3F8FC1)
-                : const Color(0xFFE1E7EE),
+            color: isActive ? const Color(0xFF3F8FC1) : const Color(0xFFE1E7EE),
           ),
 
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: const Color(
-                      0xFF3F8FC1,
-                    ).withOpacity(0.18),
+                    color: const Color(0xFF3F8FC1).withOpacity(0.18),
 
                     blurRadius: 10,
 
-                    offset: const Offset(
-                      0,
-                      4,
-                    ),
+                    offset: const Offset(0, 4),
                   ),
                 ]
               : [],
         ),
 
         child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
 
           children: [
             Icon(
@@ -123,9 +97,7 @@ class StatusFilterCard extends StatelessWidget {
 
               size: 16.sp,
 
-              color: isActive
-                  ? Colors.white
-                  : Colors.grey.shade600,
+              color: isActive ? Colors.white : Colors.grey.shade600,
             ),
 
             SizedBox(width: 6.w),
@@ -141,9 +113,7 @@ class StatusFilterCard extends StatelessWidget {
 
                   fontWeight: FontWeight.w600,
 
-                  color: isActive
-                      ? Colors.white
-                      : Colors.grey.shade700,
+                  color: isActive ? Colors.white : Colors.grey.shade700,
                 ),
               ),
             ),

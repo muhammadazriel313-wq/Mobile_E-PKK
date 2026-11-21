@@ -14,9 +14,7 @@ class ReportRekapDesaTahunanModel {
     this.error,
   });
 
-  factory ReportRekapDesaTahunanModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ReportRekapDesaTahunanModel.fromJson(Map<String, dynamic> json) {
     return ReportRekapDesaTahunanModel(
       statusCode: json['status_code'] ?? 0,
       message: json['message'] ?? '',
@@ -135,12 +133,9 @@ class RekapDesaTahunanEntry {
     this.organization,
   });
 
-  factory RekapDesaTahunanEntry.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory RekapDesaTahunanEntry.fromJson(Map<String, dynamic> json) {
     return RekapDesaTahunanEntry(
-      idRekapDesaTahunan:
-          json['id_rekap_desa_tahunan']?.toString(),
+      idRekapDesaTahunan: json['id_rekap_desa_tahunan']?.toString(),
 
       uuid: json['uuid']?.toString(),
 
@@ -148,8 +143,7 @@ class RekapDesaTahunanEntry {
 
       kategori: json['kategori']?.toString(),
 
-      kaderKesehatan:
-          json['kader_kesehatan']?.toString(),
+      kaderKesehatan: json['kader_kesehatan']?.toString(),
 
       gizi: json['gizi']?.toString(),
 
@@ -161,9 +155,8 @@ class RekapDesaTahunanEntry {
 
       posyandu: json['posyandu']?.toString(),
 
-      imunisasiVaksinasiBayiBalita:
-          json['imunisasi_vaksinasi_bayi_balita']
-              ?.toString(),
+      imunisasiVaksinasiBayiBalita: json['imunisasi_vaksinasi_bayi_balita']
+          ?.toString(),
 
       pkg: json['pkg']?.toString(),
 
@@ -187,28 +180,20 @@ class RekapDesaTahunanEntry {
 
       jmlWus: json['jml_wus']?.toString(),
 
-      akseptorKbL:
-          json['akseptor_kb_l']?.toString(),
+      akseptorKbL: json['akseptor_kb_l']?.toString(),
 
-      akseptorKbP:
-          json['akseptor_kb_p']?.toString(),
+      akseptorKbP: json['akseptor_kb_p']?.toString(),
 
-      jmlKkTabungan:
-          json['jml_kk_tabungan']?.toString(),
+      jmlKkTabungan: json['jml_kk_tabungan']?.toString(),
 
-      jmlKkAsuransi:
-          json['jml_kk_asuransi']?.toString(),
+      jmlKkAsuransi: json['jml_kk_asuransi']?.toString(),
 
-      kesehatanProgram:
-          json['kesehatan_program']?.toString(),
+      kesehatanProgram: json['kesehatan_program']?.toString(),
 
-      kelestarianLingkunganHidup:
-          json['kelestarian_lingkungan_hidup']
-              ?.toString(),
+      kelestarianLingkunganHidup: json['kelestarian_lingkungan_hidup']
+          ?.toString(),
 
-      perencanaanSehatProgram:
-          json['perencanaan_sehat_program']
-              ?.toString(),
+      perencanaanSehatProgram: json['perencanaan_sehat_program']?.toString(),
 
       catatan: json['catatan']?.toString(),
 
@@ -240,8 +225,7 @@ class RekapDesaTahunanEntry {
       'phbs': phbs,
       'kb': kb,
       'posyandu': posyandu,
-      'imunisasi_vaksinasi_bayi_balita':
-          imunisasiVaksinasiBayiBalita,
+      'imunisasi_vaksinasi_bayi_balita': imunisasiVaksinasiBayiBalita,
       'pkg': pkg,
       'tbc': tbc,
       'jamban_wc': jambanWc,
@@ -258,10 +242,8 @@ class RekapDesaTahunanEntry {
       'jml_kk_tabungan': jmlKkTabungan,
       'jml_kk_asuransi': jmlKkAsuransi,
       'kesehatan_program': kesehatanProgram,
-      'kelestarian_lingkungan_hidup':
-          kelestarianLingkunganHidup,
-      'perencanaan_sehat_program':
-          perencanaanSehatProgram,
+      'kelestarian_lingkungan_hidup': kelestarianLingkunganHidup,
+      'perencanaan_sehat_program': perencanaanSehatProgram,
       'catatan': catatan,
     };
   }
@@ -271,8 +253,7 @@ class RekapDesaTahunanEntry {
 /// EMPTY EXTENSION
 /// ===============================
 
-extension RekapDesaTahunanEntryExtension
-    on RekapDesaTahunanEntry {
+extension RekapDesaTahunanEntryExtension on RekapDesaTahunanEntry {
   static RekapDesaTahunanEntry empty() {
     return RekapDesaTahunanEntry(
       idRekapDesaTahunan: '',

@@ -14,23 +14,14 @@ class PreferencesService {
   static const int _expiryDuration = 86400;
 
   /// ================= SAVE USER =================
-  static Future<void> saveUser(
-    UserData user,
-    String token,
-  ) async {
+  static Future<void> saveUser(UserData user, String token) async {
     final prefs = await SharedPreferences.getInstance();
 
     /// SAVE USER
-    await prefs.setString(
-      _userKey,
-      jsonEncode(user.toJson()),
-    );
+    await prefs.setString(_userKey, jsonEncode(user.toJson()));
 
     /// SAVE TOKEN
-    await prefs.setString(
-      _tokenKey,
-      token,
-    );
+    await prefs.setString(_tokenKey, token);
 
     /// SAVE LOGIN TIME
     await prefs.setInt(
@@ -46,9 +37,7 @@ class PreferencesService {
     String? userData = prefs.getString(_userKey);
 
     if (userData != null) {
-      final user = UserData.fromJson(
-        jsonDecode(userData),
-      );
+      final user = UserData.fromJson(jsonDecode(userData));
 
       print('Retrieved User: ${user.toJson()}');
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/jumlah_rumah/report_perencanaan_model.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class PerencanaanController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var reportData = Rxn<ReportPerencanaanModel>();
+  var lastFailureWasNetwork = false.obs;
 
   // ================= SUBMIT DATA =================
-  Future<void> submitPerencanaanData({
+  Future<bool> submitPerencanaanData({
     required String idUser,
     required String jumlahPriaSubur,
     required String jumlahWanitaSubur,
@@ -31,6 +33,7 @@ class PerencanaanController extends GetxController {
       isLoading(true);
       errorMessage('');
       reportData(null);
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/perencanaan-sehat',
@@ -63,6 +66,7 @@ class PerencanaanController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 3),
         );
+        return true;
       } else {
         errorMessage('Gagal mengirim data');
 
@@ -74,8 +78,13 @@ class PerencanaanController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } on SocketException {
+<<<<<<< HEAD
+=======
+      lastFailureWasNetwork.value = true;
+>>>>>>> 79c91a4f90358c475f9ad3f32e3219d5aee2b664
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -86,7 +95,9 @@ class PerencanaanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage('Server timeout');
 
       Get.snackbar(
@@ -97,7 +108,17 @@ class PerencanaanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } catch (e) {
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
+      }
       errorMessage(e.toString());
 
       Get.snackbar(
@@ -108,6 +129,7 @@ class PerencanaanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } finally {
       isLoading(false);
     }

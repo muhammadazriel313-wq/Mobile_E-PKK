@@ -21,20 +21,13 @@ class ReportKegiatanPokja4Model {
     this.error,
   });
 
-  factory ReportKegiatanPokja4Model.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory ReportKegiatanPokja4Model.fromJson(Map<String, dynamic> json) {
     return ReportKegiatanPokja4Model(
-      statusCode:
-          json['status_code'] ?? 0,
+      statusCode: json['status_code'] ?? 0,
 
-      message:
-          json['message'] ?? '',
+      message: json['message'] ?? '',
 
-      data:
-          KegiatanPokja4Entry.fromJson(
-        json['data'] ?? {},
-      ),
+      data: KegiatanPokja4Entry.fromJson(json['data'] ?? {}),
 
       error: json['error'],
     );
@@ -66,8 +59,7 @@ class KegiatanPokja4Entry {
 
   final String? posyandu;
 
-  final String?
-      imunisasiVaksinasiBayiBalita;
+  final String? imunisasiVaksinasiBayiBalita;
 
   final String? pkg;
 
@@ -95,16 +87,13 @@ class KegiatanPokja4Entry {
 
   final String? akseptorKbP;
 
-  final String?
-      kkMemilikiTabungan;
+  final String? kkMemilikiTabungan;
 
-  final String?
-      kkMemilikiAsuransi;
+  final String? kkMemilikiAsuransi;
 
   final String? kesehatan;
 
-  final String?
-      kelestarianLingkunganHidup;
+  final String? kelestarianLingkunganHidup;
 
   final String? perencanaanSehat;
 
@@ -188,146 +177,77 @@ class KegiatanPokja4Entry {
     this.organization,
   });
 
-  factory KegiatanPokja4Entry.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory KegiatanPokja4Entry.fromJson(Map<String, dynamic> json) {
     return KegiatanPokja4Entry(
-      idKegiatanPokja4:
-          json['id_kegiatan_pokja4']
-              ?.toString(),
+      idKegiatanPokja4: json['id_kegiatan_pokja4']?.toString(),
 
-      uuid:
-          json['uuid']
-              ?.toString(),
+      uuid: json['uuid']?.toString(),
 
-      idUser:
-          json['id_user']
-              ?.toString(),
+      idUser: json['id_user']?.toString(),
 
-      kategori:
-          json['kategori']
-              ?.toString(),
+      kategori: json['kategori']?.toString(),
 
-      kaderKesehatan:
-          json['kader_kesehatan']
-              ?.toString(),
+      kaderKesehatan: json['kader_kesehatan']?.toString(),
 
-      gizi:
-          json['gizi']
-              ?.toString(),
+      gizi: json['gizi']?.toString(),
 
-      kesling:
-          json['kesling']
-              ?.toString(),
+      kesling: json['kesling']?.toString(),
 
-      phbs:
-          json['phbs']
-              ?.toString(),
+      phbs: json['phbs']?.toString(),
 
-      kb:
-          json['kb']
-              ?.toString(),
+      kb: json['kb']?.toString(),
 
-      posyandu:
-          json['posyandu']
-              ?.toString(),
+      posyandu: json['posyandu']?.toString(),
 
-      imunisasiVaksinasiBayiBalita:
-          json[
-                  'imunisasi_vaksinasi_bayi_balita']
-              ?.toString(),
+      imunisasiVaksinasiBayiBalita: json['imunisasi_vaksinasi_bayi_balita']
+          ?.toString(),
 
-      pkg:
-          json['pkg']
-              ?.toString(),
+      pkg: json['pkg']?.toString(),
 
-      tbc:
-          json['tbc']
-              ?.toString(),
+      tbc: json['tbc']?.toString(),
 
-      jambanWc:
-          json['jamban_wc']
-              ?.toString(),
+      jambanWc: json['jamban_wc']?.toString(),
 
-      spal:
-          json['spal']
-              ?.toString(),
+      spal: json['spal']?.toString(),
 
-      tps:
-          json['tps']
-              ?.toString(),
+      tps: json['tps']?.toString(),
 
-      jumlahMck:
-          json['jumlah_mck']
-              ?.toString(),
+      jumlahMck: json['jumlah_mck']?.toString(),
 
-      pdam:
-          json['pdam']
-              ?.toString(),
+      pdam: json['pdam']?.toString(),
 
-      sumur:
-          json['sumur']
-              ?.toString(),
+      sumur: json['sumur']?.toString(),
 
-      lainLain:
-          json['lain_lain']
-              ?.toString(),
+      lainLain: json['lain_lain']?.toString(),
 
-      jmlPus:
-          json['jml_pus']
-              ?.toString(),
+      jmlPus: json['jml_pus']?.toString(),
 
-      jmlWus:
-          json['jml_wus']
-              ?.toString(),
+      jmlWus: json['jml_wus']?.toString(),
 
-      akseptorKbL:
-          json['akseptor_kb_l']
-              ?.toString(),
+      akseptorKbL: json['akseptor_kb_l']?.toString(),
 
-      akseptorKbP:
-          json['akseptor_kb_p']
-              ?.toString(),
+      akseptorKbP: json['akseptor_kb_p']?.toString(),
 
-      kkMemilikiTabungan:
-          json[
-                  'kk_memiliki_tabungan']
-              ?.toString(),
+      kkMemilikiTabungan: json['kk_memiliki_tabungan']?.toString(),
 
-      kkMemilikiAsuransi:
-          json[
-                  'kk_memiliki_asuransi']
-              ?.toString(),
+      kkMemilikiAsuransi: json['kk_memiliki_asuransi']?.toString(),
 
-      kesehatan:
-          json['kesehatan']
-              ?.toString(),
+      kesehatan: json['kesehatan']?.toString(),
 
-      kelestarianLingkunganHidup:
-          json[
-                  'kelestarian_lingkungan_hidup']
-              ?.toString(),
+      kelestarianLingkunganHidup: json['kelestarian_lingkungan_hidup']
+          ?.toString(),
 
-      perencanaanSehat:
-          json['perencanaan_sehat']
-              ?.toString(),
+      perencanaanSehat: json['perencanaan_sehat']?.toString(),
 
-      status:
-          json['status']
-              ?.toString(),
+      status: json['status']?.toString(),
 
-      createdAt:
-          json['created_at']
-              ?.toString(),
+      createdAt: json['created_at']?.toString(),
 
-      updatedAt:
-          json['updated_at']
-              ?.toString(),
+      updatedAt: json['updated_at']?.toString(),
 
       role: json['role'],
 
-      organization:
-          json['organization'],
+      organization: json['organization'],
     );
   }
 
@@ -347,13 +267,11 @@ class KegiatanPokja4Entry {
 
       'id_role': idRole,
 
-      'id_organization':
-          idOrganization,
+      'id_organization': idOrganization,
 
       'kategori': kategori,
 
-      'kader_kesehatan':
-          kaderKesehatan,
+      'kader_kesehatan': kaderKesehatan,
 
       'gizi': gizi,
 
@@ -365,8 +283,7 @@ class KegiatanPokja4Entry {
 
       'posyandu': posyandu,
 
-      'imunisasi_vaksinasi_bayi_balita':
-          imunisasiVaksinasiBayiBalita,
+      'imunisasi_vaksinasi_bayi_balita': imunisasiVaksinasiBayiBalita,
 
       'pkg': pkg,
 
@@ -390,25 +307,19 @@ class KegiatanPokja4Entry {
 
       'jml_wus': jmlWus,
 
-      'akseptor_kb_l':
-          akseptorKbL,
+      'akseptor_kb_l': akseptorKbL,
 
-      'akseptor_kb_p':
-          akseptorKbP,
+      'akseptor_kb_p': akseptorKbP,
 
-      'kk_memiliki_tabungan':
-          kkMemilikiTabungan,
+      'kk_memiliki_tabungan': kkMemilikiTabungan,
 
-      'kk_memiliki_asuransi':
-          kkMemilikiAsuransi,
+      'kk_memiliki_asuransi': kkMemilikiAsuransi,
 
       'kesehatan': kesehatan,
 
-      'kelestarian_lingkungan_hidup':
-          kelestarianLingkunganHidup,
+      'kelestarian_lingkungan_hidup': kelestarianLingkunganHidup,
 
-      'perencanaan_sehat':
-          perencanaanSehat,
+      'perencanaan_sehat': perencanaanSehat,
     };
   }
 }
@@ -417,8 +328,7 @@ class KegiatanPokja4Entry {
 /// EMPTY EXTENSION
 /// =======================================================
 
-extension KegiatanPokja4EntryExtension
-    on KegiatanPokja4Entry {
+extension KegiatanPokja4EntryExtension on KegiatanPokja4Entry {
   static KegiatanPokja4Entry empty() {
     return KegiatanPokja4Entry(
       idKegiatanPokja4: '',
@@ -441,8 +351,7 @@ extension KegiatanPokja4EntryExtension
 
       posyandu: '',
 
-      imunisasiVaksinasiBayiBalita:
-          '',
+      imunisasiVaksinasiBayiBalita: '',
 
       pkg: '',
 
@@ -476,8 +385,7 @@ extension KegiatanPokja4EntryExtension
 
       kesehatan: '',
 
-      kelestarianLingkunganHidup:
-          '',
+      kelestarianLingkunganHidup: '',
 
       perencanaanSehat: '',
 

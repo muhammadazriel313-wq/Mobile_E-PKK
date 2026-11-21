@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
 import 'package:epkk_nganjuk/features/pages/pokja4/kesehatan/report_kesehatan_model.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class KesehatanController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var reportData = Rxn<ReportKesehatanModel>();
+  var lastFailureWasNetwork = false.obs;
 
   // ================= SUBMIT DATA =================
-  Future<void> submitKesehatanData({
+  Future<bool> submitKesehatanData({
     required String idUser,
     required String kaderKesehatan,
     required String kaderGizi,
@@ -40,11 +42,13 @@ class KesehatanController extends GetxController {
       isLoading(true);
       errorMessage('');
       reportData(null);
+      lastFailureWasNetwork.value = false;
 
       final response = await apiHelper.post(
         '/report/kesehatan',
         data: {
           'id_user': idUser,
+<<<<<<< HEAD
           'kader_kesehatan': kaderKesehatan,
           'kader_gizi': kaderGizi,
           'kader_kesling': kaderKesling,
@@ -62,6 +66,15 @@ class KesehatanController extends GetxController {
           'jumlah_klp': jumlahKip ?? kaderKesling,
           'jumlah_anggota': jumlahAnggota ?? kaderPhbs,
           'jumlah_kartu_gratis': jumlahKartuGratis ?? kaderKb,
+=======
+          'jumlah_posyandu': jumlahPosyandu,
+          'jumlah_posyandu_iterasi': jumlahPosyanduIterasi,
+          'jumlah_klp': jumlahKip,
+          'jumlah_anggota': jumlahAnggota,
+          'jumlah_kartu_gratis': jumlahKartuGratis,
+          'id_role': idRole,
+          'id_organization': idOrganization,
+>>>>>>> 79c91a4f90358c475f9ad3f32e3219d5aee2b664
           if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
         },
       );
@@ -81,6 +94,7 @@ class KesehatanController extends GetxController {
           borderRadius: 12,
           duration: const Duration(seconds: 3),
         );
+        return true;
       } else {
         errorMessage('Gagal mengirim data');
 
@@ -92,8 +106,13 @@ class KesehatanController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } on SocketException {
+<<<<<<< HEAD
+=======
+      lastFailureWasNetwork.value = true;
+>>>>>>> 79c91a4f90358c475f9ad3f32e3219d5aee2b664
       errorMessage('Tidak ada koneksi internet');
 
       Get.snackbar(
@@ -104,7 +123,9 @@ class KesehatanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } on TimeoutException {
+      lastFailureWasNetwork.value = true;
       errorMessage('Server timeout');
 
       Get.snackbar(
@@ -115,7 +136,17 @@ class KesehatanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } catch (e) {
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
+      }
       errorMessage(e.toString());
 
       Get.snackbar(
@@ -126,6 +157,7 @@ class KesehatanController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
+      return false;
     } finally {
       isLoading(false);
     }

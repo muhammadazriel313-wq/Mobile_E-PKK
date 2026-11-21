@@ -1,5 +1,6 @@
 import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/detail_laporan/detail_laporan_controller.dart';
+import 'package:epkk_nganjuk/features/detail_laporan/pokja1/pokja1_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -129,7 +130,124 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
     );
   }
 
+  List<Widget> _buildPokja1FormFields() {
+    final fields = Pokja1Config.getFieldsForUuid(widget.uuid);
+    final isKaderPokja1 = widget.uuid.startsWith('KP1-');
+    final List<Widget> children = [];
+    String? currentSection;
+
+    for (final field in fields) {
+      if (field.section != null && field.section != currentSection) {
+        currentSection = field.section;
+        children.add(
+          Padding(
+            padding: EdgeInsets.only(top: children.isEmpty ? 0 : 12.h, bottom: 10.h),
+            child: Text(
+              currentSection!,
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1F2937),
+              ),
+            ),
+          ),
+        );
+      }
+
+      children.add(
+        Container(
+          margin: EdgeInsets.only(bottom: 16.h),
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18.r),
+            border: Border.all(color: const Color(0xFFE8EDF3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                field.label,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              TextFormField(
+                initialValue: _formData[field.key]?.toString() ?? '',
+                keyboardType: field.type == Pokja1InputType.number
+                    ? TextInputType.number
+                    : TextInputType.text,
+                minLines: field.type == Pokja1InputType.multiline ? 3 : 1,
+                maxLines: field.type == Pokja1InputType.multiline ? 5 : 1,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                decoration: InputDecoration(
+                  hintText: field.type == Pokja1InputType.number
+                      ? 'Masukkan jumlah'
+                      : 'Masukkan ${field.label}',
+                  hintStyle: TextStyle(
+                    fontSize: 13.sp,
+                    color: Colors.grey.shade400,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 14.h,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                    borderSide: BorderSide(color: primaryColor, width: 1.5),
+                  ),
+                ),
+                onSaved: (newValue) => _formData[field.key] = newValue,
+                validator: (value) {
+                  if (isKaderPokja1) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Field wajib diisi';
+                    }
+                    if (int.tryParse(value.trim()) == null) {
+                      return 'Masukkan angka yang valid';
+                    }
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return children;
+  }
+
   List<Widget> _buildFormFields() {
+    if (Pokja1Config.isPokja1(widget.uuid)) {
+      return _buildPokja1FormFields();
+    }
+
     final editableData = Map.from(_formData)
       ..removeWhere(
         (key, value) =>
@@ -361,10 +479,23 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
 
   void _updateLaporan() async {
     try {
+      final Map<String, dynamic> dataToSend;
+      if (Pokja1Config.isPokja1(widget.uuid)) {
+        final pokja1Fields = Pokja1Config.getFieldsForUuid(widget.uuid);
+        dataToSend = {};
+        for (final field in pokja1Fields) {
+          if (_formData.containsKey(field.key)) {
+            dataToSend[field.key] = _formData[field.key];
+          }
+        }
+      } else {
+        dataToSend = _formData;
+      }
+
       await controller.updateLaporan(
         uuid: widget.uuid,
         orgId: widget.orgId,
-        data: _formData,
+        data: dataToSend,
       );
 
       Get.snackbar(
