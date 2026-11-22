@@ -33,11 +33,17 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
   String? nameRole;
   String? nameOrganization;
 
-  final posyanduJumlahController = TextEditingController();
-  final posyanduTintegrasiController = TextEditingController();
-  final lansiaKlpController = TextEditingController();
-  final lansiaAnggotaController = TextEditingController();
-  final lansiaKartuController = TextEditingController();
+  // Kolom 3-11 Lampiran 4.24
+  final kaderKesehatanController = TextEditingController();
+  final kaderGiziController = TextEditingController();
+  final kaderKeslingController = TextEditingController();
+  final kaderPhbsController = TextEditingController();
+  final kaderKbController = TextEditingController();
+  final posyanduController = TextEditingController();
+  final imunisasiController = TextEditingController();
+  final pkgController = TextEditingController();
+  final tbcController = TextEditingController();
+  final catatanController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -51,19 +57,29 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
   bool _closedBySave = false;
 
   void clearForm() {
-    posyanduJumlahController.clear();
-    posyanduTintegrasiController.clear();
-    lansiaKlpController.clear();
-    lansiaAnggotaController.clear();
-    lansiaKartuController.clear();
+    kaderKesehatanController.clear();
+    kaderGiziController.clear();
+    kaderKeslingController.clear();
+    kaderPhbsController.clear();
+    kaderKbController.clear();
+    posyanduController.clear();
+    imunisasiController.clear();
+    pkgController.clear();
+    tbcController.clear();
+    catatanController.clear();
   }
 
   bool isFormEmpty() {
-    return posyanduJumlahController.text.trim().isEmpty &&
-        posyanduTintegrasiController.text.trim().isEmpty &&
-        lansiaKlpController.text.trim().isEmpty &&
-        lansiaAnggotaController.text.trim().isEmpty &&
-        lansiaKartuController.text.trim().isEmpty;
+    return kaderKesehatanController.text.trim().isEmpty &&
+        kaderGiziController.text.trim().isEmpty &&
+        kaderKeslingController.text.trim().isEmpty &&
+        kaderPhbsController.text.trim().isEmpty &&
+        kaderKbController.text.trim().isEmpty &&
+        posyanduController.text.trim().isEmpty &&
+        imunisasiController.text.trim().isEmpty &&
+        pkgController.text.trim().isEmpty &&
+        tbcController.text.trim().isEmpty &&
+        catatanController.text.trim().isEmpty;
   }
 
   @override
@@ -88,12 +104,18 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
 
   void _populateFromDraft(DraftModel draft) {
     final d = draft.dataForm;
-    posyanduJumlahController.text = d['jumlah_posyandu']?.toString() ?? '';
-    posyanduTintegrasiController.text =
-        d['jumlah_posyandu_iterasi']?.toString() ?? '';
-    lansiaKlpController.text = d['jumlah_klp']?.toString() ?? '';
-    lansiaAnggotaController.text = d['jumlah_anggota']?.toString() ?? '';
-    lansiaKartuController.text = d['jumlah_kartu_gratis']?.toString() ?? '';
+    kaderKesehatanController.text = d['kader_kesehatan']?.toString() ?? '';
+    kaderGiziController.text = d['kader_gizi']?.toString() ?? '';
+    kaderKeslingController.text = d['kader_kesling']?.toString() ?? '';
+    kaderPhbsController.text = d['kader_phbs']?.toString() ?? '';
+    kaderKbController.text = d['kader_kb']?.toString() ?? '';
+    // Draf lama menyimpan posyandu di kunci jumlah_posyandu.
+    posyanduController.text =
+        (d['posyandu'] ?? d['jumlah_posyandu'])?.toString() ?? '';
+    imunisasiController.text = d['imunisasi_vaksinasi']?.toString() ?? '';
+    pkgController.text = d['pkg']?.toString() ?? '';
+    tbcController.text = d['tbc']?.toString() ?? '';
+    catatanController.text = d['catatan']?.toString() ?? '';
   }
 
   Map<String, dynamic> _collectFormData() {
@@ -106,11 +128,16 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
       'full_name': fullName ?? '',
       'name_role': nameRole ?? '',
       'name_organization': nameOrganization ?? '',
-      'jumlah_posyandu': posyanduJumlahController.text.trim(),
-      'jumlah_posyandu_iterasi': posyanduTintegrasiController.text.trim(),
-      'jumlah_klp': lansiaKlpController.text.trim(),
-      'jumlah_anggota': lansiaAnggotaController.text.trim(),
-      'jumlah_kartu_gratis': lansiaKartuController.text.trim(),
+      'kader_kesehatan': kaderKesehatanController.text.trim(),
+      'kader_gizi': kaderGiziController.text.trim(),
+      'kader_kesling': kaderKeslingController.text.trim(),
+      'kader_phbs': kaderPhbsController.text.trim(),
+      'kader_kb': kaderKbController.text.trim(),
+      'posyandu': posyanduController.text.trim(),
+      'imunisasi_vaksinasi': imunisasiController.text.trim(),
+      'pkg': pkgController.text.trim(),
+      'tbc': tbcController.text.trim(),
+      'catatan': catatanController.text.trim(),
     };
   }
 
@@ -236,28 +263,37 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
 
   @override
   void dispose() {
-    posyanduJumlahController.dispose();
-    posyanduTintegrasiController.dispose();
-    lansiaKlpController.dispose();
-    lansiaAnggotaController.dispose();
-    lansiaKartuController.dispose();
+    kaderKesehatanController.dispose();
+    kaderGiziController.dispose();
+    kaderKeslingController.dispose();
+    kaderPhbsController.dispose();
+    kaderKbController.dispose();
+    posyanduController.dispose();
+    imunisasiController.dispose();
+    pkgController.dispose();
+    tbcController.dispose();
+    catatanController.dispose();
     super.dispose();
   }
 
   Widget buildInput({
     required TextEditingController controller,
     required String label,
+    String hintText = 'Masukkan jumlah',
     TextInputAction action = TextInputAction.next,
+    bool isOptional = false,
   }) {
     return Column(
       children: [
         InputFormField(
           controller: controller,
-          hintText: 'Masukkan jumlah',
+          hintText: hintText,
           label: label,
           textInputAction: action,
-          keyboardType: TextInputType.number,
-          validator: (value) => ValidatorForm.validateDefault(value),
+          keyboardType: isOptional ? TextInputType.text : TextInputType.number,
+          validator: isOptional
+              ? null
+              : (value) => ValidatorForm.validateDefault(value),
         ),
         SizedBox(height: 20.h),
       ],
@@ -332,48 +368,89 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
                           children: [
                             SizedBox(height: 6.h),
                             TypographyStyles.bodyCaptionSemiBold(
-                              'Posyandu',
+                              'Jumlah Kader',
                               color: TextColors.grey900,
                             ),
                             SizedBox(height: 24.h),
 
-                            /// POSYANDU JUMLAH
+                            /// KADER KESEHATAN
                             buildInput(
-                              controller: posyanduJumlahController,
-                              label: 'Jumlah Posyandu',
+                              controller: kaderKesehatanController,
+                              label: 'Kader Kesehatan',
                             ),
 
-                            /// POSYANDU TERINTEGRASI
+                            /// KADER GIZI
                             buildInput(
-                              controller: posyanduTintegrasiController,
-                              label: 'Jumlah Posyandu Terintegrasi',
+                              controller: kaderGiziController,
+                              label: 'Gizi',
+                            ),
+
+                            /// KADER KESLING
+                            buildInput(
+                              controller: kaderKeslingController,
+                              label: 'Kesling',
+                            ),
+
+                            /// KADER PHBS
+                            buildInput(
+                              controller: kaderPhbsController,
+                              label: 'PHBS',
+                            ),
+
+                            /// KADER KB
+                            buildInput(
+                              controller: kaderKbController,
+                              label: 'KB',
                             ),
 
                             SizedBox(height: 10.h),
                             TypographyStyles.bodyCaptionSemiBold(
-                              'Kelompok Lansia',
+                              'Posyandu, Imunisasi, PKG dan TBC',
                               color: TextColors.grey900,
                             ),
                             SizedBox(height: 24.h),
 
-                            /// LANSIA KLP
+                            /// POSYANDU
                             buildInput(
-                              controller: lansiaKlpController,
-                              label: 'Jumlah Kelompok',
+                              controller: posyanduController,
+                              label: 'Posyandu',
+                              hintText: 'Jumlah total posyandu',
                             ),
 
-                            /// LANSIA ANGGOTA
+                            /// IMUNISASI / VAKSINASI
                             buildInput(
-                              controller: lansiaAnggotaController,
-                              label: 'Jumlah Anggota',
+                              controller: imunisasiController,
+                              label: 'Imunisasi / Vaksinasi Bayi / Balita',
                             ),
 
-                            /// LANSIA KARTU GRATIS
+                            /// PKG
                             buildInput(
-                              controller: lansiaKartuController,
-                              label:
-                                  'Jumlah yang Memiliki Kartu Berobat Gratis',
+                              controller: pkgController,
+                              label: 'PKG',
+                              hintText: 'Pemeriksaan Kesehatan Gratis',
+                            ),
+
+                            /// TBC
+                            buildInput(
+                              controller: tbcController,
+                              label: 'TBC',
+                              hintText: 'Jumlah penderita TBC',
+                            ),
+
+                            SizedBox(height: 10.h),
+                            TypographyStyles.bodyCaptionSemiBold(
+                              'Catatan Tambahan (Opsional)',
+                              color: TextColors.grey900,
+                            ),
+                            SizedBox(height: 24.h),
+
+                            /// CATATAN
+                            buildInput(
+                              controller: catatanController,
+                              label: 'Catatan',
+                              hintText: 'Tulis catatan jika ada',
                               action: TextInputAction.done,
+                              isOptional: true,
                             ),
 
                             SizedBox(height: 10.h),
@@ -434,20 +511,26 @@ class _KesehatanScreenState extends State<KesehatanScreen> {
                                                     await uploadReportController
                                                         .submitKesehatanData(
                                                   idUser: idUser ?? '',
-                                                  jumlahPosyandu:
-                                                      posyanduJumlahController
+                                                  kaderKesehatan:
+                                                      kaderKesehatanController
                                                           .text,
-                                                  jumlahPosyanduIterasi:
-                                                      posyanduTintegrasiController
+                                                  kaderGizi:
+                                                      kaderGiziController.text,
+                                                  kaderKesling:
+                                                      kaderKeslingController
                                                           .text,
-                                                  jumlahKip: lansiaKlpController
-                                                      .text,
-                                                  jumlahAnggota:
-                                                      lansiaAnggotaController
-                                                          .text,
-                                                  jumlahKartuGratis:
-                                                      lansiaKartuController
-                                                          .text,
+                                                  kaderPhbs:
+                                                      kaderPhbsController.text,
+                                                  kaderKb:
+                                                      kaderKbController.text,
+                                                  posyandu:
+                                                      posyanduController.text,
+                                                  imunisasiVaksinasi:
+                                                      imunisasiController.text,
+                                                  pkg: pkgController.text,
+                                                  tbc: tbcController.text,
+                                                  catatan:
+                                                      catatanController.text,
                                                   idRole: idRole ?? '',
                                                   idOrganization:
                                                       idOrganization ?? '',

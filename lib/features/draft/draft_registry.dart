@@ -745,16 +745,23 @@ class DraftRegistry {
     final data = draft.dataForm;
 
     final requiredKeys = [
-      'jumlah_posyandu',
-      'jumlah_posyandu_iterasi',
-      'jumlah_klp',
-      'jumlah_anggota',
-      'jumlah_kartu_gratis',
+      'kader_kesehatan',
+      'kader_gizi',
+      'kader_kesling',
+      'kader_phbs',
+      'kader_kb',
+      'posyandu',
+      'imunisasi_vaksinasi',
+      'pkg',
+      'tbc',
     ];
-    final isComplete = requiredKeys.every((k) {
-      final val = data[k]?.toString().trim() ?? '';
-      return val.isNotEmpty;
-    });
+    // Draf lama menyimpan posyandu di kunci jumlah_posyandu.
+    final posyandu =
+        (data['posyandu'] ?? data['jumlah_posyandu'])?.toString().trim() ?? '';
+    final isComplete = posyandu.isNotEmpty &&
+        requiredKeys
+            .where((k) => k != 'posyandu')
+            .every((k) => (data[k]?.toString().trim() ?? '').isNotEmpty);
 
     if (!isComplete) {
       return const DraftSendResult(
@@ -764,11 +771,15 @@ class DraftRegistry {
     }
 
     final success = await controller.submitKesehatanData(
-      jumlahPosyandu: data['jumlah_posyandu']?.toString() ?? '',
-      jumlahPosyanduIterasi: data['jumlah_posyandu_iterasi']?.toString() ?? '',
-      jumlahKip: data['jumlah_klp']?.toString() ?? '',
-      jumlahAnggota: data['jumlah_anggota']?.toString() ?? '',
-      jumlahKartuGratis: data['jumlah_kartu_gratis']?.toString() ?? '',
+      kaderKesehatan: data['kader_kesehatan']?.toString() ?? '',
+      kaderGizi: data['kader_gizi']?.toString() ?? '',
+      kaderKesling: data['kader_kesling']?.toString() ?? '',
+      kaderPhbs: data['kader_phbs']?.toString() ?? '',
+      kaderKb: data['kader_kb']?.toString() ?? '',
+      posyandu: posyandu,
+      imunisasiVaksinasi: data['imunisasi_vaksinasi']?.toString() ?? '',
+      pkg: data['pkg']?.toString() ?? '',
+      tbc: data['tbc']?.toString() ?? '',
       idRole: data['id_role']?.toString() ?? '',
       idOrganization: data['id_organization']?.toString() ?? '',
       idUser: draft.idAkun,
@@ -814,6 +825,7 @@ class DraftRegistry {
       kbPria: data['Kb_p']?.toString() ?? '',
       kbWanita: data['Kb_w']?.toString() ?? '',
       kkTabungan: data['Kk_tbg']?.toString() ?? '',
+      kkAsuransi: data['Kk_asuransi']?.toString() ?? '',
       idRole: data['id_role']?.toString() ?? '',
       idOrganization: data['id_organization']?.toString() ?? '',
       idUser: draft.idAkun,
