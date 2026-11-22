@@ -47,6 +47,8 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
     switch (status) {
       case 'Proses':
         return 'Sedang Diproses';
+      case 'Revisi':
+        return 'Revisi';
       case 'Disetujui1':
         return 'Disetujui Kecamatan';
       case 'Disetujui2':

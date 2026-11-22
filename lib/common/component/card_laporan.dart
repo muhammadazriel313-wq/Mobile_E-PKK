@@ -206,9 +206,6 @@ Color getStatusColor(String status) {
     case 'sedang diproses':
       return Colors.orange.shade100;
 
-    case 'revisi':
-      return Colors.red.shade100;
-
     case 'disetujui kecamatan':
       return Colors.green.shade100;
 
@@ -224,9 +221,6 @@ Color getStatusTextColor(String status) {
   switch (status.toLowerCase()) {
     case 'sedang diproses':
       return Colors.orange.shade800;
-
-    case 'revisi':
-      return Colors.red.shade800;
 
     case 'disetujui kecamatan':
       return Colors.green.shade800;

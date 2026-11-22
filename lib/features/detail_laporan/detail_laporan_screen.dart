@@ -215,6 +215,67 @@ class DetailLaporanScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildRevisionFieldCard(Map<String, dynamic> data) {
+    final catatan = (data['catatan'] ?? '').toString().trim();
+
+    return Container(
+      width: double.infinity,
+
+      margin: EdgeInsets.only(bottom: 14.h),
+
+      padding: EdgeInsets.all(14.w),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(18.r),
+
+        border: Border.all(color: const Color(0xFFE7EDF3)),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          Text(
+            'Revisi',
+
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+            ),
+          ),
+
+          SizedBox(height: 8.h),
+
+          Text(
+            'Keterangan',
+
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade500,
+            ),
+          ),
+
+          SizedBox(height: 4.h),
+
+          Text(
+            catatan.isEmpty ? '-' : catatan,
+
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPokja1DetailFields(Map<String, dynamic> data) {
     final fields = Pokja1Config.getFieldsForUuid(uuid);
     final List<Widget> children = [];
@@ -225,7 +286,10 @@ class DetailLaporanScreen extends StatelessWidget {
         currentSection = field.section;
         children.add(
           Padding(
-            padding: EdgeInsets.only(top: children.isEmpty ? 0 : 12.h, bottom: 10.h),
+            padding: EdgeInsets.only(
+              top: children.isEmpty ? 0 : 12.h,
+              bottom: 10.h,
+            ),
             child: Text(
               currentSection!,
               style: TextStyle(
@@ -239,7 +303,8 @@ class DetailLaporanScreen extends StatelessWidget {
       }
 
       final rawValue = data[field.key];
-      final displayValue = (rawValue == null || rawValue.toString().trim().isEmpty)
+      final displayValue =
+          (rawValue == null || rawValue.toString().trim().isEmpty)
           ? '-'
           : rawValue.toString().trim();
 
@@ -278,6 +343,10 @@ class DetailLaporanScreen extends StatelessWidget {
           ),
         ),
       );
+    }
+
+    if (status == 'Revisi') {
+      children.add(_buildRevisionFieldCard(data));
     }
 
     // Tampilkan updated_at di paling bawah setelah semua field form
@@ -357,6 +426,7 @@ class DetailLaporanScreen extends StatelessWidget {
       'id_pokja4_bidang3',
       'id_laporan_umum',
       'status',
+      'catatan',
       'created_at',
       'id_role',
       'id_organization',
@@ -371,62 +441,72 @@ class DetailLaporanScreen extends StatelessWidget {
                 idOrganization.toString() != kIdOrganisasiBidangUmum),
       );
 
-    return Column(
-      children: displayData.entries.map((entry) {
-        // Foto kegiatan (khusus Kegiatan)
-        if (entry.key == 'gambar_url') {
-          return _buildFotoCard(entry.value?.toString());
-        }
+    final children = displayData.entries.map((entry) {
+      // Foto kegiatan (khusus Kegiatan)
+      if (entry.key == 'gambar_url') {
+        return _buildFotoCard(entry.value?.toString());
+      }
 
-        return Container(
-          width: double.infinity,
+      return Container(
+        width: double.infinity,
 
-          margin: EdgeInsets.only(bottom: 14.h),
+        margin: EdgeInsets.only(bottom: 14.h),
 
-          padding: EdgeInsets.all(14.w),
+        padding: EdgeInsets.all(14.w),
 
-          decoration: BoxDecoration(
-            color: Colors.white,
+        decoration: BoxDecoration(
+          color: Colors.white,
 
-            borderRadius: BorderRadius.circular(18.r),
+          borderRadius: BorderRadius.circular(18.r),
 
-            border: Border.all(color: const Color(0xFFE7EDF3)),
-          ),
+          border: Border.all(color: const Color(0xFFE7EDF3)),
+        ),
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-            children: [
-              Text(
-                _getFieldLabel(
-                  entry.key,
-                  isKegiatan: data.containsKey('gambar_url'),
-                ),
-
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
-                ),
+          children: [
+            Text(
+              _getFieldLabel(
+                entry.key,
+                isKegiatan: data.containsKey('gambar_url'),
               ),
 
-              SizedBox(height: 8.h),
-
-              Text(
-                _formatFieldValue(entry.key, entry.value),
-
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                  height: 1.5,
-                ),
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
               ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
+            ),
+
+            SizedBox(height: 8.h),
+
+            Text(
+              _formatFieldValue(entry.key, entry.value),
+
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+
+    if (status == 'Revisi') {
+      final updatedAtIndex = displayData.keys.toList().indexOf('updated_at');
+
+      if (updatedAtIndex >= 0) {
+        children.insert(updatedAtIndex, _buildRevisionFieldCard(data));
+      } else {
+        children.add(_buildRevisionFieldCard(data));
+      }
+    }
+
+    return Column(children: children);
   }
 
   Widget _buildFotoCard(String? url) {
@@ -524,6 +604,9 @@ class DetailLaporanScreen extends StatelessWidget {
     switch (status) {
       case 'Proses':
         return 'Sedang Diproses';
+
+      case 'Revisi':
+        return 'Revisi';
 
       case 'Disetujui1':
         return 'Disetujui Kecamatan';
