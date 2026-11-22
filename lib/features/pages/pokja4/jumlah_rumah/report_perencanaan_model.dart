@@ -43,6 +43,7 @@ class PerencanaanEntry {
   final String kbPria;
   final String kbWanita;
   final String kkTabungan;
+  final String kkAsuransi;
   final String? catatan;
   final String status;
   final DateTime createdAt;
@@ -59,6 +60,7 @@ class PerencanaanEntry {
     required this.kbPria,
     required this.kbWanita,
     required this.kkTabungan,
+    required this.kkAsuransi,
     this.catatan,
     required this.status,
     required this.createdAt,
@@ -81,6 +83,7 @@ class PerencanaanEntry {
       kbPria: json['Kb_p']?.toString() ?? '0',
       kbWanita: json['Kb_w']?.toString() ?? '0',
       kkTabungan: json['Kk_tbg']?.toString() ?? '0',
+      kkAsuransi: json['Kk_asuransi']?.toString() ?? '0',
       catatan: json['catatan']?.toString(),
       status: json['status']?.toString() ?? 'Proses',
       createdAt:
@@ -104,6 +107,7 @@ class PerencanaanEntry {
       'Kb_p': kbPria,
       'Kb_w': kbWanita,
       'Kk_tbg': kkTabungan,
+      'Kk_asuransi': kkAsuransi,
       'catatan': catatan,
       'status': status,
       'created_at': createdAt.toIso8601String(),
