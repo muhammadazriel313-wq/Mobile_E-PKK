@@ -276,6 +276,53 @@ class DetailLaporanScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildUpdatedAtCard(Map<String, dynamic> data) {
+    final rawUpdatedAt = data['updated_at'];
+    String formattedUpdatedAt = '-';
+    if (rawUpdatedAt != null) {
+      final parsedDate = DateTime.tryParse(rawUpdatedAt.toString());
+      if (parsedDate != null) {
+        formattedUpdatedAt = DateFormat('dd-MM-yyyy HH:mm').format(parsedDate);
+      } else {
+        formattedUpdatedAt = rawUpdatedAt.toString();
+      }
+    }
+
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 14.h),
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: const Color(0xFFE7EDF3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Terakhir diperbarui',
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            formattedUpdatedAt,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPokja1DetailFields(Map<String, dynamic> data) {
     final fields = Pokja1Config.getFieldsForUuid(uuid);
     final List<Widget> children = [];
@@ -350,52 +397,7 @@ class DetailLaporanScreen extends StatelessWidget {
     }
 
     // Tampilkan updated_at di paling bawah setelah semua field form
-    final rawUpdatedAt = data['updated_at'];
-    String formattedUpdatedAt = '-';
-    if (rawUpdatedAt != null) {
-      final parsedDate = DateTime.tryParse(rawUpdatedAt.toString());
-      if (parsedDate != null) {
-        formattedUpdatedAt = DateFormat('dd-MM-yyyy HH:mm').format(parsedDate);
-      } else {
-        formattedUpdatedAt = rawUpdatedAt.toString();
-      }
-    }
-
-    children.add(
-      Container(
-        width: double.infinity,
-        margin: EdgeInsets.only(bottom: 14.h),
-        padding: EdgeInsets.all(14.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-          border: Border.all(color: const Color(0xFFE7EDF3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Terakhir diperbarui',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              formattedUpdatedAt,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    children.add(_buildUpdatedAtCard(data));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,6 +430,7 @@ class DetailLaporanScreen extends StatelessWidget {
       'status',
       'catatan',
       'created_at',
+      'updated_at',
       'id_role',
       'id_organization',
     ];
@@ -497,13 +500,11 @@ class DetailLaporanScreen extends StatelessWidget {
     }).toList();
 
     if (status == 'Revisi') {
-      final updatedAtIndex = displayData.keys.toList().indexOf('updated_at');
+      children.add(_buildRevisionFieldCard(data));
+    }
 
-      if (updatedAtIndex >= 0) {
-        children.insert(updatedAtIndex, _buildRevisionFieldCard(data));
-      } else {
-        children.add(_buildRevisionFieldCard(data));
-      }
+    if (data.containsKey('updated_at')) {
+      children.add(_buildUpdatedAtCard(data));
     }
 
     return Column(children: children);
