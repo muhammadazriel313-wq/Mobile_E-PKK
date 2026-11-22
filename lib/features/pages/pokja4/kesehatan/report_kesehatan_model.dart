@@ -36,6 +36,7 @@ class KesehatanEntry {
   final String idPokja4Bidang1;
   final String uuid;
   final String idUser;
+  // Kolom Pokja IV (Lampiran 4.24)
   final String kaderKesehatan;
   final String kaderGizi;
   final String kaderKesling;
@@ -45,6 +46,8 @@ class KesehatanEntry {
   final String imunisasiVaksinasi;
   final String pkg;
   final String tbc;
+
+  // Legacy fields untuk backwards compatibility
   final String jumlahPosyandu;
   final String jumlahPosyanduIterasi;
   final String jumlahKip;
