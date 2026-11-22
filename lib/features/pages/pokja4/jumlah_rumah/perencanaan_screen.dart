@@ -38,6 +38,8 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
   final kbPriaController = TextEditingController();
   final kbWanitaController = TextEditingController();
   final tabunganKeluargaController = TextEditingController();
+  final asuransiKeluargaController = TextEditingController();
+  final catatanController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -56,6 +58,8 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
     kbPriaController.clear();
     kbWanitaController.clear();
     tabunganKeluargaController.clear();
+    asuransiKeluargaController.clear();
+    catatanController.clear();
   }
 
   bool isFormEmpty() {
@@ -63,7 +67,9 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
         wusController.text.trim().isEmpty &&
         kbPriaController.text.trim().isEmpty &&
         kbWanitaController.text.trim().isEmpty &&
-        tabunganKeluargaController.text.trim().isEmpty;
+        tabunganKeluargaController.text.trim().isEmpty &&
+        asuransiKeluargaController.text.trim().isEmpty &&
+        catatanController.text.trim().isEmpty;
   }
 
   @override
@@ -93,6 +99,8 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
     kbPriaController.text = d['Kb_p']?.toString() ?? '';
     kbWanitaController.text = d['Kb_w']?.toString() ?? '';
     tabunganKeluargaController.text = d['Kk_tbg']?.toString() ?? '';
+    asuransiKeluargaController.text = d['Kk_asuransi']?.toString() ?? '';
+    catatanController.text = d['catatan']?.toString() ?? '';
   }
 
   Map<String, dynamic> _collectFormData() {
@@ -110,6 +118,8 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
       'Kb_p': kbPriaController.text.trim(),
       'Kb_w': kbWanitaController.text.trim(),
       'Kk_tbg': tabunganKeluargaController.text.trim(),
+      'Kk_asuransi': asuransiKeluargaController.text.trim(),
+      'catatan': catatanController.text.trim(),
     };
   }
 
@@ -240,6 +250,8 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
     kbPriaController.dispose();
     kbWanitaController.dispose();
     tabunganKeluargaController.dispose();
+    asuransiKeluargaController.dispose();
+    catatanController.dispose();
     super.dispose();
   }
 
@@ -253,17 +265,21 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
   Widget buildInput({
     required TextEditingController controller,
     required String label,
+    String hintText = 'Masukkan jumlah',
     TextInputAction action = TextInputAction.next,
+    bool isOptional = false,
   }) {
     return Column(
       children: [
         InputFormField(
           controller: controller,
-          hintText: 'Masukkan jumlah',
+          hintText: hintText,
           label: label,
           textInputAction: action,
-          keyboardType: TextInputType.number,
-          validator: (value) => ValidatorForm.validateDefault(value),
+          keyboardType: isOptional ? TextInputType.text : TextInputType.number,
+          validator: isOptional
+              ? null
+              : (value) => ValidatorForm.validateDefault(value),
         ),
         SizedBox(height: 20.h),
       ],
@@ -369,14 +385,32 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
                             ),
 
                             SizedBox(height: 10.h),
-                            sectionTitle('Tabungan'),
+                            sectionTitle('Tabungan dan Asuransi Kesehatan'),
                             SizedBox(height: 24.h),
 
                             /// TABUNGAN
                             buildInput(
                               controller: tabunganKeluargaController,
                               label: 'KK yang Memiliki Tabungan Keluarga',
+                            ),
+
+                            /// ASURANSI
+                            buildInput(
+                              controller: asuransiKeluargaController,
+                              label: 'KK yang Memiliki Asuransi Kesehatan',
+                            ),
+
+                            SizedBox(height: 10.h),
+                            sectionTitle('Catatan Tambahan (Opsional)'),
+                            SizedBox(height: 24.h),
+
+                            /// CATATAN
+                            buildInput(
+                              controller: catatanController,
+                              label: 'Catatan',
+                              hintText: 'Tulis catatan jika ada',
                               action: TextInputAction.done,
+                              isOptional: true,
                             ),
 
                             SizedBox(height: 10.h),
@@ -447,6 +481,11 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
                                                   kkTabungan:
                                                       tabunganKeluargaController
                                                           .text,
+                                                  kkAsuransi:
+                                                      asuransiKeluargaController
+                                                          .text,
+                                                  catatan:
+                                                      catatanController.text,
                                                   idRole: idRole ?? '',
                                                   idOrganization:
                                                       idOrganization ?? '',
