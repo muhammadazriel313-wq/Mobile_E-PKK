@@ -41,6 +41,7 @@ class _KelestarianLingkungan2ScreenState
   final pdamController = TextEditingController();
   final sumurController = TextEditingController();
   final lainnyaController = TextEditingController();
+  final catatanController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -81,6 +82,7 @@ class _KelestarianLingkungan2ScreenState
     pdamController.text = d['pdam']?.toString() ?? '';
     sumurController.text = d['sumur']?.toString() ?? '';
     lainnyaController.text = d['dll']?.toString() ?? '';
+    catatanController.text = d['catatan']?.toString() ?? '';
   }
 
   Map<String, dynamic> _collectFormData() {
@@ -100,6 +102,7 @@ class _KelestarianLingkungan2ScreenState
       'pdam': pdamController.text.trim(),
       'sumur': sumurController.text.trim(),
       'dll': lainnyaController.text.trim(),
+      'catatan': catatanController.text.trim(),
       'langkah': 2,
     };
   }
@@ -212,22 +215,25 @@ class _KelestarianLingkungan2ScreenState
     pdamController.dispose();
     sumurController.dispose();
     lainnyaController.dispose();
+    catatanController.dispose();
     super.dispose();
   }
 
   Widget buildInput({
     required TextEditingController controller,
     required String label,
+    String hintText = 'Masukkan jumlah',
     TextInputAction action = TextInputAction.next,
+    bool isOptional = false,
   }) {
     return Column(
       children: [
         InputFormField(
           controller: controller,
-          hintText: 'Masukkan jumlah',
+          hintText: hintText,
           label: label,
           textInputAction: action,
-          keyboardType: TextInputType.number,
+          keyboardType: isOptional ? TextInputType.text : TextInputType.number,
         ),
         SizedBox(height: 20.h),
       ],
@@ -298,7 +304,22 @@ class _KelestarianLingkungan2ScreenState
                           buildInput(
                             controller: lainnyaController,
                             label: 'Lain - lainnya',
+                          ),
+
+                          SizedBox(height: 10.h),
+                          TypographyStyles.bodyCaptionSemiBold(
+                            'Catatan Tambahan (Opsional)',
+                            color: TextColors.grey900,
+                          ),
+                          SizedBox(height: 24.h),
+
+                          /// CATATAN
+                          buildInput(
+                            controller: catatanController,
+                            label: 'Catatan',
+                            hintText: 'Tulis catatan jika ada',
                             action: TextInputAction.done,
+                            isOptional: true,
                           ),
 
                           SizedBox(height: 10.h),
@@ -358,6 +379,8 @@ class _KelestarianLingkungan2ScreenState
                                                         sumurController.text,
                                                     'dll':
                                                         lainnyaController.text,
+                                                    'catatan':
+                                                        catatanController.text,
                                                     if (_editingDraft != null)
                                                       'draft': _editingDraft,
                                                   },

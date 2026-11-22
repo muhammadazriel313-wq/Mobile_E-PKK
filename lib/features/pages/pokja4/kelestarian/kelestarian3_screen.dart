@@ -61,6 +61,7 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
       'pdam': data['pdam']?.toString() ?? '',
       'sumur': data['sumur']?.toString() ?? '',
       'dll': data['dll']?.toString() ?? '',
+      'catatan': data['catatan']?.toString() ?? '',
       'langkah': 3,
     };
   }
@@ -360,6 +361,19 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
                               _row('Sumur', data['sumur']),
                               _row('Lain-lain', data['dll']),
                             ]),
+
+                            // ================= SECTION 3 =================
+                            _section('Catatan', [
+                              _row(
+                                'Catatan',
+                                (data['catatan'] ?? '')
+                                        .toString()
+                                        .trim()
+                                        .isEmpty
+                                    ? '-'
+                                    : data['catatan'].toString(),
+                              ),
+                            ]),
                           ],
                         ),
                       ),
@@ -411,6 +425,7 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
                                             idRole: data['id_role'],
                                             idOrganization:
                                                 data['id_organization'],
+                                            catatan: data['catatan'],
                                           );
 
                                           if (success) {
