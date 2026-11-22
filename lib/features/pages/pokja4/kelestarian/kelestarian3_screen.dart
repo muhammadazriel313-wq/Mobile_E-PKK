@@ -349,9 +349,9 @@ class _Kelestarian3ScreenState extends State<Kelestarian3Screen> {
                           children: [
                             // ================= SECTION 1 =================
                             _section('Jumlah Rumah Yang Memiliki', [
-                              _row('Jamban', data['jamban']),
+                              _row('Jamban (WC)', data['jamban']),
                               _row('SPAL', data['spal']),
-                              _row('Tempat Pembuangan Sampah', data['tps']),
+                              _row('TPS', data['tps']),
                               _row('Jumlah MCK', data['mck']),
                             ]),
 

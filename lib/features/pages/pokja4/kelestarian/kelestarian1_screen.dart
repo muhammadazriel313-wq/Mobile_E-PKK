@@ -287,7 +287,7 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
 
         /// APPBAR
         appBar: AppBarPrimary(
-          title: 'Kelestarian Lingkungan',
+          title: 'Kelestarian Lingkungan Hidup',
           actionWidget: DraftBadgeIcon(
             scope: DraftScope.laporan,
             arguments: {
@@ -348,7 +348,7 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
                             /// JAMBAN
                             buildInput(
                               controller: jambanController,
-                              label: 'Jamban',
+                              label: 'Jamban (WC)',
                             ),
 
                             /// SPAL
@@ -357,7 +357,7 @@ class _Kelestarian1ScreenState extends State<KelestarianLingkungan1Screen> {
                             /// TPS
                             buildInput(
                               controller: sampahController,
-                              label: 'Tempat Pembuangan Sampah',
+                              label: 'TPS',
                             ),
 
                             /// MCK
