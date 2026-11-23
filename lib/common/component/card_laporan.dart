@@ -77,25 +77,7 @@ class CardLaporan extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-                    /// TITLE
-                    Text(
-                      title,
-
-                      maxLines: 2,
-
-                      overflow: TextOverflow.ellipsis,
-
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        color: TextColors.grey700,
-                        height: 1.4,
-                      ),
-                    ),
-
-                    SizedBox(height: 8.h),
-
-                    /// SUBTITLE
+                    /// POKJA / BIDANG (di atas, dengan ikon folder)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -103,12 +85,12 @@ class CardLaporan extends StatelessWidget {
                         Icon(
                           Icons.folder_open_outlined,
 
-                          size: 16.sp,
+                          size: 18.sp,
 
-                          color: TextColors.grey500,
+                          color: BrandColors.brandPrimary500,
                         ),
 
-                        SizedBox(width: 4.w),
+                        SizedBox(width: 6.w),
 
                         Expanded(
                           child: Text(
@@ -119,13 +101,32 @@ class CardLaporan extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
 
                             style: TextStyle(
-                              fontSize: 12.sp,
-                              color: TextColors.grey600,
-                              height: 1.5,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              color: TextColors.grey700,
+                              height: 1.4,
                             ),
                           ),
                         ),
                       ],
+                    ),
+
+                    SizedBox(height: 6.h),
+
+                    /// KODE LAPORAN (di bawah)
+                    Text(
+                      title,
+
+                      maxLines: 1,
+
+                      overflow: TextOverflow.ellipsis,
+
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: TextColors.grey600,
+                        height: 1.4,
+                      ),
                     ),
 
                     SizedBox(height: 12.h),
@@ -206,6 +207,9 @@ Color getStatusColor(String status) {
     case 'sedang diproses':
       return Colors.orange.shade100;
 
+    case 'revisi':
+      return Colors.red.shade100;
+
     case 'disetujui kecamatan':
       return Colors.green.shade100;
 
@@ -221,6 +225,9 @@ Color getStatusTextColor(String status) {
   switch (status.toLowerCase()) {
     case 'sedang diproses':
       return Colors.orange.shade800;
+
+    case 'revisi':
+      return Colors.red.shade800;
 
     case 'disetujui kecamatan':
       return Colors.green.shade800;
