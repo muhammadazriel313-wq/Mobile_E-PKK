@@ -463,6 +463,10 @@ class DetailLaporanScreen extends StatelessWidget {
 
           fit: BoxFit.cover,
 
+          // Di web, gambar lintas-origin diblokir CORS saat di-fetch.
+          // Fallback ini memakai elemen <img> browser supaya foto tetap tampil.
+          webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+
           errorBuilder: (context, error, stackTrace) => Padding(
             padding: EdgeInsets.all(20.w),
 
