@@ -8,6 +8,7 @@ class CardLaporan extends StatelessWidget {
   final String subtitle;
   final String status;
   final String dateText;
+  final String? catatan;
   final VoidCallback onTap;
 
   const CardLaporan({
@@ -17,10 +18,15 @@ class CardLaporan extends StatelessWidget {
     required this.status,
     required this.dateText,
     required this.onTap,
+    this.catatan,
   });
 
   @override
   Widget build(BuildContext context) {
+    final catatanText = (catatan ?? '').trim();
+    final showCatatan =
+        catatanText.isNotEmpty && status.toLowerCase() == 'revisi';
+
     return ZoomTapAnimation(
       onTap: onTap,
 
@@ -128,6 +134,35 @@ class CardLaporan extends StatelessWidget {
                         height: 1.4,
                       ),
                     ),
+
+                    // Catatan revisi dari admin (hanya di tab Revisi)
+                    if (showCatatan) ...[
+                      SizedBox(height: 8.h),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.sticky_note_2_outlined,
+                            size: 14.sp,
+                            color: const Color(0xFFC2410C),
+                          ),
+                          SizedBox(width: 4.w),
+                          Expanded(
+                            child: Text(
+                              'Catatan: $catatanText',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF9A3412),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
 
                     SizedBox(height: 12.h),
 

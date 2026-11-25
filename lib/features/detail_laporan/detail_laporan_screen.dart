@@ -101,6 +101,8 @@ class DetailLaporanScreen extends StatelessWidget {
 
               SizedBox(height: 20.h),
 
+              _buildCatatanAdminCard(controller.laporanDetail.value),
+
               _buildDetailFields(controller.laporanDetail.value),
             ],
           ),
@@ -344,6 +346,73 @@ class DetailLaporanScreen extends StatelessWidget {
     );
   }
 
+  // Catatan revisi yang diisi admin di website. Hanya tampil (tidak bisa
+  // diedit dari mobile) supaya desa bisa membaca alasan perbaikan.
+  Widget _buildCatatanAdminCard(Map<String, dynamic> data) {
+    final catatan = (data['catatan'] ?? '').toString().trim();
+
+    if (catatan.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+
+      margin: EdgeInsets.only(bottom: 16.h),
+
+      padding: EdgeInsets.all(14.w),
+
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7ED),
+
+        borderRadius: BorderRadius.circular(18.r),
+
+        border: Border.all(color: const Color(0xFFFED7AA)),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.sticky_note_2_outlined,
+
+                size: 16.sp,
+
+                color: const Color(0xFFC2410C),
+              ),
+
+              SizedBox(width: 6.w),
+
+              Text(
+                'Catatan dari Admin',
+
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFFC2410C),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 8.h),
+
+          Text(
+            catatan,
+
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDetailFields(Map<String, dynamic> data) {
     if (Pokja1Config.isPokja1(uuid)) {
       return _buildPokja1DetailFields(data);
@@ -370,6 +439,8 @@ class DetailLaporanScreen extends StatelessWidget {
       'created_at',
       'id_role',
       'id_organization',
+      // Catatan admin ditampilkan di kartu khusus, bukan sebagai field biasa
+      'catatan',
     ];
 
     final displayData = Map.from(data)

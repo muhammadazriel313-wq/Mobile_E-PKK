@@ -401,19 +401,6 @@ class _PerencanaanSehatScreenState extends State<PerencanaanSehatScreen> {
                             ),
 
                             SizedBox(height: 10.h),
-                            sectionTitle('Catatan Tambahan (Opsional)'),
-                            SizedBox(height: 24.h),
-
-                            /// CATATAN
-                            buildInput(
-                              controller: catatanController,
-                              label: 'Catatan',
-                              hintText: 'Tulis catatan jika ada',
-                              action: TextInputAction.done,
-                              isOptional: true,
-                            ),
-
-                            SizedBox(height: 10.h),
 
                             /// BUTTON
                             Row(

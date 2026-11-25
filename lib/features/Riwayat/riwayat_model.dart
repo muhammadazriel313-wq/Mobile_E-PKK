@@ -41,6 +41,7 @@ class Laporan {
   final DateTime createdAt;
   final int idRole;
   final int idOrganization;
+  final String? catatan;
 
   Laporan({
     required this.uuid,
@@ -49,6 +50,7 @@ class Laporan {
     required this.createdAt,
     required this.idRole,
     required this.idOrganization,
+    this.catatan,
   });
 
   factory Laporan.fromJson(Map<String, dynamic> json) {
@@ -61,6 +63,7 @@ class Laporan {
       ),
       idRole: json['id_role'] ?? 0,
       idOrganization: json['id_organization'] ?? 0,
+      catatan: json['catatan']?.toString(),
     );
   }
 
@@ -72,6 +75,7 @@ class Laporan {
       'created_at': createdAt.toIso8601String(),
       'id_role': idRole,
       'id_organization': idOrganization,
+      'catatan': catatan,
     };
   }
 }

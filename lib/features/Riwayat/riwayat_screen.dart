@@ -124,6 +124,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                       title: riwayat.uuid,
                       subtitle: getSubtitleFromUUID(riwayat.uuid),
                       status: _getStatusLabel(riwayat.status),
+                      catatan: riwayat.catatan,
                       dateText: DateFormat(
                         'dd-MM-yyyy',
                       ).format(riwayat.createdAt),
