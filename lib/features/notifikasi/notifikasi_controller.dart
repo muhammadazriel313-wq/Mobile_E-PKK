@@ -7,6 +7,7 @@ import 'package:epkk_nganjuk/features/home/kebun/kebun_laporan_controller.dart';
 import 'package:epkk_nganjuk/features/home/nav_controller.dart';
 import 'package:epkk_nganjuk/features/notifikasi/notifikasi_model.dart';
 import 'package:epkk_nganjuk/features/notifikasi/notifikasi_screen.dart';
+import 'package:epkk_nganjuk/features/pengumuman/pengumuman_controller.dart';
 import 'package:epkk_nganjuk/features/pengumuman/pengumuman_model.dart';
 import 'package:epkk_nganjuk/services/preferences/preferences_service.dart';
 import 'package:flutter/foundation.dart';
@@ -18,12 +19,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Pusat notifikasi (lonceng di Beranda).
 ///
-/// Cara kerja (tanpa perubahan di server):
+/// Cara kerja:
 /// - Setiap [intervalSinkron] dan saat aplikasi dibuka kembali, data laporan
-///   (`/riwayat`) dibandingkan dengan keadaan terakhir yang tersimpan di HP.
+///   (`/riwayat`) dan pengumuman minggu ini (`/announcement`) dibandingkan
+///   dengan keadaan terakhir yang tersimpan di HP.
 /// - Laporan baru masuk, berubah menjadi Revisi, Disetujui Kecamatan,
 ///   Disetujui Kabupaten, atau Dibatalkan -> dibuatkan notifikasi.
-/// - Pengumuman baru minggu ini -> dibuatkan notifikasi.
+/// - Pengumuman baru minggu ini (termasuk yang baru dikirim admin website)
+///   -> dibuatkan notifikasi maksimal satu interval setelah dikirim.
 /// - Perubahan yang terjadi saat aplikasi tertutup tetap terdeteksi saat
 ///   aplikasi dibuka lagi (notifikasi yang terlewat).
 /// - Setiap notifikasi baru memunculkan pop up di bagian atas layar.
@@ -108,7 +111,7 @@ class NotifikasiController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
-  // ================= SINKRON LAPORAN =================
+  // ================= SINKRON LAPORAN + PENGUMUMAN =================
   Future<void> sinkron() async {
     if (_idUser.isEmpty || _sedangSinkron) return;
     _sedangSinkron = true;
@@ -120,28 +123,66 @@ class NotifikasiController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      try {
+        final response = await _api.get(
+          '/riwayat',
+          queryParameters: {
+            'user_id': _idUser,
+            'user_role': _idRole,
+            'user_org': _idOrg,
+          },
+        );
+
+        final hasil = RiwayatResponse.fromJson(response.data);
+        if (hasil.statusCode == 200) {
+          // Kebun Laporan memakai data yang sama (tanpa permintaan ganda).
+          if (Get.isRegistered<KebunLaporanController>()) {
+            Get.find<KebunLaporanController>().perbarui(hasil.data);
+          }
+
+          await _periksaLaporan(hasil.data);
+        }
+      } catch (e) {
+        debugPrint('ERROR SINKRON LAPORAN: $e');
+      }
+
+      // Pengumuman tetap diperiksa walau sinkron laporan gagal.
+      await _sinkronPengumuman();
+    } finally {
+      _sedangSinkron = false;
+    }
+  }
+
+  /// Memeriksa pengumuman minggu ini langsung dari API supaya pengumuman
+  /// yang baru dikirim admin website muncul sebagai notifikasi tanpa harus
+  /// menunggu Beranda dimuat ulang.
+  Future<void> _sinkronPengumuman() async {
+    try {
+      final range = PengumumanController.getWeeklyDateRange();
+
       final response = await _api.get(
-        '/riwayat',
+        '/announcement',
         queryParameters: {
-          'user_id': _idUser,
-          'user_role': _idRole,
-          'user_org': _idOrg,
+          'dari': range['dari'],
+          'sampai': range['sampai'],
+          'limit': 50,
         },
       );
 
-      final hasil = RiwayatResponse.fromJson(response.data);
+      final hasil = PengumumanResponse.fromJson(response.data);
       if (hasil.statusCode != 200) return;
 
-      // Kebun Laporan memakai data yang sama (tanpa permintaan ganda).
-      if (Get.isRegistered<KebunLaporanController>()) {
-        Get.find<KebunLaporanController>().perbarui(hasil.data);
-      }
+      await periksaPengumuman(hasil.data);
 
-      await _periksaLaporan(hasil.data);
+      // Setelah dicatat, samakan daftar di Beranda dan tab Pengumuman
+      // supaya pengumuman baru ikut tampil tanpa refresh manual.
+      if (Get.isRegistered<PengumumanController>()) {
+        Get.find<PengumumanController>().weeklyPengumumanList.assignAll(
+          hasil.data,
+        );
+      }
     } catch (e) {
-      debugPrint('ERROR SINKRON NOTIFIKASI: $e');
-    } finally {
-      _sedangSinkron = false;
+      debugPrint('ERROR SINKRON PENGUMUMAN: $e');
     }
   }
 
