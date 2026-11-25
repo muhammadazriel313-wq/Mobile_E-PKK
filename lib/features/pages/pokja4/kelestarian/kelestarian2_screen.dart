@@ -307,22 +307,6 @@ class _KelestarianLingkungan2ScreenState
                           ),
 
                           SizedBox(height: 10.h),
-                          TypographyStyles.bodyCaptionSemiBold(
-                            'Catatan Tambahan (Opsional)',
-                            color: TextColors.grey900,
-                          ),
-                          SizedBox(height: 24.h),
-
-                          /// CATATAN
-                          buildInput(
-                            controller: catatanController,
-                            label: 'Catatan',
-                            hintText: 'Tulis catatan jika ada',
-                            action: TextInputAction.done,
-                            isOptional: true,
-                          ),
-
-                          SizedBox(height: 10.h),
 
                           /// BUTTON
                           Row(

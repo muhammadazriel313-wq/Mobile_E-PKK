@@ -257,6 +257,8 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
             key == 'created_at' ||
             key == 'id_role' ||
             key == 'id_organization' ||
+            // Catatan revisi hanya diisi admin di website, bukan dari mobile
+            key == 'catatan' ||
             // khusus Kegiatan: tidak boleh diedit dari mobile
             key == 'gambar_url' ||
             key == 'bidang' ||
@@ -491,6 +493,10 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
       } else {
         dataToSend = _formData;
       }
+
+      // Catatan revisi hanya diisi admin website; jangan pernah dikirim
+      // dari mobile agar catatan admin tidak tertimpa.
+      dataToSend.remove('catatan');
 
       await controller.updateLaporan(
         uuid: widget.uuid,
