@@ -58,6 +58,13 @@ class DetailLaporanController extends GetxController {
       }
 
       Get.snackbar('Berhasil', 'Laporan berhasil diupdate');
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      final pesan = (data is Map && data['message'] != null)
+          ? data['message'].toString()
+          : 'Koneksi bermasalah';
+      errorMessage.value = pesan;
+      throw Exception(pesan);
     } catch (e) {
       errorMessage.value = 'Gagal update: $e';
       rethrow;

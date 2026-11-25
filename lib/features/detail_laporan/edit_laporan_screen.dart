@@ -243,29 +243,39 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
     return children;
   }
 
-  List<Widget> _buildFormFields() {
-    if (Pokja1Config.isPokja1(widget.uuid)) {
-      return _buildPokja1FormFields();
-    }
-
-    final editableData = Map.from(_formData)
+  // Field yang boleh diubah dari mobile. Kolom identitas (id_*, *_id),
+  // status, catatan admin, dan penanda aksi dari server tidak ikut dikirim.
+  Map<String, dynamic> _editableData() {
+    return Map.from(_formData)
       ..removeWhere(
         (key, value) =>
             key == 'uuid' ||
-            key == 'id_user' ||
             key == 'status' ||
             key == 'created_at' ||
-            key == 'id_role' ||
-            key == 'id_organization' ||
+            key == 'updated_at' ||
             // Catatan revisi hanya diisi admin di website, bukan dari mobile
             key == 'catatan' ||
             // khusus Kegiatan: tidak boleh diedit dari mobile
             key == 'gambar_url' ||
             key == 'bidang' ||
+            // Penanda hak aksi dari server, bukan isi laporan
+            key == 'bisa_diedit' ||
+            key == 'bisa_dikirim_ulang' ||
+            key == 'bisa_dibatalkan' ||
+            key.startsWith('id_') ||
+            key.endsWith('_id') ||
             // Jabatan hanya untuk akun Bidang Umum
             (key == 'jabatan' &&
                 widget.orgId.toString() != kIdOrganisasiBidangUmum),
       );
+  }
+
+  List<Widget> _buildFormFields() {
+    if (Pokja1Config.isPokja1(widget.uuid)) {
+      return _buildPokja1FormFields();
+    }
+
+    final editableData = _editableData();
 
     return editableData.entries.map((entry) {
       return Container(
@@ -491,7 +501,14 @@ class _EditLaporanScreenState extends State<EditLaporanScreen> {
           }
         }
       } else {
-        dataToSend = _formData;
+        // Kirim hanya field yang tampil di form, bukan seluruh isi detail.
+        // Kolom lain di database tidak ikut tertimpa saat menyimpan.
+        dataToSend = {};
+        for (final key in _editableData().keys) {
+          if (_formData.containsKey(key)) {
+            dataToSend[key] = _formData[key];
+          }
+        }
       }
 
       // Catatan revisi hanya diisi admin website; jangan pernah dikirim

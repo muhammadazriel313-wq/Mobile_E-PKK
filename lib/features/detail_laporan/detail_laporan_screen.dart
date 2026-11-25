@@ -54,32 +54,60 @@ class DetailLaporanScreen extends StatelessWidget {
         ),
 
         actions: [
-          // Edit: laporan yang sedang diproses atau perlu direvisi
-          if (status == 'Proses' || status == 'Revisi')
-            IconButton(
-              tooltip: 'Edit laporan',
+          // Tombol aksi mengikuti hak akses dari server (bisa_diedit,
+          // bisa_dibatalkan). Status 'Menunggu' di server tampil sebagai
+          // 'Proses' di mobile, jadi tombol tidak boleh hanya melihat status.
+          Obx(() {
+            final data = controller.laporanDetail;
+            final sudahMuat = data.isNotEmpty;
+            final bisaDiedit = sudahMuat
+                ? data['bisa_diedit'] == true
+                : (status == 'Proses' || status == 'Revisi');
+            final bisaDibatalkan = sudahMuat
+                ? data['bisa_dibatalkan'] == true
+                : status == 'Proses';
 
-              icon: Icon(Icons.edit_rounded, size: 22.sp),
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (bisaDiedit)
+                  IconButton(
+                    tooltip: 'Edit laporan',
 
-              onPressed: () => _navigateToEditScreen(context),
-            ),
+                    icon: Icon(Icons.edit_rounded, size: 22.sp),
 
-          if (status == 'Proses')
-            IconButton(
-              icon: Icon(
-                Icons.delete_outline_rounded,
-                size: 22.sp,
-                color: Colors.red.shade400,
-              ),
+                    onPressed: () => _navigateToEditScreen(context),
+                  ),
 
-              onPressed: () => _showCancelDialog(context),
-            ),
+                if (bisaDibatalkan)
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 22.sp,
+                      color: Colors.red.shade400,
+                    ),
+
+                    onPressed: () => _showCancelDialog(context),
+                  ),
+              ],
+            );
+          }),
         ],
       ),
 
-      // Laporan Revisi: tombol Kirim Ulang di bagian bawah
-      bottomNavigationBar:
-          status == 'Revisi' ? _buildKirimUlangBar(context, controller) : null,
+      // Laporan yang boleh dikirim ulang (Revisi/Ditolak) di server:
+      // tombol Kirim Ulang di bagian bawah
+      bottomNavigationBar: Obx(() {
+        final data = controller.laporanDetail;
+        final sudahMuat = data.isNotEmpty;
+        final bisaKirimUlang = sudahMuat
+            ? data['bisa_dikirim_ulang'] == true
+            : status == 'Revisi';
+
+        return bisaKirimUlang
+            ? _buildKirimUlangBar(context, controller)
+            : const SizedBox.shrink();
+      }),
 
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -445,8 +473,15 @@ class DetailLaporanScreen extends StatelessWidget {
       'updated_at',
       'id_role',
       'id_organization',
+      // Kolom relasi wilayah hanya berupa angka ID, bukan isi laporan
+      'kecamatan_id',
+      'desa_id',
       // Catatan admin ditampilkan di kartu khusus, bukan sebagai field biasa
       'catatan',
+      // Penanda hak aksi dari server, bukan isi laporan
+      'bisa_diedit',
+      'bisa_dikirim_ulang',
+      'bisa_dibatalkan',
     ];
 
     final displayData = Map.from(data)

@@ -539,39 +539,6 @@ class _PenghayatanPengamalanScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (_editingDraft != null) ...[
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.w,
-                                vertical: 8.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE3F2FD),
-                                borderRadius: BorderRadius.circular(8.r),
-                                border: Border.all(
-                                  color: const Color(0xFF90CAF9),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.info_outline,
-                                    size: 18.sp,
-                                    color: BrandColors.brandPrimary25,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Expanded(
-                                    child: TypographyStyles.bodyCaptionReguler(
-                                      'Tanggal laporan: mengikuti tanggal draf dibuat',
-                                      color: BrandColors.brandPrimary25,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 12.h),
-                          ],
-
                           // ============ KISAH ============
                           _buildDivisiTitle('KISAH'),
                           InputFormField(
