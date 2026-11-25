@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:epkk_nganjuk/core/ambil_foto.dart';
 import 'package:image_picker/image_picker.dart';
 
 class InfoAkunScreen extends StatefulWidget {
@@ -29,7 +30,6 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
   final Color primaryColor = const Color(0xFF3F8FC1);
 
   // [PERUBAHAN 08-10-2026] Instance ImagePicker untuk ganti foto profil
-  final ImagePicker _picker = ImagePicker();
 
   // [PERUBAHAN 08-10-2026] State berkas dan byte foto yang dipilih secara lokal untuk pratinjau langsung
   XFile? _selectedImageFile;
@@ -184,8 +184,8 @@ class _InfoAkunScreenState extends State<InfoAkunScreen> {
   // [PERUBAHAN 08-10-2026] Mengambil foto profil untuk pratinjau langsung di tampilan
   Future<void> _ambilFoto(ImageSource source) async {
     try {
-      final pickedFile = await _picker.pickImage(
-        source: source,
+      final pickedFile = await AmbilFoto.pilih(
+        source,
         imageQuality: 70,
         maxWidth: 800,
       );

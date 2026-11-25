@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:epkk_nganjuk/common/appbar/custom_appbar.dart';
 import 'package:epkk_nganjuk/common/colors.dart';
 import 'package:epkk_nganjuk/common/typography.dart';
+import 'package:epkk_nganjuk/core/ambil_foto.dart';
 import 'package:epkk_nganjuk/core/jabatan_options.dart';
 import 'package:epkk_nganjuk/features/auth/button/button_file.dart';
 import 'package:epkk_nganjuk/features/auth/component/drop_down.dart';
@@ -22,8 +23,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:epkk_nganjuk/features/lokasi/pilih_lokasi_screen.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
@@ -56,7 +57,6 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
   String? _imageName;
   bool get _hasImage => kIsWeb ? _imageBytes != null : _image != null;
 
-  final _picker = ImagePicker();
   String? _selectedBidang;
 
   // ================= JABATAN (khusus Bidang Umum) =================
@@ -513,10 +513,8 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final pickedFile = await _picker.pickImage(
-        source: source,
-        imageQuality: 80,
-      );
+      // Kamera di Chrome membuka webcam, di HP memakai kamera bawaan
+      final pickedFile = await AmbilFoto.pilih(source, imageQuality: 80);
       if (pickedFile != null) {
         final bytes = await pickedFile.readAsBytes();
         setState(() {
@@ -575,48 +573,24 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
     );
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      setState(() {
-        isGettingLocation = true;
-      });
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        Get.snackbar(
-          'Lokasi Mati',
-          'Aktifkan GPS terlebih dahulu',
-          snackPosition: SnackPosition.TOP,
-        );
-        return;
-      }
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.deniedForever) {
-        Get.snackbar(
-          'Izin Ditolak',
-          'Izin lokasi ditolak permanen',
-          snackPosition: SnackPosition.TOP,
-        );
-        return;
-      }
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      latitude = position.latitude;
-      longitude = position.longitude;
-      final placemarks = await placemarkFromCoordinates(latitude!, longitude!);
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        String lokasi = '${place.subLocality ?? ''}, ${place.locality ?? ''}';
-        _lokasiController.text = lokasi;
-      }
-    } finally {
-      setState(() {
-        isGettingLocation = false;
-      });
-    }
+  /// Buka peta untuk memilih tempat kegiatan. Alamat dan koordinat terisi
+  /// otomatis dari lokasi yang dipilih.
+  Future<void> _bukaPetaLokasi() async {
+    final awal = (latitude != null && longitude != null)
+        ? LatLng(latitude!, longitude!)
+        : null;
+
+    final hasil = await Get.to<HasilLokasi>(
+      () => PilihLokasiScreen(posisiAwal: awal),
+    );
+
+    if (hasil == null) return;
+
+    setState(() {
+      latitude = hasil.latitude;
+      longitude = hasil.longitude;
+      _lokasiController.text = hasil.alamat;
+    });
   }
 
   Future<void> _submitData() async {
@@ -921,7 +895,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                       InputFormField(
                         controller: _lokasiController,
                         label: 'Tempat Kegiatan',
-                        hintText: 'Masukkan tempat atau klik icon GPS',
+                        hintText: 'Ketik tempat atau ketuk ikon peta',
                         keyboardType: TextInputType.streetAddress,
                         textInputAction: TextInputAction.done,
                         validator: (value) {
@@ -947,7 +921,7 @@ class _UploadGaleriPageState extends State<UploadGaleriPage> {
                                   color: Colors.blue,
                                   size: 24.sp,
                                 ),
-                                onPressed: _getCurrentLocation,
+                                onPressed: _bukaPetaLokasi,
                               ),
                       ),
                       SizedBox(height: 20.h),
