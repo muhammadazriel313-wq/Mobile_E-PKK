@@ -293,6 +293,17 @@ class DetailLaporanScreen extends StatelessWidget {
     }
 
     // Tampilkan updated_at di paling bawah setelah semua field form
+    children.add(_buildUpdatedAtCard(data));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
+  }
+
+  // Waktu pembaruan terakhir selalu ditaruh paling bawah untuk semua jenis
+  // laporan, supaya urutan informasi di layar detail konsisten.
+  Widget _buildUpdatedAtCard(Map<String, dynamic> data) {
     final rawUpdatedAt = data['updated_at'];
     String formattedUpdatedAt = '-';
     if (rawUpdatedAt != null) {
@@ -304,45 +315,38 @@ class DetailLaporanScreen extends StatelessWidget {
       }
     }
 
-    children.add(
-      Container(
-        width: double.infinity,
-        margin: EdgeInsets.only(bottom: 14.h),
-        padding: EdgeInsets.all(14.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-          border: Border.all(color: const Color(0xFFE7EDF3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Terakhir diperbarui',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              formattedUpdatedAt,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 14.h),
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: const Color(0xFFE7EDF3)),
       ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Terakhir diperbarui',
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            formattedUpdatedAt,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -437,6 +441,8 @@ class DetailLaporanScreen extends StatelessWidget {
       'id_laporan_umum',
       'status',
       'created_at',
+      // Ditampilkan paling bawah lewat _buildUpdatedAtCard
+      'updated_at',
       'id_role',
       'id_organization',
       // Catatan admin ditampilkan di kartu khusus, bukan sebagai field biasa
@@ -453,60 +459,63 @@ class DetailLaporanScreen extends StatelessWidget {
       );
 
     return Column(
-      children: displayData.entries.map((entry) {
-        // Foto kegiatan (khusus Kegiatan)
-        if (entry.key == 'gambar_url') {
-          return _buildFotoCard(entry.value?.toString());
-        }
+      children: [
+        ...displayData.entries.map((entry) {
+          // Foto kegiatan (khusus Kegiatan)
+          if (entry.key == 'gambar_url') {
+            return _buildFotoCard(entry.value?.toString());
+          }
 
-        return Container(
-          width: double.infinity,
+          return Container(
+            width: double.infinity,
 
-          margin: EdgeInsets.only(bottom: 14.h),
+            margin: EdgeInsets.only(bottom: 14.h),
 
-          padding: EdgeInsets.all(14.w),
+            padding: EdgeInsets.all(14.w),
 
-          decoration: BoxDecoration(
-            color: Colors.white,
+            decoration: BoxDecoration(
+              color: Colors.white,
 
-            borderRadius: BorderRadius.circular(18.r),
+              borderRadius: BorderRadius.circular(18.r),
 
-            border: Border.all(color: const Color(0xFFE7EDF3)),
-          ),
+              border: Border.all(color: const Color(0xFFE7EDF3)),
+            ),
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
 
-            children: [
-              Text(
-                _getFieldLabel(
-                  entry.key,
-                  isKegiatan: data.containsKey('gambar_url'),
+              children: [
+                Text(
+                  _getFieldLabel(
+                    entry.key,
+                    isKegiatan: data.containsKey('gambar_url'),
+                  ),
+
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
 
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
+                SizedBox(height: 8.h),
+
+                Text(
+                  _formatFieldValue(entry.key, entry.value),
+
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-
-              SizedBox(height: 8.h),
-
-              Text(
-                _formatFieldValue(entry.key, entry.value),
-
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+              ],
+            ),
+          );
+        }),
+        _buildUpdatedAtCard(data),
+      ],
     );
   }
 
