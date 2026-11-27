@@ -95,30 +95,12 @@ class KesehatanEntry {
       idPokja4Bidang1: json['id_pokja4_bidang1']?.toString() ?? '',
       uuid: json['uuid']?.toString() ?? '',
       idUser: json['id_user']?.toString() ?? '',
-      kaderKesehatan:
-          json['kader_kesehatan']?.toString() ??
-          json['jumlah_posyandu']?.toString() ??
-          '0',
-      kaderGizi:
-          json['kader_gizi']?.toString() ??
-          json['jumlah_posyandu_iterasi']?.toString() ??
-          '0',
-      kaderKesling:
-          json['kader_kesling']?.toString() ??
-          json['jumlah_klp']?.toString() ??
-          '0',
-      kaderPhbs:
-          json['kader_phbs']?.toString() ??
-          json['jumlah_anggota']?.toString() ??
-          '0',
-      kaderKb:
-          json['kader_kb']?.toString() ??
-          json['jumlah_kartu_gratis']?.toString() ??
-          '0',
-      posyandu:
-          json['posyandu']?.toString() ??
-          json['jumlah_posyandu']?.toString() ??
-          '0',
+      kaderKesehatan: json['kader_kesehatan']?.toString() ?? '0',
+      kaderGizi: json['kader_gizi']?.toString() ?? '0',
+      kaderKesling: json['kader_kesling']?.toString() ?? '0',
+      kaderPhbs: json['kader_phbs']?.toString() ?? '0',
+      kaderKb: json['kader_kb']?.toString() ?? '0',
+      posyandu: json['posyandu']?.toString() ?? '0',
       imunisasiVaksinasi: json['imunisasi_vaksinasi']?.toString() ?? '0',
       pkg: json['pkg']?.toString() ?? '0',
       tbc: json['tbc']?.toString() ?? '0',

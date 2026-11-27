@@ -637,7 +637,7 @@ class _BantuanScreenState extends State<BantuanScreen> {
           _buildExpansionFaq(
             pertanyaan: 'Laporan saya mendapat catatan revisi, apa langkahnya',
             jawaban:
-                'Laporan dengan catatan revisi tidak dapat diedit atau dikirim ulang secara langsung pada formulir lama. Buka rincian laporan di menu Riwayat untuk membaca catatan evaluasi pemeriksa, lalu buat dan kirim laporan baru dengan isian yang sudah diperbaiki.',
+                'Buka menu Riwayat, pilih tab Revisi, lalu buka laporan yang dikembalikan. Baca catatan pemeriksa, tekan ikon pensil di pojok kanan atas untuk memperbaiki isian lalu simpan, kemudian tekan tombol Kirim Ulang di bagian bawah untuk mengirimkannya kembali.',
           ),
         ],
       ),

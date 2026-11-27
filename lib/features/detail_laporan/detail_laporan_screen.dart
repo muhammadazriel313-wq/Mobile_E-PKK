@@ -44,7 +44,7 @@ class DetailLaporanScreen extends StatelessWidget {
         centerTitle: true,
 
         title: Text(
-          subtitle,
+          'Detail Laporan',
 
           style: TextStyle(
             fontSize: 16.sp,
@@ -54,25 +54,60 @@ class DetailLaporanScreen extends StatelessWidget {
         ),
 
         actions: [
-          if (status == 'Proses')
-            IconButton(
-              icon: Icon(Icons.edit_rounded, size: 22.sp),
+          // Tombol aksi mengikuti hak akses dari server (bisa_diedit,
+          // bisa_dibatalkan). Status 'Menunggu' di server tampil sebagai
+          // 'Proses' di mobile, jadi tombol tidak boleh hanya melihat status.
+          Obx(() {
+            final data = controller.laporanDetail;
+            final sudahMuat = data.isNotEmpty;
+            final bisaDiedit = sudahMuat
+                ? data['bisa_diedit'] == true
+                : (status == 'Proses' || status == 'Revisi');
+            final bisaDibatalkan = sudahMuat
+                ? data['bisa_dibatalkan'] == true
+                : status == 'Proses';
 
-              onPressed: () => _navigateToEditScreen(context),
-            ),
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (bisaDiedit)
+                  IconButton(
+                    tooltip: 'Edit laporan',
 
-          if (status == 'Proses')
-            IconButton(
-              icon: Icon(
-                Icons.delete_outline_rounded,
-                size: 22.sp,
-                color: Colors.red.shade400,
-              ),
+                    icon: Icon(Icons.edit_rounded, size: 22.sp),
 
-              onPressed: () => _showCancelDialog(context),
-            ),
+                    onPressed: () => _navigateToEditScreen(context),
+                  ),
+
+                if (bisaDibatalkan)
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 22.sp,
+                      color: Colors.red.shade400,
+                    ),
+
+                    onPressed: () => _showCancelDialog(context),
+                  ),
+              ],
+            );
+          }),
         ],
       ),
+
+      // Laporan yang boleh dikirim ulang (Revisi/Ditolak) di server:
+      // tombol Kirim Ulang di bagian bawah
+      bottomNavigationBar: Obx(() {
+        final data = controller.laporanDetail;
+        final sudahMuat = data.isNotEmpty;
+        final bisaKirimUlang = sudahMuat
+            ? data['bisa_dikirim_ulang'] == true
+            : status == 'Revisi';
+
+        return bisaKirimUlang
+            ? _buildKirimUlangBar(context, controller)
+            : const SizedBox.shrink();
+      }),
 
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -93,6 +128,8 @@ class DetailLaporanScreen extends StatelessWidget {
               _buildInfoCard(context),
 
               SizedBox(height: 20.h),
+
+              _buildCatatanAdminCard(controller.laporanDetail.value),
 
               _buildDetailFields(controller.laporanDetail.value),
             ],
@@ -128,45 +165,48 @@ class DetailLaporanScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          /// TITLE
-          Text(
-            title,
-
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-              height: 1.4,
-            ),
-          ),
-
-          SizedBox(height: 10.h),
-
-          /// SUBTITLE
+          /// POKJA / BIDANG (di atas, dengan ikon folder)
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
               Icon(
                 Icons.folder_open_rounded,
 
-                size: 18.sp,
+                size: 22.sp,
 
                 color: BrandColors.brandPrimary500,
               ),
 
-              SizedBox(width: 6.w),
+              SizedBox(width: 8.w),
 
               Expanded(
                 child: Text(
                   subtitle,
 
                   style: TextStyle(
-                    fontSize: 13.sp,
-                    color: Colors.grey.shade700,
-                    height: 1.5,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                    height: 1.4,
                   ),
                 ),
               ),
             ],
+          ),
+
+          SizedBox(height: 6.h),
+
+          /// KODE LAPORAN (di bawah)
+          Text(
+            title,
+
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade700,
+              height: 1.5,
+            ),
           ),
 
           SizedBox(height: 14.h),
@@ -281,6 +321,17 @@ class DetailLaporanScreen extends StatelessWidget {
     }
 
     // Tampilkan updated_at di paling bawah setelah semua field form
+    children.add(_buildUpdatedAtCard(data));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
+  }
+
+  // Waktu pembaruan terakhir selalu ditaruh paling bawah untuk semua jenis
+  // laporan, supaya urutan informasi di layar detail konsisten.
+  Widget _buildUpdatedAtCard(Map<String, dynamic> data) {
     final rawUpdatedAt = data['updated_at'];
     String formattedUpdatedAt = '-';
     if (rawUpdatedAt != null) {
@@ -292,45 +343,105 @@ class DetailLaporanScreen extends StatelessWidget {
       }
     }
 
-    children.add(
-      Container(
-        width: double.infinity,
-        margin: EdgeInsets.only(bottom: 14.h),
-        padding: EdgeInsets.all(14.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18.r),
-          border: Border.all(color: const Color(0xFFE7EDF3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Terakhir diperbarui',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade600,
-              ),
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 14.h),
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: const Color(0xFFE7EDF3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Terakhir diperbarui',
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
             ),
-            SizedBox(height: 8.h),
-            Text(
-              formattedUpdatedAt,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-                height: 1.5,
-              ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            formattedUpdatedAt,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+              height: 1.5,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
+  // Catatan revisi yang diisi admin di website. Hanya tampil (tidak bisa
+  // diedit dari mobile) supaya desa bisa membaca alasan perbaikan.
+  Widget _buildCatatanAdminCard(Map<String, dynamic> data) {
+    final catatan = (data['catatan'] ?? '').toString().trim();
+
+    if (catatan.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+
+      margin: EdgeInsets.only(bottom: 16.h),
+
+      padding: EdgeInsets.all(14.w),
+
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7ED),
+
+        borderRadius: BorderRadius.circular(18.r),
+
+        border: Border.all(color: const Color(0xFFFED7AA)),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.sticky_note_2_outlined,
+
+                size: 16.sp,
+
+                color: const Color(0xFFC2410C),
+              ),
+
+              SizedBox(width: 6.w),
+
+              Text(
+                'Catatan dari Admin',
+
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFFC2410C),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 8.h),
+
+          Text(
+            catatan,
+
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -358,8 +469,19 @@ class DetailLaporanScreen extends StatelessWidget {
       'id_laporan_umum',
       'status',
       'created_at',
+      // Ditampilkan paling bawah lewat _buildUpdatedAtCard
+      'updated_at',
       'id_role',
       'id_organization',
+      // Kolom relasi wilayah hanya berupa angka ID, bukan isi laporan
+      'kecamatan_id',
+      'desa_id',
+      // Catatan admin ditampilkan di kartu khusus, bukan sebagai field biasa
+      'catatan',
+      // Penanda hak aksi dari server, bukan isi laporan
+      'bisa_diedit',
+      'bisa_dikirim_ulang',
+      'bisa_dibatalkan',
     ];
 
     final displayData = Map.from(data)
@@ -372,60 +494,63 @@ class DetailLaporanScreen extends StatelessWidget {
       );
 
     return Column(
-      children: displayData.entries.map((entry) {
-        // Foto kegiatan (khusus Kegiatan)
-        if (entry.key == 'gambar_url') {
-          return _buildFotoCard(entry.value?.toString());
-        }
+      children: [
+        ...displayData.entries.map((entry) {
+          // Foto kegiatan (khusus Kegiatan)
+          if (entry.key == 'gambar_url') {
+            return _buildFotoCard(entry.value?.toString());
+          }
 
-        return Container(
-          width: double.infinity,
+          return Container(
+            width: double.infinity,
 
-          margin: EdgeInsets.only(bottom: 14.h),
+            margin: EdgeInsets.only(bottom: 14.h),
 
-          padding: EdgeInsets.all(14.w),
+            padding: EdgeInsets.all(14.w),
 
-          decoration: BoxDecoration(
-            color: Colors.white,
+            decoration: BoxDecoration(
+              color: Colors.white,
 
-            borderRadius: BorderRadius.circular(18.r),
+              borderRadius: BorderRadius.circular(18.r),
 
-            border: Border.all(color: const Color(0xFFE7EDF3)),
-          ),
+              border: Border.all(color: const Color(0xFFE7EDF3)),
+            ),
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
 
-            children: [
-              Text(
-                _getFieldLabel(
-                  entry.key,
-                  isKegiatan: data.containsKey('gambar_url'),
+              children: [
+                Text(
+                  _getFieldLabel(
+                    entry.key,
+                    isKegiatan: data.containsKey('gambar_url'),
+                  ),
+
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
 
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade600,
+                SizedBox(height: 8.h),
+
+                Text(
+                  _formatFieldValue(entry.key, entry.value),
+
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-
-              SizedBox(height: 8.h),
-
-              Text(
-                _formatFieldValue(entry.key, entry.value),
-
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+              ],
+            ),
+          );
+        }),
+        _buildUpdatedAtCard(data),
+      ],
     );
   }
 
@@ -452,6 +577,10 @@ class DetailLaporanScreen extends StatelessWidget {
           url,
 
           fit: BoxFit.cover,
+
+          // Di web, gambar lintas-origin diblokir CORS saat di-fetch.
+          // Fallback ini memakai elemen <img> browser supaya foto tetap tampil.
+          webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
 
           errorBuilder: (context, error, stackTrace) => Padding(
             padding: EdgeInsets.all(20.w),
@@ -549,6 +678,7 @@ class DetailLaporanScreen extends StatelessWidget {
         return Colors.green.shade100;
 
       case 'Dibatalkan':
+      case 'Revisi':
         return Colors.red.shade100;
 
       default:
@@ -566,6 +696,7 @@ class DetailLaporanScreen extends StatelessWidget {
         return Colors.green.shade800;
 
       case 'Dibatalkan':
+      case 'Revisi':
         return Colors.red.shade800;
 
       default:
@@ -591,6 +722,122 @@ class DetailLaporanScreen extends StatelessWidget {
 
     if (result == true) {
       controller.loadDetailLaporan(uuid: uuid, orgId: idOrganization);
+    }
+  }
+
+  // ================= KIRIM ULANG =================
+  Widget _buildKirimUlangBar(
+    BuildContext context,
+    DetailLaporanController controller,
+  ) {
+    return SafeArea(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 12.h),
+
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE7EDF3))),
+        ),
+
+        child: Obx(
+          () => SizedBox(
+            width: double.infinity,
+            height: 52.h,
+
+            child: ElevatedButton.icon(
+              onPressed: controller.isSending.value
+                  ? null
+                  : () => _showKirimUlangDialog(context),
+
+              icon: controller.isSending.value
+                  ? SizedBox(
+                      width: 18.w,
+                      height: 18.w,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Icon(Icons.send_rounded, size: 20.sp),
+
+              label: Text(
+                controller.isSending.value ? 'Mengirim...' : 'Kirim Ulang',
+                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700),
+              ),
+
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: BrandColors.brandPrimary500,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showKirimUlangDialog(BuildContext context) {
+    showDialog(
+      context: context,
+
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.r),
+        ),
+
+        title: const Text('Kirim Ulang Laporan'),
+
+        content: const Text(
+          'Pastikan isian laporan sudah diperbaiki. Laporan akan dikirim '
+          'kembali untuk diperiksa.',
+        ),
+
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+
+            child: const Text('Batal'),
+          ),
+
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+
+              _processKirimUlang(context);
+            },
+
+            child: const Text('Ya, Kirim'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _processKirimUlang(BuildContext context) async {
+    final controller = Get.find<DetailLaporanController>();
+
+    try {
+      await controller.kirimUlangLaporan(uuid: uuid, orgId: idOrganization);
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Laporan berhasil dikirim ulang')),
+      );
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!context.mounted) return;
+
+      final pesan = e.toString().replaceFirst('Exception: ', '');
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal mengirim ulang: $pesan')));
     }
   }
 

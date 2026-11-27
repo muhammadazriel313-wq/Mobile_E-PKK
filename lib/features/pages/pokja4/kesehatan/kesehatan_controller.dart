@@ -28,10 +28,11 @@ class KesehatanController extends GetxController {
     String imunisasiVaksinasi = '',
     String pkg = '',
     String tbc = '',
+    String? catatan,
     required String idRole,
     required String idOrganization,
-    String? catatan,
-    // Optional legacy params jika dipanggil dari tempat lama
+    // Parameter legacy dipertahankan agar pemanggil lama tetap kompilasi,
+    // tetapi tidak dikirim karena backend memakai default 0.
     String? jumlahPosyandu,
     String? jumlahPosyanduIterasi,
     String? jumlahKip,
@@ -60,12 +61,6 @@ class KesehatanController extends GetxController {
           if (tbc.isNotEmpty) 'tbc': tbc,
           'id_role': idRole,
           'id_organization': idOrganization,
-          // Support kolom legacy
-          'jumlah_posyandu': jumlahPosyandu ?? posyandu,
-          'jumlah_posyandu_iterasi': jumlahPosyanduIterasi ?? kaderGizi,
-          'jumlah_klp': jumlahKip ?? kaderKesling,
-          'jumlah_anggota': jumlahAnggota ?? kaderPhbs,
-          'jumlah_kartu_gratis': jumlahKartuGratis ?? kaderKb,
           if (catatan != null && catatan.isNotEmpty) 'catatan': catatan,
         },
       );
@@ -126,19 +121,20 @@ class KesehatanController extends GetxController {
       );
       return false;
     } catch (e) {
-      if (e is DioException &&
-          (e.type == DioExceptionType.connectionTimeout ||
-              e.type == DioExceptionType.sendTimeout ||
-              e.type == DioExceptionType.receiveTimeout ||
-              e.type == DioExceptionType.connectionError ||
-              e.error is SocketException)) {
-        lastFailureWasNetwork.value = true;
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
       }
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       Get.snackbar(
         'Error',
-        e.toString(),
+        ApiHelper.pesanGalat(e),
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,

@@ -158,7 +158,7 @@ class UploadReportController extends GetxController {
           e.error is SocketException) {
         lastFailureWasNetwork.value = true;
       }
-      errorMessage.value = 'Terjadi kesalahan koneksi';
+      errorMessage.value = ApiHelper.pesanGalat(e);
       Get.snackbar(
         'Error',
         errorMessage.value,

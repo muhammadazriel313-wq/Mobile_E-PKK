@@ -60,7 +60,7 @@ class PerencanaanEntry {
     required this.kbPria,
     required this.kbWanita,
     required this.kkTabungan,
-    this.kkAsuransi = '0',
+    required this.kkAsuransi,
     this.catatan,
     required this.status,
     required this.createdAt,

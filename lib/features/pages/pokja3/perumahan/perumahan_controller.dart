@@ -75,7 +75,7 @@ class PerumahanController extends GetxController {
       if (e is SocketException || e is TimeoutException) {
         lastFailureWasNetwork.value = true;
       }
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       // ERROR
       if (e is DioException) {
@@ -99,7 +99,7 @@ class PerumahanController extends GetxController {
       } else {
         Get.snackbar(
           'Error',
-          e.toString(),
+          ApiHelper.pesanGalat(e),
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,

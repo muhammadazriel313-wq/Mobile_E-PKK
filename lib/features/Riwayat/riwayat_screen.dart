@@ -47,6 +47,8 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
     switch (status) {
       case 'Proses':
         return 'Sedang Diproses';
+      case 'Revisi':
+        return 'Revisi';
       case 'Disetujui1':
         return 'Disetujui Kecamatan';
       case 'Disetujui2':
@@ -122,6 +124,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
                       title: riwayat.uuid,
                       subtitle: getSubtitleFromUUID(riwayat.uuid),
                       status: _getStatusLabel(riwayat.status),
+                      catatan: riwayat.catatan,
                       dateText: DateFormat(
                         'dd-MM-yyyy',
                       ).format(riwayat.createdAt),

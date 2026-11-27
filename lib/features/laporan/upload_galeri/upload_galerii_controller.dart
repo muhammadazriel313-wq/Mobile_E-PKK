@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:epkk_nganjuk/core/api_helper.dart';
@@ -160,6 +160,19 @@ class GaleriController extends GetxController {
       errorMessage.value = (data is Map && data['message'] != null)
           ? data['message'].toString()
           : 'Terjadi kesalahan jaringan';
+
+      // [DEBUG] Saat pengembangan, tampilkan penyebab asli dari server
+      // (error.message) agar mudah dilacak. Tidak muncul di aplikasi rilis.
+      var detail = false;
+      if (kDebugMode &&
+          data is Map &&
+          data['error'] is Map &&
+          data['error']['message'] != null) {
+        debugPrint('DETAIL ERROR SERVER: ${data['error']}');
+        errorMessage.value = '${errorMessage.value}\n${data['error']['message']}';
+        detail = true;
+      }
+
       Get.snackbar(
         'Error',
         errorMessage.value,
@@ -168,7 +181,7 @@ class GaleriController extends GetxController {
         colorText: Colors.white,
         margin: const EdgeInsets.all(12),
         borderRadius: 12,
-        duration: const Duration(seconds: 3),
+        duration: Duration(seconds: detail ? 10 : 3),
       );
     } catch (e) {
       errorMessage.value = 'Gagal upload kegiatan';

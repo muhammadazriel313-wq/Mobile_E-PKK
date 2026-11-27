@@ -8,6 +8,7 @@ class CardLaporan extends StatelessWidget {
   final String subtitle;
   final String status;
   final String dateText;
+  final String? catatan;
   final VoidCallback onTap;
 
   const CardLaporan({
@@ -17,10 +18,15 @@ class CardLaporan extends StatelessWidget {
     required this.status,
     required this.dateText,
     required this.onTap,
+    this.catatan,
   });
 
   @override
   Widget build(BuildContext context) {
+    final catatanText = (catatan ?? '').trim();
+    final showCatatan =
+        catatanText.isNotEmpty && status.toLowerCase() == 'revisi';
+
     return ZoomTapAnimation(
       onTap: onTap,
 
@@ -77,25 +83,7 @@ class CardLaporan extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-                    /// TITLE
-                    Text(
-                      title,
-
-                      maxLines: 2,
-
-                      overflow: TextOverflow.ellipsis,
-
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        color: TextColors.grey700,
-                        height: 1.4,
-                      ),
-                    ),
-
-                    SizedBox(height: 8.h),
-
-                    /// SUBTITLE
+                    /// POKJA / BIDANG (di atas, dengan ikon folder)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
 
@@ -103,12 +91,12 @@ class CardLaporan extends StatelessWidget {
                         Icon(
                           Icons.folder_open_outlined,
 
-                          size: 16.sp,
+                          size: 18.sp,
 
-                          color: TextColors.grey500,
+                          color: BrandColors.brandPrimary500,
                         ),
 
-                        SizedBox(width: 4.w),
+                        SizedBox(width: 6.w),
 
                         Expanded(
                           child: Text(
@@ -119,14 +107,62 @@ class CardLaporan extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
 
                             style: TextStyle(
-                              fontSize: 12.sp,
-                              color: TextColors.grey600,
-                              height: 1.5,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              color: TextColors.grey700,
+                              height: 1.4,
                             ),
                           ),
                         ),
                       ],
                     ),
+
+                    SizedBox(height: 6.h),
+
+                    /// KODE LAPORAN (di bawah)
+                    Text(
+                      title,
+
+                      maxLines: 1,
+
+                      overflow: TextOverflow.ellipsis,
+
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: TextColors.grey600,
+                        height: 1.4,
+                      ),
+                    ),
+
+                    // Catatan revisi dari admin (hanya di tab Revisi)
+                    if (showCatatan) ...[
+                      SizedBox(height: 8.h),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.sticky_note_2_outlined,
+                            size: 14.sp,
+                            color: const Color(0xFFC2410C),
+                          ),
+                          SizedBox(width: 4.w),
+                          Expanded(
+                            child: Text(
+                              'Catatan: $catatanText',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF9A3412),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
 
                     SizedBox(height: 12.h),
 

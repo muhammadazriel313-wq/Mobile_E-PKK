@@ -203,7 +203,7 @@ class RekapDesaBulananController extends GetxController {
         lastFailureWasNetwork.value = true;
       }
 
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       if (e is DioException) {
         if (e.type == DioExceptionType.connectionTimeout ||
@@ -232,7 +232,7 @@ class RekapDesaBulananController extends GetxController {
         Get.snackbar(
           'Error',
 
-          e.toString(),
+          ApiHelper.pesanGalat(e),
 
           snackPosition: SnackPosition.TOP,
 

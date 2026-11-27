@@ -329,19 +329,19 @@ class PendidikanKeterampilanController extends GetxController {
       errorMessage.value = e.message.isEmpty ? 'Tidak ada koneksi internet' : e.message;
       Get.snackbar(
         'Error',
-        e.toString(),
+        errorMessage.value,
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
       );
       return false;
-    } on TimeoutException catch (e) {
+    } on TimeoutException {
       lastFailureWasNetwork.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Waktu tunggu koneksi habis';
       Get.snackbar(
         'Error',
-        e.toString(),
+        errorMessage.value,
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -349,21 +349,16 @@ class PendidikanKeterampilanController extends GetxController {
       );
       return false;
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = ApiHelper.pesanGalat(e);
       if (e is DioException) {
         lastFailureWasNetwork.value =
             e.type == DioExceptionType.connectionError ||
             e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
             e.type == DioExceptionType.sendTimeout;
-        errorMessage.value = e.response?.data?['message']?.toString() ??
-            e.message ??
-            e.toString();
         Get.snackbar(
           'Server Error',
-          e.response?.data?['message'] ??
-              e.response?.data.toString() ??
-              'Terjadi kesalahan pada server',
+          errorMessage.value,
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -372,7 +367,7 @@ class PendidikanKeterampilanController extends GetxController {
       } else {
         Get.snackbar(
           'Error',
-          e.toString(),
+          ApiHelper.pesanGalat(e),
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,

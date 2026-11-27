@@ -107,19 +107,20 @@ class PerencanaanController extends GetxController {
       );
       return false;
     } catch (e) {
-      if (e is DioException &&
-          (e.type == DioExceptionType.connectionTimeout ||
-              e.type == DioExceptionType.sendTimeout ||
-              e.type == DioExceptionType.receiveTimeout ||
-              e.type == DioExceptionType.connectionError ||
-              e.error is SocketException)) {
-        lastFailureWasNetwork.value = true;
+      if (e is DioException) {
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.error is SocketException) {
+          lastFailureWasNetwork.value = true;
+        }
       }
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       Get.snackbar(
         'Error',
-        e.toString(),
+        ApiHelper.pesanGalat(e),
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,

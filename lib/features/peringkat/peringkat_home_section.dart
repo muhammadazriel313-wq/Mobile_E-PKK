@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'peringkat_controller.dart';
 import 'peringkat_model.dart';
@@ -44,8 +45,13 @@ class _PeringkatHomeSectionState extends State<PeringkatHomeSection> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // ================= JUDUL =================
       Row(children: [
-        Icon(Icons.emoji_events_rounded,
-            color: PeringkatColors.navy, size: 22.r),
+        ExcludeSemantics(
+          child: SvgPicture.asset(
+            'assets/icons/ic_trophy.svg',
+            width: 22.r,
+            height: 22.r,
+          ),
+        ),
         SizedBox(width: 8.w),
         Expanded(
           child: Obx(() => Text('Peringkat ${c.periode.value.label}',

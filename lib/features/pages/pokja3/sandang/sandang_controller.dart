@@ -74,7 +74,7 @@ class SandangController extends GetxController {
       if (e is SocketException || e is TimeoutException) {
         lastFailureWasNetwork.value = true;
       }
-      errorMessage.value = e.toString();
+      errorMessage.value = ApiHelper.pesanGalat(e);
 
       if (e is DioException) {
         if (e.type == DioExceptionType.connectionTimeout ||
