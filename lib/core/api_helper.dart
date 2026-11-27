@@ -114,6 +114,33 @@ class ApiHelper {
     handler.next(e);
   }
 
+  /// Pesan kesalahan yang layak ditampilkan ke pengguna.
+  /// Bila server mengirim pesan (misalnya 422 "Isian PHBS harus berupa angka."),
+  /// pesan itulah yang dipakai. Selain itu dipakai pesan umum berbahasa Indonesia.
+  static String pesanGalat(Object e) {
+    if (e is! DioException) {
+      return 'Terjadi kesalahan. Coba lagi.';
+    }
+
+    final data = e.response?.data;
+    if (data is Map) {
+      final error = data['error'];
+      final pesan = (error is Map ? error['message'] : null) ?? data['message'];
+      if (pesan is String && pesan.trim().isNotEmpty) return pesan;
+    }
+
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return 'Waktu tunggu koneksi habis. Coba lagi.';
+      case DioExceptionType.connectionError:
+        return 'Tidak dapat terhubung ke server. Periksa koneksi internet.';
+      default:
+        return 'Terjadi kesalahan pada server. Coba lagi.';
+    }
+  }
+
   /// ================= GET =================
   Future<Response> get(
     String endpoint, {

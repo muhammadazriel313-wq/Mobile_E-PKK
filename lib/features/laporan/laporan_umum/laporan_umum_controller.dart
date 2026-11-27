@@ -150,7 +150,7 @@ class LaporanUmumController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       Get.snackbar(
         'Error',

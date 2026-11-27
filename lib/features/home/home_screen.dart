@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,7 @@ import 'package:epkk_nganjuk/features/auth/component/header_home.dart';
 import 'package:epkk_nganjuk/features/auth/component/widget_text_pengumuman.dart';
 
 import 'package:epkk_nganjuk/features/home/kebun/kebun_laporan_controller.dart';
+import 'package:epkk_nganjuk/features/home/component/card_action_figma.dart';
 import 'package:epkk_nganjuk/features/home/kebun/widget_kebun_laporan.dart';
 import 'package:epkk_nganjuk/features/home/nav_controller.dart';
 import 'package:epkk_nganjuk/features/notifikasi/notifikasi_controller.dart';
@@ -177,8 +179,66 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: SafeArea(
-        child: Column(
+      body: Stack(
+        children: [
+          // Background Foto Tugu Nganjuk & Glow Putih (Figma Node 3463:3557)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: IgnorePointer(
+              ignoring: true,
+              child: ExcludeSemantics(
+                child: SizedBox(
+                  height: 250.h,
+                  width: double.infinity,
+                  child: Stack(
+                    clipBehavior: Clip.hardEdge,
+                    fit: StackFit.expand,
+                    children: [
+                      // Foto Tugu Nganjuk lebih jelas (opacity 100%)
+                      Opacity(
+                        opacity: 1.0,
+                        child: Image.asset(
+                          'assets/images/header_tugu_nganjuk.png',
+                          fit: BoxFit.cover,
+                          alignment: const Alignment(0.12, -1.0),
+                        ),
+                      ),
+                      // Overlay Gradien Putih Lebih Ringan (atas 22%, tengah 10%, bawah memudar penuh)
+                      Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: [0.0, 0.62, 1.0],
+                            colors: [
+                              Color(0x38FFFFFF), // Putih ~22%
+                              Color(0x1AFFFFFF), // Putih ~10%
+                              Colors.white,      // Putih 100% (memudar mulus ke warna latar)
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Glow Putih Radial (Figma Node 3463:3557 "Ellipse 757") di belakang sapaan
+                      Positioned(
+                        left: -78.w,
+                        top: 24.h,
+                        width: 268.w,
+                        height: 255.h,
+                        child: SvgPicture.asset(
+                          'assets/images/glow_header.svg',
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
@@ -208,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
+                      // Jarak dari header ke atas kotak Kebun (turunkan ±14px lebih jauh: 6 + 14 = 20px)
                       SizedBox(height: 20.h),
 
                       // ================= BANNER (KEBUN LAPORAN) =================
@@ -229,109 +290,74 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                       SizedBox(height: 18.h),
 
-                      // ================= BUTTON LAPORAN =================
-                      if (roleBidang == 'Bidang Umum') ...[
-                        CardButtonActions(
-                          backroundColor: ButtonActionsColors.fillLaporan,
-
-                          strokeColor: ButtonActionsColors.strokeLaporan,
-
-                          titleText: 'Upload Laporan Umum',
-
-                          subTitle: 'upload laporan umum PKK disini',
-
-                          imageAssets: 'assets/images/ic_report.png',
-
-                          onTab: () {
-                            Get.toNamed(
-                              Routes.LAPORAN_UMUM1,
-
-                              arguments: {
-                                'id_user': idUser,
-
-                                'full_name': fullName,
-
-                                'id_role': idRole,
-
-                                'name_role': role,
-
-                                'id_organization': idOrganization,
-
-                                'name_organization': roleBidang,
-                              },
-                            );
-                          },
+                      // ================= AKSI CEPAT (FIGMA 2 KOLOM) =================
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: CardActionFigma(
+                                title: roleBidang == 'Bidang Umum'
+                                    ? 'Upload Laporan Umum'
+                                    : 'Upload Laporan',
+                                description: 'Laporkan kegiatan PKK disini',
+                                imageAsset: 'assets/icons/ic_upload_laporan.png',
+                                onTap: () {
+                                  if (roleBidang == 'Bidang Umum') {
+                                    Get.toNamed(
+                                      Routes.LAPORAN_UMUM1,
+                                      arguments: {
+                                        'id_user': idUser,
+                                        'full_name': fullName,
+                                        'id_role': idRole,
+                                        'name_role': role,
+                                        'id_organization': idOrganization,
+                                        'name_organization': roleBidang,
+                                      },
+                                    );
+                                  } else {
+                                    Get.toNamed(
+                                      Routes.UPLOAD_LAPORAN,
+                                      arguments: {
+                                        'id_user': idUser,
+                                        'full_name': fullName,
+                                        'id_role': idRole,
+                                        'name_role': role,
+                                        'id_organization': idOrganization,
+                                        'name_organization': roleBidang,
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: CardActionFigma(
+                                title: 'Upload Foto Kegiatan',
+                                description: 'Bagikan momen kegiatan PKK',
+                                imageAsset: 'assets/icons/ic_upload_galeri.png',
+                                onTap: () {
+                                  Get.toNamed(
+                                    Routes.UPLOAD_GALERI,
+                                    arguments: {
+                                      'id_user': idUser,
+                                      'full_name': fullName,
+                                      'id_role': idRole,
+                                      'name_role': role,
+                                      'id_organization': idOrganization,
+                                      'name_organization': roleBidang,
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ] else ...[
-                        CardButtonActions(
-                          backroundColor: ButtonActionsColors.fillLaporan,
-
-                          strokeColor: ButtonActionsColors.strokeLaporan,
-
-                          titleText: 'Upload Laporan',
-
-                          subTitle: 'upload laporan PKK disini',
-
-                          imageAssets: 'assets/images/ic_report.png',
-
-                          onTab: () {
-                            Get.toNamed(
-                              Routes.UPLOAD_LAPORAN,
-
-                              arguments: {
-                                'id_user': idUser,
-
-                                'full_name': fullName,
-
-                                'id_role': idRole,
-
-                                'name_role': role,
-
-                                'id_organization': idOrganization,
-
-                                'name_organization': roleBidang,
-                              },
-                            );
-                          },
-                        ),
-                      ],
-
-                      SizedBox(height: 14.h),
-
-                      // ================= BUTTON GALERI =================
-                      CardButtonActions(
-                        backroundColor: ButtonActionsColors.fillGalery,
-
-                        strokeColor: ButtonActionsColors.strokeGalery,
-
-                        titleText: 'Tambah Foto kegiatan',
-
-                        subTitle: 'upload kegiatan PKK disini',
-
-                        imageAssets: 'assets/images/ic_gallery.png',
-
-                        onTab: () {
-                          Get.toNamed(
-                            Routes.UPLOAD_GALERI,
-
-                            arguments: {
-                              'id_user': idUser,
-
-                              'full_name': fullName,
-
-                              'id_role': idRole,
-
-                              'name_role': role,
-
-                              'id_organization': idOrganization,
-
-                              'name_organization': roleBidang,
-                            },
-                          );
-                        },
                       ),
 
-                      SizedBox(height: 32.h),
+                      // Kurangi jarak ke Peringkat dari ~32px menjadi ~16px
+                      SizedBox(height: 16.h),
 
                       // ================= PERINGKAT (BARU) =================
                       // [PERUBAHAN 20-11-2026] Akun kecamatan -> podium kecamatan,
@@ -478,7 +504,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ],
         ),
       ),
-    );
+    ],
+  ),
+);
   }
 
   // ================= DETAIL DIALOG =================

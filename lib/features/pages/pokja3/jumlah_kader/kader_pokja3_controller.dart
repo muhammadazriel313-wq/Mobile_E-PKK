@@ -151,7 +151,7 @@ class KaderPokja3Controller extends GetxController {
 
       return false;
     } catch (e) {
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       if (e is DioException) {
         lastFailureWasNetwork.value =
@@ -172,7 +172,7 @@ class KaderPokja3Controller extends GetxController {
       } else {
         Get.snackbar(
           'Error',
-          e.toString(),
+          ApiHelper.pesanGalat(e),
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,

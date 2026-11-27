@@ -143,7 +143,7 @@ class GotongRoyongController extends GetxController {
           e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
           e.type == DioExceptionType.sendTimeout;
-      errorMessage.value = 'Terjadi kesalahan';
+      errorMessage.value = ApiHelper.pesanGalat(e);
       Get.snackbar(
         'Error',
         errorMessage.value,

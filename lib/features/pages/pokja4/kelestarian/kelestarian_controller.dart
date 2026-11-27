@@ -118,11 +118,11 @@ class KelestarianController extends GetxController {
           lastFailureWasNetwork.value = true;
         }
       }
-      errorMessage(e.toString());
+      errorMessage(ApiHelper.pesanGalat(e));
 
       Get.snackbar(
         'Error',
-        e.toString(),
+        ApiHelper.pesanGalat(e),
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,

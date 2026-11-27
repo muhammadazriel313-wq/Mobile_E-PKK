@@ -117,7 +117,7 @@ class PanganController extends GetxController {
       if (e is SocketException || e is TimeoutException) {
         lastFailureWasNetwork.value = true;
       }
-      errorMessage.value = e.toString();
+      errorMessage.value = ApiHelper.pesanGalat(e);
 
       if (e is DioException) {
         if (e.type == DioExceptionType.connectionTimeout ||
@@ -211,7 +211,7 @@ class PanganController extends GetxController {
       }
       Get.snackbar(
         'Error',
-        e.toString(),
+        ApiHelper.pesanGalat(e),
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
